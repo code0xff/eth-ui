@@ -3,94 +3,123 @@
 	import Input from '@/components/ui/input/input.svelte';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
+	import { Block, JsonRpcProvider } from 'ethers';
+	import {
+		blockIndexStore,
+		blockListStore,
+		blockNumberStore,
+		blockStore,
+		syncingStore,
+		syncJobStore,
+		timestampToDate,
+		txListStore
+	} from '@/index';
+	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 
 	let rpc: string = '';
+	let provider: JsonRpcProvider;
+
 	let syncing: boolean = false;
-	let syncJobId: NodeJS.Timeout;
+	let syncJobId: NodeJS.Timeout | undefined;
 
-	let chainId: string = '';
-	let number: string = '';
+	let number: number;
+	let blocks: Block[] = [];
+	let txs: { hash: string; number: number }[] = [];
 
-	let blocksByNumber: Map<string, string> = new Map();
-	let blocksByHash: Map<string, any> = new Map();
-	let blocks: { number: string; hash: string; timestamp: string }[] = [];
+	blockNumberStore.subscribe((blockNumber) => {
+		number = blockNumber;
+	});
+	syncingStore.subscribe((isSyncing) => {
+		syncing = isSyncing;
+	});
+	blockListStore.subscribe((blockList) => {
+		blocks = [...blockList];
+	});
+	txListStore.subscribe((txList) => {
+		txs = [...txList];
+	});
+	syncJobStore.subscribe((syncJob) => {
+		syncJobId = syncJob;
+	});
 
-	let txs: { hash: string; number: string }[] = [];
+	onMount(() => {
+		rpc = localStorage.getItem('rpc') ?? '';
+	});
 
-	async function jsonRpcRequest(rpc: string, method: string, params: any[] = []) {
-		try {
-			const response = await fetch(rpc.trim(), {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					jsonrpc: '2.0',
-					method,
-					params,
-					id: 1
-				})
-			});
-
-			const data = await response.json();
-			return data.result;
-		} catch (error) {
-			throw new Error(`Error fetching ${method}: ${error}`);
-		}
+	async function getBlockNumber(provider: JsonRpcProvider): Promise<number> {
+		return provider.getBlockNumber();
 	}
 
-	async function getChainId(rpc: string): Promise<string> {
-		return await jsonRpcRequest(rpc, 'eth_chainId');
-	}
-
-	async function getBlockNumber(rpc: string): Promise<string> {
-		return await jsonRpcRequest(rpc, 'eth_blockNumber');
-	}
-
-	async function getBlockByNumber(rpc: string, number: string): Promise<any> {
-		return await jsonRpcRequest(rpc, 'eth_getBlockByNumber', [number, false]);
+	async function getBlockByNumber(provider: JsonRpcProvider, number: number): Promise<any> {
+		return provider.getBlock(number, false);
 	}
 
 	async function startSync(rpc: string) {
-		syncing = true;
+		syncingStore.set(true);
 
-		chainId = await getChainId(rpc);
-		number = await getBlockNumber(rpc);
+		provider = new JsonRpcProvider(rpc.trim());
+		localStorage.setItem('rpc', rpc.trim());
 
-		syncJobId = setInterval(async () => {
-			const block = await getBlockByNumber(rpc, number);
+		if (!number) {
+			number = await getBlockNumber(provider);
+			const block = await getBlockByNumber(provider, number);
 
 			if (block) {
-				blocksByNumber.set(number, block.hash!);
-				blocksByHash.set(block.hash, block);
-				blocks = [{ number, hash: block.hash, timestamp: block.timestamp }, ...blocks];
-
-				txs = [
-					...block.transactions.map((hash: string) => {
-						return { hash, number: block.number };
-					}),
-					...txs
-				];
-
-				number = `0x${(parseInt(number, 16) + 1).toString(16)}`;
+				updateNewBlock(block);
 			}
-		}, 5000);
+		}
+
+		const syncJobId = setInterval(async () => {
+			const block = await getBlockByNumber(provider, number + 1);
+
+			if (block) {
+				updateNewBlock(block);
+			}
+		}, 1000);
+		syncJobStore.set(syncJobId);
 	}
 
 	function stopSync() {
-		syncing = false;
+		syncingStore.set(false);
 		if (syncJobId) {
 			clearInterval(syncJobId);
+			syncJobStore.set(undefined);
 		}
 	}
 
-	function timestampToDate(timestampHex: string): string {
-		const timestamp = parseInt(timestampHex, 16) * 1000; // Convert to milliseconds
-		const datetime = new Date(timestamp).toISOString();
-		const date = datetime.slice(0, 10);
-		const time = datetime.slice(11, 19);
+	function printNumber(num: number): string {
+		if (num !== undefined && num !== 0) {
+			return num.toString();
+		} else {
+			return '';
+		}
+	}
 
-		return `${date} ${time}`;
+	function updateNewBlock(block: Block) {
+		blockNumberStore.set(block.number);
+		blockIndexStore.update((blockIndex) => {
+			blockIndex.set(block.number, block.hash!);
+			return blockIndex;
+		});
+		blockStore.update((blockStore) => {
+			blockStore.set(block.hash!, block);
+			return blockStore;
+		});
+		blockListStore.update((blockList) => {
+			blockList = [block, ...blockList];
+			return blockList;
+		});
+
+		txListStore.update((txList) => {
+			txList = [
+				...block.transactions.map((hash: string) => {
+					return { hash, number: block.number };
+				}),
+				...txList
+			];
+			return txList;
+		});
 	}
 </script>
 
@@ -108,29 +137,6 @@
 						>
 					</div>
 				</div>
-			</Card.Content>
-		</Card.Root>
-	</div>
-	<div class="m-4">
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Network</Card.Title>
-			</Card.Header>
-			<Card.Content class="h-20">
-				<Table.Root>
-					<Table.Header>
-						<Table.Row>
-							<Table.Head>ChainId</Table.Head>
-							<Table.Head>Number</Table.Head>
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						<Table.Row>
-							<Table.Cell>{chainId}</Table.Cell>
-							<Table.Cell>{number}</Table.Cell>
-						</Table.Row>
-					</Table.Body>
-				</Table.Root>
 			</Card.Content>
 		</Card.Root>
 	</div>
@@ -152,8 +158,8 @@
 							</Table.Header>
 							<Table.Body>
 								{#each blocks as block}
-									<Table.Row>
-										<Table.Cell>{parseInt(block.number, 16)}</Table.Cell>
+									<Table.Row onclick={() => goto(`/block/${block.hash}`)} class="cursor-pointer">
+										<Table.Cell>{printNumber(block.number)}</Table.Cell>
 										<Table.Cell>{block.hash}</Table.Cell>
 										<Table.Cell>{timestampToDate(block.timestamp)}</Table.Cell>
 									</Table.Row>
@@ -180,7 +186,7 @@
 								{#each txs as tx}
 									<Table.Row>
 										<Table.Cell>{tx.hash}</Table.Cell>
-										<Table.Cell>{parseInt(tx.number, 16)}</Table.Cell>
+										<Table.Cell>{tx.number}</Table.Cell>
 									</Table.Row>
 								{/each}
 							</Table.Body>
