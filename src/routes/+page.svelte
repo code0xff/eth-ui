@@ -3,19 +3,24 @@
 	import Input from '@/components/ui/input/input.svelte';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
-	import { Block, JsonRpcProvider } from 'ethers';
+	import { Block, JsonRpcProvider, TransactionResponse } from 'ethers';
 	import {
 		blockIndexStore,
 		blockListStore,
 		blockNumberStore,
 		blockStore,
+		printNumber,
+		providerStore,
 		syncingStore,
 		syncJobStore,
 		timestampToDate,
-		txListStore
+		txListStore,
+		txStore
 	} from '@/index';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import { toggleMode } from 'mode-watcher';
+	import { SunMoon } from '@lucide/svelte';
 
 	let rpc: string = '';
 	let provider: JsonRpcProvider;
@@ -25,7 +30,7 @@
 
 	let number: number;
 	let blocks: Block[] = [];
-	let txs: { hash: string; number: number }[] = [];
+	let txs: TransactionResponse[] = [];
 
 	blockNumberStore.subscribe((blockNumber) => {
 		number = blockNumber;
@@ -33,15 +38,18 @@
 	syncingStore.subscribe((isSyncing) => {
 		syncing = isSyncing;
 	});
-	blockListStore.subscribe((blockList) => {
-		blocks = [...blockList];
-	});
-	txListStore.subscribe((txList) => {
-		txs = [...txList];
-	});
 	syncJobStore.subscribe((syncJob) => {
 		syncJobId = syncJob;
 	});
+	blockStore.subscribe((blockStore) => {
+		blocks = [...blockStore.values()].reverse();
+	});
+	txStore.subscribe((txStore) => {
+		txs = [...txStore.values()].reverse();
+	});
+    providerStore.subscribe((providerStore) => {
+        provider = providerStore;
+    });
 
 	onMount(() => {
 		rpc = localStorage.getItem('rpc') ?? '';
@@ -52,13 +60,13 @@
 	}
 
 	async function getBlockByNumber(provider: JsonRpcProvider, number: number): Promise<any> {
-		return provider.getBlock(number, false);
+		return provider.getBlock(number, true);
 	}
 
 	async function startSync(rpc: string) {
 		syncingStore.set(true);
-
-		provider = new JsonRpcProvider(rpc.trim());
+        providerStore.set(new JsonRpcProvider(rpc.trim()));
+        
 		localStorage.setItem('rpc', rpc.trim());
 
 		if (!number) {
@@ -88,14 +96,6 @@
 		}
 	}
 
-	function printNumber(num: number): string {
-		if (num !== undefined && num !== 0) {
-			return num.toString();
-		} else {
-			return '';
-		}
-	}
-
 	function updateNewBlock(block: Block) {
 		blockNumberStore.set(block.number);
 		blockIndexStore.update((blockIndex) => {
@@ -107,17 +107,22 @@
 			return blockStore;
 		});
 		blockListStore.update((blockList) => {
-			blockList = [block, ...blockList];
+			blockList = [
+				{ number: block.number, hash: block.hash!, timestamp: block.timestamp },
+				...blockList
+			];
 			return blockList;
 		});
-
+		txStore.update((txStore) => {
+			block.prefetchedTransactions.forEach((tx) => {
+				txStore.set(tx.hash, tx);
+			});
+			return txStore;
+		});
 		txListStore.update((txList) => {
-			txList = [
-				...block.transactions.map((hash: string) => {
-					return { hash, number: block.number };
-				}),
-				...txList
-			];
+			block.transactions.forEach((hash) => {
+				txList = [{ hash, number: block.number }, ...txList];
+			});
 			return txList;
 		});
 	}
@@ -132,9 +137,15 @@
 						<Input placeholder="RPC endpoint" bind:value={rpc} disabled={syncing} />
 					</div>
 					<div>
-						<Button onclick={() => (syncing ? stopSync() : startSync(rpc))} class="cursor-pointer"
-							>{syncing ? 'Pause' : 'Start'}</Button
+						<Button
+							onclick={() => (syncing ? stopSync() : startSync(rpc))}
+							class="w-[80px] cursor-pointer">{syncing ? 'Pause' : 'Start'}</Button
 						>
+					</div>
+					<div>
+						<Button onclick={toggleMode} class="cursor-pointer">
+							<SunMoon />
+						</Button>
 					</div>
 				</div>
 			</Card.Content>
@@ -147,7 +158,7 @@
 					<Card.Header>
 						<Card.Title>Blocks</Card.Title>
 					</Card.Header>
-					<Card.Content class="h-100 overflow-y-auto">
+					<Card.Content class="h-120 overflow-y-auto">
 						<Table.Root>
 							<Table.Header>
 								<Table.Row>
@@ -174,7 +185,7 @@
 					<Card.Header>
 						<Card.Title>Transactions</Card.Title>
 					</Card.Header>
-					<Card.Content class="h-100 overflow-y-auto">
+					<Card.Content class="h-120 overflow-y-auto">
 						<Table.Root>
 							<Table.Header>
 								<Table.Row>
@@ -184,9 +195,9 @@
 							</Table.Header>
 							<Table.Body>
 								{#each txs as tx}
-									<Table.Row>
+									<Table.Row onclick={() => goto(`/tx/${tx.hash}`)} class="cursor-pointer">
 										<Table.Cell>{tx.hash}</Table.Cell>
-										<Table.Cell>{tx.number}</Table.Cell>
+										<Table.Cell>{tx.blockNumber}</Table.Cell>
 									</Table.Row>
 								{/each}
 							</Table.Body>

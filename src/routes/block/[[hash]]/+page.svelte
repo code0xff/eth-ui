@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { blockStore, timestampToDate } from '@/index';
+	import { blockStore, printNumber, printWei, timestampToDate } from '@/index';
 	import type { Block } from 'ethers';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
@@ -8,8 +8,8 @@
 
 	let block: Block | undefined;
 
-	blockStore.subscribe((blocks) => {
-		block = blocks.get(data.hash);
+	blockStore.subscribe((blockStore) => {
+		block = blockStore.get(data.hash);
 	});
 </script>
 
@@ -17,14 +17,14 @@
 	<div class="m-4">
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Block #{block ? block.number : ''}</Card.Title>
+				<Card.Title>Block #{block ? printNumber(block.number) : ''}</Card.Title>
 			</Card.Header>
 			<Card.Content>
 				<Table.Root>
 					<Table.Body>
 						<Table.Row>
 							<Table.Cell>Number</Table.Cell>
-							<Table.Cell>{block ? block.number.toLocaleString() : ''}</Table.Cell>
+							<Table.Cell>{block ? printNumber(block.number) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell>Hash</Table.Cell>
@@ -48,22 +48,15 @@
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell>Base Fee</Table.Cell>
-							<Table.Cell
-								>{block && block.baseFeePerGas
-									? block.baseFeePerGas.toLocaleString()
-									: ''}</Table.Cell
-							>
+							<Table.Cell>{block ? printWei(block.baseFeePerGas) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell>Gas Used</Table.Cell>
-							<Table.Cell>{block && block.gasUsed ? block.gasUsed.toLocaleString() : ''}</Table.Cell
-							>
+							<Table.Cell>{block ? printNumber(block.gasUsed) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell>Gas Limit</Table.Cell>
-							<Table.Cell
-								>{block && block.gasLimit ? block.gasLimit.toLocaleString() : ''}</Table.Cell
-							>
+							<Table.Cell>{block ? printNumber(block.gasLimit) : ''}</Table.Cell>
 						</Table.Row>
 					</Table.Body>
 				</Table.Root>
