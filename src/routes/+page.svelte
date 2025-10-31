@@ -9,6 +9,8 @@
 		blockListStore,
 		blockNumberStore,
 		blockStore,
+		compactAddress,
+		compactHash,
 		printNumber,
 		providerStore,
 		syncingStore,
@@ -47,9 +49,9 @@
 	txStore.subscribe((txStore) => {
 		txs = [...txStore.values()].reverse();
 	});
-    providerStore.subscribe((providerStore) => {
-        provider = providerStore;
-    });
+	providerStore.subscribe((providerStore) => {
+		provider = providerStore;
+	});
 
 	onMount(() => {
 		rpc = localStorage.getItem('rpc') ?? '';
@@ -65,8 +67,8 @@
 
 	async function startSync(rpc: string) {
 		syncingStore.set(true);
-        providerStore.set(new JsonRpcProvider(rpc.trim()));
-        
+		providerStore.set(new JsonRpcProvider(rpc.trim()));
+
 		localStorage.setItem('rpc', rpc.trim());
 
 		if (!number) {
@@ -171,7 +173,7 @@
 								{#each blocks as block}
 									<Table.Row onclick={() => goto(`/block/${block.hash}`)} class="cursor-pointer">
 										<Table.Cell>{printNumber(block.number)}</Table.Cell>
-										<Table.Cell>{block.hash}</Table.Cell>
+										<Table.Cell>{compactHash(block.hash)}</Table.Cell>
 										<Table.Cell>{timestampToDate(block.timestamp)}</Table.Cell>
 									</Table.Row>
 								{/each}
@@ -190,13 +192,15 @@
 							<Table.Header>
 								<Table.Row>
 									<Table.Head>Hash</Table.Head>
+									<Table.Head>From</Table.Head>
 									<Table.Head>Number</Table.Head>
 								</Table.Row>
 							</Table.Header>
 							<Table.Body>
 								{#each txs as tx}
 									<Table.Row onclick={() => goto(`/tx/${tx.hash}`)} class="cursor-pointer">
-										<Table.Cell>{tx.hash}</Table.Cell>
+										<Table.Cell>{compactHash(tx.hash)}</Table.Cell>
+										<Table.Cell>{compactAddress(tx.from)}</Table.Cell>
 										<Table.Cell>{tx.blockNumber}</Table.Cell>
 									</Table.Row>
 								{/each}

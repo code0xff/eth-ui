@@ -46,15 +46,37 @@ export function printWei(wei: bigint | null): string {
 }
 
 const CHUNK_SIZE = 64;
+const SELECTOR_SIZE = 8;
 
 export function toChunks(data: string): string[] {
-	if (data.length <= CHUNK_SIZE + 2) {
+	if (data.startsWith('0x') && data.length <= 2) {
+		return ['0x'];
+	} else if (data.length <= CHUNK_SIZE) {
 		return [data];
+	} else {
+		data = data.startsWith('0x') ? data.slice(2) : data;
+		const chunks: string[] = [`0x${data.slice(0, SELECTOR_SIZE)}`];
+
+		data = data.slice(SELECTOR_SIZE);
+		for (let i = 0; i < data.length; i += CHUNK_SIZE) {
+			chunks.push('0x' + data.slice(i, i + CHUNK_SIZE));
+		}
+		return chunks;
 	}
-	data = data.startsWith('0x') ? data.slice(2) : data;
-	const chunks: string[] = [];
-	for (let i = 0; i < data.length; i += CHUNK_SIZE) {
-		chunks.push('0x' + data.slice(i, i + CHUNK_SIZE));
+}
+
+export function compactHash(hash: string | null): string {
+	if (hash) {
+		return `${hash.slice(0, 18)}...${hash.slice(-16)}`;
+	} else {
+		return '';
 	}
-	return chunks;
+}
+
+export function compactAddress(address: string | null): string {
+	if (address) {
+		return `${address.slice(0, 10)}...${address.slice(-8)}`;
+	} else {
+		return '';
+	}
 }
