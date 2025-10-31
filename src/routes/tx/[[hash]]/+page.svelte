@@ -1,23 +1,14 @@
 <script lang="ts">
-	import { txStore, printNumber, printWei, toChunks, providerStore } from '@/index';
+	import { txStore, printNumber, printWei, toChunks } from '@/index';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
-	import type { TransactionResponse, JsonRpcProvider } from 'ethers';
+	import type { TransactionResponse } from 'ethers';
+	import { get } from 'svelte/store';
 
 	export let data: { hash: string };
 
-	let tx: TransactionResponse | undefined;
-	let txDataChunks: string[] = [];
-
-	let provider: JsonRpcProvider;
-
-	txStore.subscribe((txStore) => {
-		tx = txStore.get(data.hash);
-		txDataChunks = tx ? toChunks(tx.data) : [];
-	});
-	providerStore.subscribe((providerStore) => {
-		provider = providerStore;
-	});
+	let tx: TransactionResponse | undefined = get(txStore).get(data.hash);
+	let txDataChunks: string[] = tx ? toChunks(tx.data) : [];
 </script>
 
 <div>

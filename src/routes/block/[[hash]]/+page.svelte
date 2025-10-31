@@ -3,21 +3,18 @@
 	import type { Block } from 'ethers';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
+	import { get } from 'svelte/store';
 
 	export let data: { hash: string };
 
-	let block: Block | undefined;
-
-	blockStore.subscribe((blockStore) => {
-		block = blockStore.get(data.hash);
-	});
+	let block: Block | undefined = get(blockStore).get(data.hash);
 </script>
 
 <div>
 	<div class="m-4">
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Block #{block ? printNumber(block.number) : ''}</Card.Title>
+				<Card.Title>Block #{block ? block.hash : ''}</Card.Title>
 			</Card.Header>
 			<Card.Content>
 				<Table.Root>
