@@ -153,8 +153,22 @@
 			</Card.Content>
 		</Card.Root>
 	</div>
-	<div>
-		<div class="m-4 lg:flex lg:flex-row lg:gap-4">
+	<div class="m-4">
+		<Card.Root>
+			<Card.Content>
+				<div class="flex flex-row gap-4">
+					<div class="w-full">
+						<Input placeholder="Search by..." />
+					</div>
+					<div>
+						<Button>Search</Button>
+					</div>
+				</div>
+			</Card.Content>
+		</Card.Root>
+	</div>
+	<div class="m-4">
+		<div class="lg:flex lg:flex-row lg:gap-4">
 			<div class="lg:flex-1">
 				<Card.Root>
 					<Card.Header>
@@ -171,7 +185,7 @@
 							</Table.Header>
 							<Table.Body>
 								{#each blocks as block}
-									<Table.Row onclick={() => goto(`/block/${block.hash}`)} class="cursor-pointer">
+									<Table.Row onclick={() => goto(`/block/${block.number}`)} class="cursor-pointer">
 										<Table.Cell>{printNumber(block.number)}</Table.Cell>
 										<Table.Cell>{compactHash(block.hash)}</Table.Cell>
 										<Table.Cell>{timestampToDate(block.timestamp)}</Table.Cell>

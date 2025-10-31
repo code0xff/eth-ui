@@ -1,20 +1,30 @@
 <script lang="ts">
-	import { blockStore, printNumber, printWei, timestampToDate } from '@/index';
+	import { blockIndexStore, blockStore, printNumber, printWei, timestampToDate } from '@/index';
 	import type { Block } from 'ethers';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
 	import { get } from 'svelte/store';
+	import { onMount } from 'svelte';
 
-	export let data: { hash: string };
+	export let data: { number: string };
 
-	let block: Block | undefined = get(blockStore).get(data.hash);
+	let block: Block | undefined;
+
+	onMount(() => {
+		const blockNumber = parseInt(data.number);
+		const hash = get(blockIndexStore).get(blockNumber);
+		
+		if (hash) {
+			block = get(blockStore).get(hash);
+		}
+	});
 </script>
 
 <div>
 	<div class="m-4">
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Block #{block ? block.hash : ''}</Card.Title>
+				<Card.Title>Block #{block ? printNumber(block.number) : ''}</Card.Title>
 			</Card.Header>
 			<Card.Content>
 				<Table.Root>
