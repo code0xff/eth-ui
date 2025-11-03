@@ -24,6 +24,7 @@
 	import { toggleMode } from 'mode-watcher';
 	import { SunMoon } from '@lucide/svelte';
 	import { ADDRESS_SIZE, DEFAULT_RPC, HASH_SIZE } from '@/constants';
+	import { get } from 'svelte/store';
 
 	let rpc: string = '';
 	let provider: JsonRpcProvider;
@@ -103,6 +104,10 @@
 	}
 
 	function updateNewBlock(block: Block) {
+		if (get(blockStore).get(block.hash!)) {
+			return;
+		}
+
 		blockNumberStore.set(block.number);
 		blockIndexStore.update((blockIndex) => {
 			blockIndex.set(block.number, block.hash!);
