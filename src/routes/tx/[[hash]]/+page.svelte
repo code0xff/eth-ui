@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { txStore, printNumber, printWei, toChunks, providerStore } from '@/index';
+	import { txStore, printNumber, printWei, splitToChunks, providerStore } from '@/index';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
 	import type { TransactionResponse } from 'ethers';
@@ -18,7 +18,7 @@
 
 	onMount(async () => {
 		tx = get(txStore).get(data.hash);
-		txDataChunks = tx ? toChunks(tx.data) : [];
+		txDataChunks = tx ? splitToChunks(tx.data) : [];
 
 		if (tx && provider) {
 			txReceipt = await provider.getTransactionReceipt(tx.hash);

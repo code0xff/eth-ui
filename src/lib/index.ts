@@ -48,7 +48,7 @@ export function printWei(wei: bigint | null): string {
 const CHUNK_SIZE = 64;
 const SELECTOR_SIZE = 8;
 
-export function toChunks(data: string): string[] {
+export function splitToChunks(data: string): string[] {
 	if (data.startsWith('0x') && data.length <= 2) {
 		return ['0x'];
 	} else if (data.length <= CHUNK_SIZE) {
