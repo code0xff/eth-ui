@@ -142,7 +142,7 @@
 		try {
 			if (searchParam.startsWith('0x')) {
 				if (searchParam.length === ADDRESS_SIZE) {
-					// TODO: goto account page
+					goto(`/account/${searchParam}`);
 				} else if (searchParam.length === HASH_SIZE) {
 					goto(`/tx/${searchParam}`);
 				} else {

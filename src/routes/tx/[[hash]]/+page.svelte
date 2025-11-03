@@ -13,7 +13,7 @@
 	let provider: JsonRpcProvider = get(providerStore);
 
 	let tx: TransactionResponse | undefined | null;
-	let txDataChunks: string[];
+	let txDataChunks: string[] = [];
 	let txReceipt: TransactionReceipt | undefined | null;
 
 	onMount(async () => {
