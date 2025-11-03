@@ -1,6 +1,7 @@
 import { writable } from 'svelte/store';
 import type { Block, TransactionResponse } from 'ethers';
 import { JsonRpcProvider } from 'ethers';
+import { CHUNK_SIZE, SELECTOR_SIZE } from '@/constants';
 
 export const blockStore = writable(new Map<string, Block>());
 export const blockIndexStore = writable(new Map<number, string>());
@@ -44,9 +45,6 @@ export function printWei(wei: bigint | null): string {
 		return wei.toLocaleString();
 	}
 }
-
-const CHUNK_SIZE = 64;
-const SELECTOR_SIZE = 8;
 
 export function splitToChunks(data: string): string[] {
 	if (data.startsWith('0x') && data.length <= 2) {
