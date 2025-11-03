@@ -23,7 +23,7 @@
 	import { onMount } from 'svelte';
 	import { toggleMode } from 'mode-watcher';
 	import { SunMoon } from '@lucide/svelte';
-	import { ADDRESS_SIZE, HASH_SIZE } from '@/constants';
+	import { ADDRESS_SIZE, DEFAULT_RPC, HASH_SIZE } from '@/constants';
 
 	let rpc: string = '';
 	let provider: JsonRpcProvider;
@@ -56,8 +56,9 @@
 		provider = providerStore;
 	});
 
-	onMount(() => {
-		rpc = localStorage.getItem('rpc') ?? '';
+	onMount(async () => {
+		rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
+		await startSync(rpc);
 	});
 
 	async function getBlockNumber(provider: JsonRpcProvider): Promise<number> {
@@ -181,7 +182,10 @@
 			<Card.Content>
 				<div class="flex flex-row gap-4">
 					<div class="w-full">
-						<Input placeholder="Search by Address / Tx Hash / Block Number" bind:value={searchParam} />
+						<Input
+							placeholder="Search by Address / Tx Hash / Block Number"
+							bind:value={searchParam}
+						/>
 					</div>
 					<div>
 						<Button onclick={search}>Search</Button>
