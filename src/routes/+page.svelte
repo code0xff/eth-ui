@@ -215,7 +215,7 @@
 									<Table.Row onclick={() => goto(`/tx/${tx.hash}`)} class="cursor-pointer">
 										<Table.Cell>{compactHash(tx.hash)}</Table.Cell>
 										<Table.Cell>{compactAddress(tx.from)}</Table.Cell>
-										<Table.Cell>{tx.blockNumber}</Table.Cell>
+										<Table.Cell>{printNumber(tx.blockNumber)}</Table.Cell>
 									</Table.Row>
 								{/each}
 							</Table.Body>
