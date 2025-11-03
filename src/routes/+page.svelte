@@ -23,6 +23,7 @@
 	import { onMount } from 'svelte';
 	import { toggleMode } from 'mode-watcher';
 	import { SunMoon } from '@lucide/svelte';
+	import { ADDRESS_SIZE, HASH_SIZE } from '@/constants';
 
 	let rpc: string = '';
 	let provider: JsonRpcProvider;
@@ -33,6 +34,8 @@
 	let number: number;
 	let blocks: Block[] = [];
 	let txs: TransactionResponse[] = [];
+
+	let searchParam: string = '';
 
 	blockNumberStore.subscribe((blockNumber) => {
 		number = blockNumber;
@@ -128,6 +131,26 @@
 			return txList;
 		});
 	}
+
+	function search() {
+		try {
+			if (searchParam.startsWith('0x')) {
+				if (searchParam.length === ADDRESS_SIZE) {
+					// TODO: goto account page
+				} else if (searchParam.length === HASH_SIZE) {
+					goto(`/tx/${searchParam}`);
+				} else {
+					throw new Error('unsupported search condition');
+				}
+			} else {
+				const blockNumber = parseInt(searchParam.trim());
+				goto(`/block/${blockNumber}`);
+			}
+		} catch (e: any) {
+			// TODO: support toast to show info message to user
+			console.warn(e.toString());
+		}
+	}
 </script>
 
 <div>
@@ -158,10 +181,10 @@
 			<Card.Content>
 				<div class="flex flex-row gap-4">
 					<div class="w-full">
-						<Input placeholder="Search by..." />
+						<Input placeholder="Search by Address / Tx Hash / Block Number" bind:value={searchParam} />
 					</div>
 					<div>
-						<Button>Search</Button>
+						<Button onclick={search}>Search</Button>
 					</div>
 				</div>
 			</Card.Content>
