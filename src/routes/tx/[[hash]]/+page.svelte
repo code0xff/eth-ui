@@ -2,22 +2,29 @@
 	import { txStore, printNumber, printWei, splitToChunks, providerStore } from '@/index';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
-	import type { TransactionResponse } from 'ethers';
 	import { get } from 'svelte/store';
 	import { onMount } from 'svelte';
 	import { JsonRpcProvider } from 'ethers';
-	import type { TransactionReceipt } from 'ethers';
+	import type { TransactionReceipt, TransactionResponse } from 'ethers';
+	import { DEFAULT_RPC } from '@/constants';
 
 	export let data: { hash: string };
 
 	let provider: JsonRpcProvider = get(providerStore);
 
-	let tx: TransactionResponse | undefined;
+	let tx: TransactionResponse | undefined | null;
 	let txDataChunks: string[];
 	let txReceipt: TransactionReceipt | undefined | null;
 
 	onMount(async () => {
-		tx = get(txStore).get(data.hash);
+		if (!provider) {
+			const rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
+			provider = new JsonRpcProvider(rpc);
+
+			providerStore.set(provider);
+		}
+
+		tx = get(txStore).get(data.hash) ?? (await provider.getTransaction(data.hash));
 		txDataChunks = tx ? splitToChunks(tx.data) : [];
 
 		if (tx && provider) {

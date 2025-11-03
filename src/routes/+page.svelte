@@ -3,7 +3,7 @@
 	import Input from '@/components/ui/input/input.svelte';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
-	import { Block, JsonRpcProvider, TransactionResponse } from 'ethers';
+	import { Block, JsonRpcProvider } from 'ethers';
 	import {
 		blockIndexStore,
 		blockListStore,
@@ -32,8 +32,8 @@
 	let syncJobId: NodeJS.Timeout | undefined;
 
 	let number: number;
-	let blocks: Block[] = [];
-	let txs: TransactionResponse[] = [];
+	let blockList: { number: number; hash: string; timestamp: number }[] = [];
+	let txList: { hash: string; from: string; number: number }[] = [];
 
 	let searchParam: string = '';
 
@@ -46,19 +46,15 @@
 	syncJobStore.subscribe((syncJob) => {
 		syncJobId = syncJob;
 	});
-	blockStore.subscribe((blockStore) => {
-		blocks = [...blockStore.values()].reverse();
+	blockListStore.subscribe((blockListStore) => {
+		blockList = [...blockListStore];
 	});
-	txStore.subscribe((txStore) => {
-		txs = [...txStore.values()].reverse();
-	});
-	providerStore.subscribe((providerStore) => {
-		provider = providerStore;
+	txListStore.subscribe((txListStore) => {
+		txList = [...txListStore];
 	});
 
 	onMount(async () => {
 		rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-		await startSync(rpc);
 	});
 
 	async function getBlockNumber(provider: JsonRpcProvider): Promise<number> {
@@ -70,10 +66,14 @@
 	}
 
 	async function startSync(rpc: string) {
-		syncingStore.set(true);
-		providerStore.set(new JsonRpcProvider(rpc.trim()));
+		rpc = rpc.trim();
 
-		localStorage.setItem('rpc', rpc.trim());
+		syncingStore.set(true);
+
+		provider = new JsonRpcProvider(rpc);
+		providerStore.set(provider);
+
+		localStorage.setItem('rpc', rpc);
 
 		if (!number) {
 			number = await getBlockNumber(provider);
@@ -112,12 +112,12 @@
 			blockStore.set(block.hash!, block);
 			return blockStore;
 		});
-		blockListStore.update((blockList) => {
-			blockList = [
+		blockListStore.update((blockListStore) => {
+			blockListStore = [
 				{ number: block.number, hash: block.hash!, timestamp: block.timestamp },
-				...blockList
+				...blockListStore
 			];
-			return blockList;
+			return blockListStore;
 		});
 		txStore.update((txStore) => {
 			block.prefetchedTransactions.forEach((tx) => {
@@ -125,11 +125,11 @@
 			});
 			return txStore;
 		});
-		txListStore.update((txList) => {
-			block.transactions.forEach((hash) => {
-				txList = [{ hash, number: block.number }, ...txList];
+		txListStore.update((txListStore) => {
+			block.prefetchedTransactions.forEach((tx) => {
+				txListStore = [{ hash: tx.hash, from: tx.from, number: block.number }, ...txListStore];
 			});
-			return txList;
+			return txListStore;
 		});
 	}
 
@@ -211,7 +211,7 @@
 								</Table.Row>
 							</Table.Header>
 							<Table.Body>
-								{#each blocks as block}
+								{#each blockList as block}
 									<Table.Row onclick={() => goto(`/block/${block.number}`)} class="cursor-pointer">
 										<Table.Cell>{printNumber(block.number)}</Table.Cell>
 										<Table.Cell>{compactHash(block.hash)}</Table.Cell>
@@ -238,11 +238,11 @@
 								</Table.Row>
 							</Table.Header>
 							<Table.Body>
-								{#each txs as tx}
+								{#each txList as tx}
 									<Table.Row onclick={() => goto(`/tx/${tx.hash}`)} class="cursor-pointer">
 										<Table.Cell>{compactHash(tx.hash)}</Table.Cell>
 										<Table.Cell>{compactAddress(tx.from)}</Table.Cell>
-										<Table.Cell>{printNumber(tx.blockNumber)}</Table.Cell>
+										<Table.Cell>{printNumber(tx.number)}</Table.Cell>
 									</Table.Row>
 								{/each}
 							</Table.Body>

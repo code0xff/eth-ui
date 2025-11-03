@@ -1,22 +1,37 @@
 <script lang="ts">
-	import { blockIndexStore, blockStore, printNumber, printWei, timestampToDate } from '@/index';
-	import type { Block } from 'ethers';
+	import {
+		blockIndexStore,
+		blockStore,
+		printNumber,
+		printWei,
+		providerStore,
+		timestampToDate
+	} from '@/index';
+	import { JsonRpcProvider, type Block } from 'ethers';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
 	import { get } from 'svelte/store';
 	import { onMount } from 'svelte';
+	import { DEFAULT_RPC } from '@/constants';
 
 	export let data: { number: string };
 
-	let block: Block | undefined;
+	let provider: JsonRpcProvider = get(providerStore);
 
-	onMount(() => {
+	let block: Block | undefined | null;
+
+	onMount(async () => {
+		if (!provider) {
+			const rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
+			provider = new JsonRpcProvider(rpc);
+
+			providerStore.set(provider);
+		}
+
 		const blockNumber = parseInt(data.number);
 		const hash = get(blockIndexStore).get(blockNumber);
-		
-		if (hash) {
-			block = get(blockStore).get(hash);
-		}
+
+		block = hash ? get(blockStore).get(hash) : await provider.getBlock(blockNumber);
 	});
 </script>
 
