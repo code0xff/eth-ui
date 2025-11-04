@@ -3,10 +3,10 @@ import type { Block, TransactionResponse } from 'ethers';
 import { JsonRpcProvider } from 'ethers';
 import { CHUNK_SIZE, SELECTOR_SIZE } from '@/constants';
 
-export const blockStore = writable<Map<string, Block>>(new Map());
+export const blockCacheStore = writable<Map<string, Block>>(new Map());
 export const blockIndexStore = writable<Map<number, string>>(new Map());
 export const blockListStore = writable<BlockInfo[]>([]);
-export const txStore = writable<Map<string, TransactionResponse>>(new Map());
+export const txCacheStore = writable<Map<string, TransactionResponse>>(new Map());
 export const txListStore = writable<TxInfo[]>([]);
 export const blockNumberStore = writable<number>();
 export const syncingStore = writable<boolean>(false);

@@ -8,7 +8,7 @@
 		blockIndexStore,
 		blockListStore,
 		blockNumberStore,
-		blockStore,
+		blockCacheStore,
 		compactAddress,
 		compactHash,
 		printNumber,
@@ -17,7 +17,7 @@
 		syncJobStore,
 		timestampToDate,
 		txListStore,
-		txStore
+		txCacheStore
 	} from '@/index';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
@@ -38,20 +38,20 @@
 
 	let searchParam: string = '';
 
-	blockNumberStore.subscribe((blockNumber) => {
-		number = blockNumber;
+	blockNumberStore.subscribe((_number) => {
+		number = _number;
 	});
-	syncingStore.subscribe((isSyncing) => {
-		syncing = isSyncing;
+	syncingStore.subscribe((_syncing) => {
+		syncing = _syncing;
 	});
-	syncJobStore.subscribe((syncJob) => {
-		syncJobId = syncJob;
+	syncJobStore.subscribe((_syncJobId) => {
+		syncJobId = _syncJobId;
 	});
-	blockListStore.subscribe((blockListStore) => {
-		blockList = [...blockListStore];
+	blockListStore.subscribe((_blockList) => {
+		blockList = [..._blockList];
 	});
-	txListStore.subscribe((txListStore) => {
-		txList = [...txListStore];
+	txListStore.subscribe((_txList) => {
+		txList = [..._txList];
 	});
 
 	onMount(async () => {
@@ -59,6 +59,10 @@
 	});
 
 	async function startSync(rpc: string) {
+		if (syncing) {
+			return;
+		}
+
 		rpc = rpc.trim();
 
 		syncingStore.set(true);
@@ -70,7 +74,7 @@
 
 		if (!number) {
 			number = await provider.getBlockNumber();
-			const block = await provider.getBlock(number);
+			const block = await provider.getBlock(number, true);
 
 			if (block) {
 				updateNewBlock(block);
@@ -78,7 +82,7 @@
 		}
 
 		const syncJobId = setInterval(async () => {
-			const block = await provider.getBlock(number + 1);
+			const block = await provider.getBlock(number + 1, true);
 
 			if (block) {
 				updateNewBlock(block);
@@ -96,37 +100,37 @@
 	}
 
 	function updateNewBlock(block: Block) {
-		if (get(blockStore).get(block.hash!)) {
+		if (get(blockCacheStore).get(block.hash!)) {
 			return;
 		}
 
 		blockNumberStore.set(block.number);
-		blockIndexStore.update((blockIndex) => {
-			blockIndex.set(block.number, block.hash!);
-			return blockIndex;
+		blockIndexStore.update((_blockIndex) => {
+			_blockIndex.set(block.number, block.hash!);
+			return _blockIndex;
 		});
-		blockStore.update((blockStore) => {
-			blockStore.set(block.hash!, block);
-			return blockStore;
+		blockCacheStore.update((_blockCache) => {
+			_blockCache.set(block.hash!, block);
+			return _blockCache;
 		});
-		blockListStore.update((blockListStore) => {
-			blockListStore = [
+		blockListStore.update((_blockList) => {
+			_blockList = [
 				{ number: block.number, hash: block.hash!, timestamp: block.timestamp },
-				...blockListStore
+				..._blockList
 			];
-			return blockListStore;
+			return _blockList;
 		});
-		txStore.update((txStore) => {
+		txCacheStore.update((_txCache) => {
 			block.prefetchedTransactions.forEach((tx) => {
-				txStore.set(tx.hash, tx);
+				_txCache.set(tx.hash, tx);
 			});
-			return txStore;
+			return _txCache;
 		});
-		txListStore.update((txListStore) => {
+		txListStore.update((_txList) => {
 			block.prefetchedTransactions.forEach((tx) => {
-				txListStore = [{ hash: tx.hash, from: tx.from, number: block.number }, ...txListStore];
+				_txList = [{ hash: tx.hash, from: tx.from, number: block.number }, ..._txList];
 			});
-			return txListStore;
+			return _txList;
 		});
 	}
 

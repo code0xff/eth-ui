@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { txStore, printNumber, printWei, splitToChunks, providerStore } from '@/index';
+	import { txCacheStore, printNumber, printWei, splitToChunks, providerStore } from '@/index';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
 	import { get } from 'svelte/store';
@@ -24,7 +24,7 @@
 			providerStore.set(provider);
 		}
 
-		tx = get(txStore).get(data.hash) ?? (await provider.getTransaction(data.hash));
+		tx = get(txCacheStore).get(data.hash) ?? (await provider.getTransaction(data.hash));
 		txDataChunks = tx ? splitToChunks(tx.data) : [];
 
 		if (tx && provider) {

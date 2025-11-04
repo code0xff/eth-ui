@@ -1,7 +1,7 @@
 <script lang="ts">
 	import {
 		blockIndexStore,
-		blockStore,
+		blockCacheStore,
 		printNumber,
 		printWei,
 		providerStore,
@@ -31,7 +31,7 @@
 		const blockNumber = parseInt(data.number);
 		const hash = get(blockIndexStore).get(blockNumber);
 
-		block = hash ? get(blockStore).get(hash) : await provider.getBlock(blockNumber);
+		block = hash ? get(blockCacheStore).get(hash) : await provider.getBlock(blockNumber);
 	});
 </script>
 
