@@ -25,6 +25,7 @@
 	import { SunMoon } from '@lucide/svelte';
 	import { ADDRESS_SIZE, DEFAULT_RPC, HASH_SIZE } from '@/constants';
 	import { get } from 'svelte/store';
+	import { toast } from 'svelte-sonner';
 
 	let rpc: string = '';
 	let provider: JsonRpcProvider;
@@ -167,8 +168,8 @@
 				goto(`/block/${blockNumber}`);
 			}
 		} catch (e: any) {
-			// TODO: support toast to show info message to user
 			console.warn(e.toString());
+			toast.error('invalid search condition');
 		}
 	}
 </script>
