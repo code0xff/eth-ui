@@ -9,7 +9,7 @@
 
 	export let data: { address: string };
 
-	let provider: JsonRpcProvider = get(providerStore);
+	let provider: JsonRpcProvider | undefined = get(providerStore);
 
 	let balance: bigint;
 	let nonce: number;
