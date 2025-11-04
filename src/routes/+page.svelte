@@ -58,14 +58,6 @@
 		rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
 	});
 
-	async function getBlockNumber(provider: JsonRpcProvider): Promise<number> {
-		return provider.getBlockNumber();
-	}
-
-	async function getBlockByNumber(provider: JsonRpcProvider, number: number): Promise<any> {
-		return provider.getBlock(number, true);
-	}
-
 	async function startSync(rpc: string) {
 		rpc = rpc.trim();
 
@@ -77,8 +69,8 @@
 		localStorage.setItem('rpc', rpc);
 
 		if (!number) {
-			number = await getBlockNumber(provider);
-			const block = await getBlockByNumber(provider, number);
+			number = await provider.getBlockNumber();
+			const block = await provider.getBlock(number);
 
 			if (block) {
 				updateNewBlock(block);
@@ -86,7 +78,7 @@
 		}
 
 		const syncJobId = setInterval(async () => {
-			const block = await getBlockByNumber(provider, number + 1);
+			const block = await provider.getBlock(number + 1);
 
 			if (block) {
 				updateNewBlock(block);
