@@ -13,8 +13,8 @@
 		compactHash,
 		printNumber,
 		providerStore,
-		syncingStore,
-		syncJobStore,
+		syncStatusStore,
+		syncJobIdStore,
 		timestampToDate,
 		txListStore,
 		txCacheStore
@@ -26,11 +26,12 @@
 	import { ADDRESS_SIZE, DEFAULT_RPC, HASH_SIZE } from '@/constants';
 	import { get } from 'svelte/store';
 	import { toast } from 'svelte-sonner';
+	import type { BlockInfo, SyncStatus, TxInfo } from '@/types';
 
 	let rpc: string = '';
 	let provider: JsonRpcProvider;
 
-	let syncing: boolean = false;
+	let syncStatus: SyncStatus = 'pending';
 	let syncJobId: NodeJS.Timeout | undefined;
 
 	let number: number | undefined;
@@ -42,10 +43,10 @@
 	blockNumberStore.subscribe((_number) => {
 		number = _number;
 	});
-	syncingStore.subscribe((_syncing) => {
-		syncing = _syncing;
+	syncStatusStore.subscribe((_syncStatus) => {
+		syncStatus = _syncStatus;
 	});
-	syncJobStore.subscribe((_syncJobId) => {
+	syncJobIdStore.subscribe((_syncJobId) => {
 		syncJobId = _syncJobId;
 	});
 	blockListStore.subscribe((_blockList) => {
@@ -57,11 +58,13 @@
 
 	onMount(async () => {
 		rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-		await startSync(rpc);
+		if (syncStatus === 'pending') {
+			await startSync(rpc);
+		}
 	});
 
 	async function startSync(rpc: string) {
-		if (syncing) {
+		if (syncStatus === 'processing') {
 			return;
 		}
 
@@ -80,7 +83,7 @@
 			providerStore.set(undefined);
 		}
 
-		syncingStore.set(true);
+		syncStatusStore.set('processing');
 
 		provider = new JsonRpcProvider(rpc);
 		providerStore.set(provider);
@@ -103,14 +106,14 @@
 				updateNewBlock(block);
 			}
 		}, 1000);
-		syncJobStore.set(syncJobId);
+		syncJobIdStore.set(syncJobId);
 	}
 
 	function stopSync() {
-		syncingStore.set(false);
+		syncStatusStore.set('stopped');
 		if (syncJobId) {
 			clearInterval(syncJobId);
-			syncJobStore.set(undefined);
+			syncJobIdStore.set(undefined);
 		}
 	}
 
@@ -180,12 +183,17 @@
 			<Card.Content>
 				<div class="flex flex-row gap-4">
 					<div class="w-full">
-						<Input placeholder="RPC endpoint" bind:value={rpc} disabled={syncing} />
+						<Input
+							placeholder="RPC endpoint"
+							bind:value={rpc}
+							disabled={syncStatus === 'processing'}
+						/>
 					</div>
 					<div>
 						<Button
-							onclick={() => (syncing ? stopSync() : startSync(rpc))}
-							class="w-[80px] cursor-pointer">{syncing ? 'Pause' : 'Start'}</Button
+							onclick={() => (syncStatus === 'processing' ? stopSync() : startSync(rpc))}
+							class="w-[80px] cursor-pointer"
+							>{syncStatus === 'processing' ? 'Pause' : 'Start'}</Button
 						>
 					</div>
 					<div>
