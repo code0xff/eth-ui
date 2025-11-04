@@ -8,10 +8,10 @@ export const blockIndexStore = writable<Map<number, string>>(new Map());
 export const blockListStore = writable<BlockInfo[]>([]);
 export const txCacheStore = writable<Map<string, TransactionResponse>>(new Map());
 export const txListStore = writable<TxInfo[]>([]);
-export const blockNumberStore = writable<number>();
+export const blockNumberStore = writable<number | undefined>();
 export const syncingStore = writable<boolean>(false);
 export const syncJobStore = writable<NodeJS.Timeout | undefined>();
-export const providerStore = writable<JsonRpcProvider>();
+export const providerStore = writable<JsonRpcProvider | undefined>();
 
 export function timestampToDate(timestamp: number): string {
 	const datetime = new Date(timestamp * 1000).toISOString();

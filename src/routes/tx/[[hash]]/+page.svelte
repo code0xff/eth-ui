@@ -10,7 +10,7 @@
 
 	export let data: { hash: string };
 
-	let provider: JsonRpcProvider = get(providerStore);
+	let provider: JsonRpcProvider | undefined = get(providerStore);
 
 	let tx: TransactionResponse | undefined | null;
 	let txDataChunks: string[] = [];

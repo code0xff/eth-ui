@@ -16,7 +16,7 @@
 
 	export let data: { number: string };
 
-	let provider: JsonRpcProvider = get(providerStore);
+	let provider: JsonRpcProvider | undefined = get(providerStore);
 
 	let block: Block | undefined | null;
 

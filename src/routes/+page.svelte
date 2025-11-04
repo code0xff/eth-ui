@@ -32,7 +32,7 @@
 	let syncing: boolean = false;
 	let syncJobId: NodeJS.Timeout | undefined;
 
-	let number: number;
+	let number: number | undefined;
 	let blockList: BlockInfo[] = [];
 	let txList: TxInfo[] = [];
 
@@ -66,6 +66,19 @@
 
 		rpc = rpc.trim();
 
+		const storedRpc = localStorage.getItem('rpc');
+		if (rpc !== storedRpc) {
+			blockCacheStore.set(new Map());
+			blockIndexStore.set(new Map());
+			blockListStore.set([]);
+
+			txCacheStore.set(new Map());
+			txListStore.set([]);
+
+			blockNumberStore.set(undefined);
+			providerStore.set(undefined);
+		}
+
 		syncingStore.set(true);
 
 		provider = new JsonRpcProvider(rpc);
@@ -83,7 +96,7 @@
 		}
 
 		const syncJobId = setInterval(async () => {
-			const block = await provider.getBlock(number + 1, true);
+			const block = await provider.getBlock(number! + 1, true);
 
 			if (block) {
 				updateNewBlock(block);
