@@ -5,9 +5,9 @@ import { CHUNK_SIZE, SELECTOR_SIZE } from '@/constants';
 
 export const blockStore = writable(new Map<string, Block>());
 export const blockIndexStore = writable(new Map<number, string>());
-export const blockListStore = writable<{ number: number; hash: string; timestamp: number }[]>([]);
+export const blockListStore = writable<BlockInfo[]>([]);
 export const txStore = writable(new Map<string, TransactionResponse>());
-export const txListStore = writable<{ hash: string; from: string; number: number }[]>([]);
+export const txListStore = writable<TxInfo[]>([]);
 export const blockNumberStore = writable<number>();
 export const syncingStore = writable<boolean>(false);
 export const syncJobStore = writable<NodeJS.Timeout | undefined>();

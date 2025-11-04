@@ -33,8 +33,8 @@
 	let syncJobId: NodeJS.Timeout | undefined;
 
 	let number: number;
-	let blockList: { number: number; hash: string; timestamp: number }[] = [];
-	let txList: { hash: string; from: string; number: number }[] = [];
+	let blockList: BlockInfo[] = [];
+	let txList: TxInfo[] = [];
 
 	let searchParam: string = '';
 
