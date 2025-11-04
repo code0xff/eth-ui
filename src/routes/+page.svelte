@@ -150,6 +150,7 @@
 
 	function search() {
 		try {
+			searchParam = searchParam.trim();
 			if (searchParam.startsWith('0x')) {
 				if (searchParam.length === ADDRESS_SIZE) {
 					goto(`/account/${searchParam}`);
