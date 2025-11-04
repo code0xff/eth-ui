@@ -56,6 +56,7 @@
 
 	onMount(async () => {
 		rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
+		await startSync(rpc);
 	});
 
 	async function startSync(rpc: string) {
