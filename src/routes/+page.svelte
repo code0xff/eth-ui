@@ -146,6 +146,9 @@
 				}
 			} else {
 				const blockNumber = parseInt(searchParam.trim());
+				if (isNaN(blockNumber)) {
+					throw new Error('invalid block number');
+				}
 				goto(`/block/${blockNumber}`);
 			}
 		} catch (e: any) {
