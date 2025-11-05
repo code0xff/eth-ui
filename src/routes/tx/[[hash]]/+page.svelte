@@ -7,6 +7,7 @@
 	import { JsonRpcProvider } from 'ethers';
 	import type { TransactionReceipt, TransactionResponse } from 'ethers';
 	import { DEFAULT_RPC } from '@/constants';
+	import { goto } from '$app/navigation';
 
 	export let data: { hash: string };
 
@@ -44,7 +45,11 @@
 					<Table.Body>
 						<Table.Row>
 							<Table.Cell>Number</Table.Cell>
-							<Table.Cell>{tx ? printNumber(tx.blockNumber) : ''}</Table.Cell>
+							<Table.Cell
+								class="cursor-pointer"
+								onclick={tx?.blockNumber ? () => goto(`/block/${tx!.blockNumber}`) : null}
+								>{tx ? printNumber(tx.blockNumber) : ''}</Table.Cell
+							>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell>Type</Table.Cell>
@@ -52,11 +57,19 @@
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell>From</Table.Cell>
-							<Table.Cell>{tx ? tx.from : ''}</Table.Cell>
+							<Table.Cell
+								class="cursor-pointer"
+								onclick={tx?.from ? () => goto(`/account/${tx!.from}`) : null}
+								>{tx ? tx.from : ''}</Table.Cell
+							>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell>To</Table.Cell>
-							<Table.Cell>{tx ? tx.to : ''}</Table.Cell>
+							<Table.Cell
+								class="cursor-pointer"
+								onclick={tx?.to ? () => goto(`/account/${tx!.to}`) : null}
+								>{tx ? tx.to : ''}</Table.Cell
+							>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell>Value</Table.Cell>

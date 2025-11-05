@@ -16,9 +16,12 @@
 <ModeWatcher />
 
 <div class="m-4">
-	<h2 class="scroll-m-20 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
+	<a
+		href="/"
+		class="scroll-m-20 text-3xl font-semibold tracking-tight transition-colors first:mt-0"
+	>
 		ETH UI
-	</h2>
+	</a>
 </div>
 <hr />
 {@render children?.()}
