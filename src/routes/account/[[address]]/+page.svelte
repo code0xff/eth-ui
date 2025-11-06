@@ -60,10 +60,12 @@
 							<Table.Cell class="w-1/6">Nonce</Table.Cell>
 							<Table.Cell class="w-5/6">{nonce ? printNumber(nonce) : ''}</Table.Cell>
 						</Table.Row>
-						<!-- <Table.Row>`
+						<!-- <Table.Row>
 							<Table.Cell>Code</Table.Cell>
-							<Table.Cell>{code ? code : ''}</Table.Cell>
-						</Table.Row>` -->
+							<Table.Cell>
+								<Textarea readonly class="resize-none" value={code} />
+							</Table.Cell>
+						</Table.Row> -->
 					</Table.Body>
 				</Table.Root>
 			</Card.Content>

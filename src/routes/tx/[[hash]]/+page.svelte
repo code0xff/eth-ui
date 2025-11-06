@@ -6,17 +6,16 @@
 	import { get } from 'svelte/store';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
+	import Textarea from '@/components/ui/textarea/textarea.svelte';
 	import { DEFAULT_RPC } from '@/constants';
 	import { printNumber, printWei, splitToChunks } from '@/helpers';
 	import { txCacheStore, providerStore } from '@/stores';
-	import Input from '@/components/ui/input/input.svelte';
 
 	export let data: { hash: string };
 
 	let provider: JsonRpcProvider | undefined = get(providerStore);
 
 	let tx: TransactionResponse | undefined | null;
-	let txDataChunks: string[] = [];
 	let txReceipt: TransactionReceipt | undefined | null;
 
 	onMount(async () => {
@@ -28,7 +27,6 @@
 		}
 
 		tx = get(txCacheStore).get(data.hash) ?? (await provider.getTransaction(data.hash));
-		txDataChunks = tx ? splitToChunks(tx.data) : [];
 
 		if (tx && provider) {
 			txReceipt = await provider.getTransactionReceipt(tx.hash);
@@ -96,9 +94,7 @@
 						<Table.Row>
 							<Table.Cell class="w-1/6">Data</Table.Cell>
 							<Table.Cell class="w-5/6">
-								{#each txDataChunks as chunk}
-									<div>{chunk}</div>
-								{/each}
+								<Textarea readonly class="resize-none" value={tx ? splitToChunks(tx.data) : ''} />
 							</Table.Cell>
 						</Table.Row>
 					</Table.Body>
@@ -108,6 +104,9 @@
 	</div>
 	<div class="m-4">
 		<Card.Root>
+			<Card.Header>
+				<Card.Title>Receipt</Card.Title>
+			</Card.Header>
 			<Card.Content>
 				<Table.Root>
 					<Table.Body>
@@ -135,16 +134,28 @@
 								{txReceipt ? txReceipt.logsBloom : ''}
 							</Table.Cell>
 						</Table.Row> -->
-						<!-- <Table.Row>
-							<Table.Cell class="w-1/6">Logs</Table.Cell>
-							<Table.Cell class="w-5/6">
-								{#if txReceipt}
-									{#each txReceipt.logs as log}
-										<pre>{JSON.stringify(log, null, 2)}</pre>
-									{/each}
-								{/if}
-							</Table.Cell>
-						</Table.Row> -->
+					</Table.Body>
+				</Table.Root>
+			</Card.Content>
+		</Card.Root>
+	</div>
+	<div class="m-4">
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>Logs</Card.Title>
+			</Card.Header>
+			<Card.Content>
+				<Table.Root>
+					<Table.Body>
+						{#if txReceipt}
+							{#each txReceipt.logs as log}
+								<Table.Row>
+									<Table.Cell>
+										<Textarea readonly class="resize-none" value={JSON.stringify(log, null, 2)} />
+									</Table.Cell>
+								</Table.Row>
+							{/each}
+						{/if}
 					</Table.Body>
 				</Table.Root>
 			</Card.Content>

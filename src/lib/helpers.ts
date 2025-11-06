@@ -30,11 +30,11 @@ export function printWei(wei: bigint | null): string {
 	}
 }
 
-export function splitToChunks(data: string): string[] {
+export function splitToChunks(data: string): string {
 	if (data.startsWith('0x') && data.length <= 2) {
-		return ['0x'];
+		return '0x';
 	} else if (data.length <= CHUNK_SIZE) {
-		return [data];
+		return data;
 	} else {
 		data = data.startsWith('0x') ? data.slice(2) : data;
 		const chunks: string[] = [`0x${data.slice(0, SELECTOR_SIZE)}`];
@@ -43,7 +43,7 @@ export function splitToChunks(data: string): string[] {
 		for (let i = 0; i < data.length; i += CHUNK_SIZE) {
 			chunks.push('0x' + data.slice(i, i + CHUNK_SIZE));
 		}
-		return chunks;
+		return chunks.join('\n');
 	}
 }
 
