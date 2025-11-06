@@ -1,13 +1,14 @@
 <script lang="ts">
+	import { JsonRpcProvider } from 'ethers';
+	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
 	import { Button } from '@/components/ui/button';
 	import * as Card from '@/components/ui/card';
 	import { Input } from '@/components/ui/input';
 	import * as Table from '@/components/ui/table';
 	import { DEFAULT_RPC } from '@/constants';
-	import { printNumber, printWei, providerStore } from '@/index';
-	import { JsonRpcProvider } from 'ethers';
-	import { onMount } from 'svelte';
-	import { get } from 'svelte/store';
+	import { printNumber, printWei } from '@/helpers';
+	import { providerStore } from '@/stores';
 
 	export let data: { address: string };
 

@@ -1,31 +1,18 @@
 <script lang="ts">
-	import Button from '@/components/ui/button/button.svelte';
-	import Input from '@/components/ui/input/input.svelte';
-	import * as Card from '@/components/ui/card/index.js';
-	import * as Table from '@/components/ui/table/index.js';
 	import { Block, JsonRpcProvider } from 'ethers';
-	import {
-		blockIndexStore,
-		blockListStore,
-		blockNumberStore,
-		blockCacheStore,
-		compactAddress,
-		compactHash,
-		printNumber,
-		providerStore,
-		syncStatusStore,
-		syncJobIdStore,
-		timestampToDate,
-		txListStore,
-		txCacheStore
-	} from '@/index';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { toggleMode } from 'mode-watcher';
 	import { SunMoon } from '@lucide/svelte';
-	import { ADDRESS_SIZE, DEFAULT_RPC, HASH_SIZE } from '@/constants';
 	import { get } from 'svelte/store';
 	import { toast } from 'svelte-sonner';
+	import Button from '@/components/ui/button/button.svelte';
+	import Input from '@/components/ui/input/input.svelte';
+	import * as Card from '@/components/ui/card/index.js';
+	import * as Table from '@/components/ui/table/index.js';
+	import * as stores from '@/stores';
+	import * as helpers from '@/helpers';
+	import { ADDRESS_SIZE, DEFAULT_RPC, HASH_SIZE } from '@/constants';
 	import type { BlockInfo, SyncStatus, TxInfo } from '@/types';
 
 	let rpc: string = '';
@@ -40,19 +27,19 @@
 
 	let searchParam: string = '';
 
-	blockNumberStore.subscribe((_number) => {
+	stores.blockNumberStore.subscribe((_number) => {
 		number = _number;
 	});
-	syncStatusStore.subscribe((_syncStatus) => {
+	stores.syncStatusStore.subscribe((_syncStatus) => {
 		syncStatus = _syncStatus;
 	});
-	syncJobIdStore.subscribe((_syncJobId) => {
+	stores.syncJobIdStore.subscribe((_syncJobId) => {
 		syncJobId = _syncJobId;
 	});
-	blockListStore.subscribe((_blockList) => {
+	stores.blockListStore.subscribe((_blockList) => {
 		blockList = [..._blockList];
 	});
-	txListStore.subscribe((_txList) => {
+	stores.txListStore.subscribe((_txList) => {
 		txList = [..._txList];
 	});
 
@@ -75,21 +62,21 @@
 
 		const _storedRpc = localStorage.getItem('rpc');
 		if (rpc !== _storedRpc) {
-			blockCacheStore.set(new Map());
-			blockIndexStore.set(new Map());
-			blockListStore.set([]);
+			stores.blockCacheStore.set(new Map());
+			stores.blockIndexStore.set(new Map());
+			stores.blockListStore.set([]);
 
-			txCacheStore.set(new Map());
-			txListStore.set([]);
+			stores.txCacheStore.set(new Map());
+			stores.txListStore.set([]);
 
-			blockNumberStore.set(undefined);
-			providerStore.set(undefined);
+			stores.blockNumberStore.set(undefined);
+			stores.providerStore.set(undefined);
 		}
 
-		syncStatusStore.set('processing');
+		stores.syncStatusStore.set('processing');
 
 		provider = new JsonRpcProvider(rpc);
-		providerStore.set(provider);
+		stores.providerStore.set(provider);
 
 		localStorage.setItem('rpc', rpc);
 
@@ -109,45 +96,45 @@
 				updateNewBlock(_block);
 			}
 		}, 1000);
-		syncJobIdStore.set(_syncJobId);
+		stores.syncJobIdStore.set(_syncJobId);
 	}
 
 	function stopSync() {
-		syncStatusStore.set('stopped');
+		stores.syncStatusStore.set('stopped');
 		if (syncJobId) {
 			clearInterval(syncJobId);
-			syncJobIdStore.set(undefined);
+			stores.syncJobIdStore.set(undefined);
 		}
 	}
 
 	function updateNewBlock(_block: Block) {
-		if (get(blockCacheStore).get(_block.hash!)) {
+		if (get(stores.blockCacheStore).get(_block.hash!)) {
 			return;
 		}
 
-		blockNumberStore.set(_block.number);
-		blockIndexStore.update((_blockIndex) => {
+		stores.blockNumberStore.set(_block.number);
+		stores.blockIndexStore.update((_blockIndex) => {
 			_blockIndex.set(_block.number, _block.hash!);
 			return _blockIndex;
 		});
-		blockCacheStore.update((_blockCache) => {
+		stores.blockCacheStore.update((_blockCache) => {
 			_blockCache.set(_block.hash!, _block);
 			return _blockCache;
 		});
-		blockListStore.update((_blockList) => {
+		stores.blockListStore.update((_blockList) => {
 			_blockList = [
 				{ number: _block.number, hash: _block.hash!, timestamp: _block.timestamp },
 				..._blockList
 			];
 			return _blockList;
 		});
-		txCacheStore.update((_txCache) => {
+		stores.txCacheStore.update((_txCache) => {
 			_block.prefetchedTransactions.forEach((_tx) => {
 				_txCache.set(_tx.hash, _tx);
 			});
 			return _txCache;
 		});
-		txListStore.update((_txList) => {
+		stores.txListStore.update((_txList) => {
 			_block.prefetchedTransactions.forEach((_tx) => {
 				_txList = [{ hash: _tx.hash, from: _tx.from, number: _block.number }, ..._txList];
 			});
@@ -244,9 +231,9 @@
 							<Table.Body>
 								{#each blockList as block}
 									<Table.Row onclick={() => goto(`/block/${block.number}`)} class="cursor-pointer">
-										<Table.Cell>{printNumber(block.number)}</Table.Cell>
-										<Table.Cell>{compactHash(block.hash)}</Table.Cell>
-										<Table.Cell>{timestampToDate(block.timestamp)}</Table.Cell>
+										<Table.Cell>{helpers.printNumber(block.number)}</Table.Cell>
+										<Table.Cell>{helpers.compactHash(block.hash)}</Table.Cell>
+										<Table.Cell>{helpers.timestampToDate(block.timestamp)}</Table.Cell>
 									</Table.Row>
 								{/each}
 							</Table.Body>
@@ -271,9 +258,9 @@
 							<Table.Body>
 								{#each txList as tx}
 									<Table.Row onclick={() => goto(`/tx/${tx.hash}`)} class="cursor-pointer">
-										<Table.Cell>{compactHash(tx.hash)}</Table.Cell>
-										<Table.Cell>{compactAddress(tx.from)}</Table.Cell>
-										<Table.Cell>{printNumber(tx.number)}</Table.Cell>
+										<Table.Cell>{helpers.compactHash(tx.hash)}</Table.Cell>
+										<Table.Cell>{helpers.compactAddress(tx.from)}</Table.Cell>
+										<Table.Cell>{helpers.printNumber(tx.number)}</Table.Cell>
 									</Table.Row>
 								{/each}
 							</Table.Body>

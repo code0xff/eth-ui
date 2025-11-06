@@ -1,18 +1,12 @@
 <script lang="ts">
-	import {
-		blockIndexStore,
-		blockCacheStore,
-		printNumber,
-		printWei,
-		providerStore,
-		timestampToDate
-	} from '@/index';
 	import { JsonRpcProvider, type Block } from 'ethers';
-	import * as Card from '@/components/ui/card/index.js';
-	import * as Table from '@/components/ui/table/index.js';
 	import { get } from 'svelte/store';
 	import { onMount } from 'svelte';
+	import * as Card from '@/components/ui/card/index.js';
+	import * as Table from '@/components/ui/table/index.js';
 	import { DEFAULT_RPC } from '@/constants';
+	import { printNumber, printWei, timestampToDate } from '@/helpers';
+	import { blockIndexStore, blockCacheStore, providerStore } from '@/stores';
 
 	export let data: { number: string };
 
