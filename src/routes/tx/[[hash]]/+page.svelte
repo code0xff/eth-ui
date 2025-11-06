@@ -9,6 +9,7 @@
 	import { DEFAULT_RPC } from '@/constants';
 	import { printNumber, printWei, splitToChunks } from '@/helpers';
 	import { txCacheStore, providerStore } from '@/stores';
+	import Input from '@/components/ui/input/input.svelte';
 
 	export let data: { hash: string };
 
@@ -45,56 +46,56 @@
 				<Table.Root>
 					<Table.Body>
 						<Table.Row>
-							<Table.Cell>Number</Table.Cell>
+							<Table.Cell class="w-1/6">Number</Table.Cell>
 							<Table.Cell
-								class="cursor-pointer"
+								class="w-4/5 cursor-pointer"
 								onclick={tx?.blockNumber ? () => goto(`/block/${tx!.blockNumber}`) : null}
 								>{tx ? printNumber(tx.blockNumber) : ''}</Table.Cell
 							>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Type</Table.Cell>
-							<Table.Cell>{tx ? tx.type : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Type</Table.Cell>
+							<Table.Cell class="w-5/6">{tx ? tx.type : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>From</Table.Cell>
+							<Table.Cell class="w-1/6">From</Table.Cell>
 							<Table.Cell
-								class="cursor-pointer"
+								class="w-4/5 cursor-pointer"
 								onclick={tx?.from ? () => goto(`/account/${tx!.from}`) : null}
 								>{tx ? tx.from : ''}</Table.Cell
 							>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>To</Table.Cell>
+							<Table.Cell class="w-1/6">To</Table.Cell>
 							<Table.Cell
-								class="cursor-pointer"
+								class="w-4/5 cursor-pointer"
 								onclick={tx?.to ? () => goto(`/account/${tx!.to}`) : null}
 								>{tx ? tx.to : ''}</Table.Cell
 							>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Value</Table.Cell>
-							<Table.Cell>{tx ? printWei(tx.value) : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Value</Table.Cell>
+							<Table.Cell class="w-5/6">{tx ? printWei(tx.value) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Gas Limit</Table.Cell>
-							<Table.Cell>{tx ? printNumber(tx.gasLimit) : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Gas Limit</Table.Cell>
+							<Table.Cell class="w-5/6">{tx ? printNumber(tx.gasLimit) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Gas Price</Table.Cell>
-							<Table.Cell>{tx ? printWei(tx.gasPrice) : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Gas Price</Table.Cell>
+							<Table.Cell class="w-5/6">{tx ? printWei(tx.gasPrice) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Fee</Table.Cell>
-							<Table.Cell>{tx ? printWei(tx.maxFeePerGas) : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Fee</Table.Cell>
+							<Table.Cell class="w-5/6">{tx ? printWei(tx.maxFeePerGas) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Tip</Table.Cell>
-							<Table.Cell>{tx ? printWei(tx.maxPriorityFeePerGas) : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Tip</Table.Cell>
+							<Table.Cell class="w-5/6">{tx ? printWei(tx.maxPriorityFeePerGas) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Data</Table.Cell>
-							<Table.Cell>
+							<Table.Cell class="w-1/6">Data</Table.Cell>
+							<Table.Cell class="w-5/6">
 								{#each txDataChunks as chunk}
 									<div>{chunk}</div>
 								{/each}
@@ -111,35 +112,39 @@
 				<Table.Root>
 					<Table.Body>
 						<Table.Row>
-							<Table.Cell>Status</Table.Cell>
-							<Table.Cell>{txReceipt ? txReceipt.status : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Status</Table.Cell>
+							<Table.Cell class="w-5/6">{txReceipt ? txReceipt.status : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Gas Used</Table.Cell>
-							<Table.Cell>{txReceipt ? printNumber(txReceipt.gasUsed) : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Gas Used</Table.Cell>
+							<Table.Cell class="w-5/6"
+								>{txReceipt ? printNumber(txReceipt.gasUsed) : ''}</Table.Cell
+							>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Actual Gas Price</Table.Cell>
-							<Table.Cell>{txReceipt ? printWei(txReceipt.gasPrice) : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Actual Gas Price</Table.Cell>
+							<Table.Cell class="w-5/6">{txReceipt ? printWei(txReceipt.gasPrice) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Contract</Table.Cell>
-							<Table.Cell>{txReceipt ? txReceipt.contractAddress : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Contract</Table.Cell>
+							<Table.Cell class="w-5/6">{txReceipt ? txReceipt.contractAddress : ''}</Table.Cell>
 						</Table.Row>
-						<Table.Row>
-							<Table.Cell>Log Bloom</Table.Cell>
-							<Table.Cell>{txReceipt ? txReceipt.logsBloom : ''}</Table.Cell>
-						</Table.Row>
-						<Table.Row>
-							<Table.Cell>Logs</Table.Cell>
-							<Table.Cell>
+						<!-- <Table.Row>
+							<Table.Cell class="w-1/6">Log Bloom</Table.Cell>
+							<Table.Cell class="w-5/6">
+								{txReceipt ? txReceipt.logsBloom : ''}
+							</Table.Cell>
+						</Table.Row> -->
+						<!-- <Table.Row>
+							<Table.Cell class="w-1/6">Logs</Table.Cell>
+							<Table.Cell class="w-5/6">
 								{#if txReceipt}
 									{#each txReceipt.logs as log}
 										<pre>{JSON.stringify(log, null, 2)}</pre>
 									{/each}
 								{/if}
 							</Table.Cell>
-						</Table.Row>
+						</Table.Row> -->
 					</Table.Body>
 				</Table.Root>
 			</Card.Content>

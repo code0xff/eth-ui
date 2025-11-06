@@ -53,17 +53,17 @@
 				<Table.Root>
 					<Table.Body>
 						<Table.Row>
-							<Table.Cell>Balance</Table.Cell>
-							<Table.Cell>{balance ? printWei(balance) : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Balance</Table.Cell>
+							<Table.Cell class="w-5/6">{balance ? printWei(balance) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Nonce</Table.Cell>
-							<Table.Cell>{nonce ? printNumber(nonce) : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Nonce</Table.Cell>
+							<Table.Cell class="w-5/6">{nonce ? printNumber(nonce) : ''}</Table.Cell>
 						</Table.Row>
-						<Table.Row>
+						<!-- <Table.Row>`
 							<Table.Cell>Code</Table.Cell>
 							<Table.Cell>{code ? code : ''}</Table.Cell>
-						</Table.Row>
+						</Table.Row>` -->
 					</Table.Body>
 				</Table.Root>
 			</Card.Content>
@@ -78,8 +78,8 @@
 				<Table.Root>
 					<Table.Body>
 						<Table.Row>
-							<Table.Cell>Slot</Table.Cell>
-							<Table.Cell>
+							<Table.Cell class="w-1/6">Slot</Table.Cell>
+							<Table.Cell class="w-5/6">
 								<div class="flex flex-row gap-4">
 									<div class="w-full">
 										<Input bind:value={slot} />
@@ -91,8 +91,8 @@
 							</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Value</Table.Cell>
-							<Table.Cell>
+							<Table.Cell class="w-1/6">Value</Table.Cell>
+							<Table.Cell class="w-5/6">
 								<Input readonly bind:value={result} />
 							</Table.Cell>
 						</Table.Row>

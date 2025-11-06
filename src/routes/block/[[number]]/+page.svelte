@@ -39,40 +39,40 @@
 				<Table.Root>
 					<Table.Body>
 						<Table.Row>
-							<Table.Cell>Number</Table.Cell>
-							<Table.Cell>{block ? printNumber(block.number) : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Number</Table.Cell>
+							<Table.Cell class="w-5/6">{block ? printNumber(block.number) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Hash</Table.Cell>
-							<Table.Cell>{block ? block.hash : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Hash</Table.Cell>
+							<Table.Cell class="w-5/6">{block ? block.hash : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Parent</Table.Cell>
-							<Table.Cell>{block ? block.parentHash : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Parent</Table.Cell>
+							<Table.Cell class="w-5/6">{block ? block.parentHash : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Time</Table.Cell>
-							<Table.Cell>{block ? timestampToDate(block.timestamp) : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Time</Table.Cell>
+							<Table.Cell class="w-5/6">{block ? timestampToDate(block.timestamp) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Transactions</Table.Cell>
-							<Table.Cell>{block ? block.transactions.length : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Transactions</Table.Cell>
+							<Table.Cell class="w-5/6">{block ? block.transactions.length : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Etherbase</Table.Cell>
-							<Table.Cell>{block ? block.miner : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Etherbase</Table.Cell>
+							<Table.Cell class="w-5/6">{block ? block.miner : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Base Fee</Table.Cell>
-							<Table.Cell>{block ? printWei(block.baseFeePerGas) : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Base Fee</Table.Cell>
+							<Table.Cell class="w-5/6">{block ? printWei(block.baseFeePerGas) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Gas Used</Table.Cell>
-							<Table.Cell>{block ? printNumber(block.gasUsed) : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Gas Used</Table.Cell>
+							<Table.Cell class="w-5/6">{block ? printNumber(block.gasUsed) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Gas Limit</Table.Cell>
-							<Table.Cell>{block ? printNumber(block.gasLimit) : ''}</Table.Cell>
+							<Table.Cell class="w-1/6">Gas Limit</Table.Cell>
+							<Table.Cell class="w-5/6">{block ? printNumber(block.gasLimit) : ''}</Table.Cell>
 						</Table.Row>
 					</Table.Body>
 				</Table.Root>
