@@ -63,15 +63,18 @@
 		}
 	});
 
-	async function startSync(rpc: string) {
+	async function startSync(_rpc: string) {
 		if (syncStatus === 'processing') {
 			return;
 		}
 
-		rpc = rpc.trim();
+		rpc = _rpc.trim();
+		if (!rpc || rpc === '') {
+			rpc = DEFAULT_RPC;
+		}
 
-		const storedRpc = localStorage.getItem('rpc');
-		if (rpc !== storedRpc) {
+		const _storedRpc = localStorage.getItem('rpc');
+		if (rpc !== _storedRpc) {
 			blockCacheStore.set(new Map());
 			blockIndexStore.set(new Map());
 			blockListStore.set([]);
@@ -92,21 +95,21 @@
 
 		if (!number) {
 			number = await provider.getBlockNumber();
-			const block = await provider.getBlock(number, true);
+			const _block = await provider.getBlock(number, true);
 
-			if (block) {
-				updateNewBlock(block);
+			if (_block) {
+				updateNewBlock(_block);
 			}
 		}
 
-		const syncJobId = setInterval(async () => {
-			const block = await provider.getBlock(number! + 1, true);
+		const _syncJobId = setInterval(async () => {
+			const _block = await provider.getBlock(number! + 1, true);
 
-			if (block) {
-				updateNewBlock(block);
+			if (_block) {
+				updateNewBlock(_block);
 			}
 		}, 1000);
-		syncJobIdStore.set(syncJobId);
+		syncJobIdStore.set(_syncJobId);
 	}
 
 	function stopSync() {
@@ -117,36 +120,36 @@
 		}
 	}
 
-	function updateNewBlock(block: Block) {
-		if (get(blockCacheStore).get(block.hash!)) {
+	function updateNewBlock(_block: Block) {
+		if (get(blockCacheStore).get(_block.hash!)) {
 			return;
 		}
 
-		blockNumberStore.set(block.number);
+		blockNumberStore.set(_block.number);
 		blockIndexStore.update((_blockIndex) => {
-			_blockIndex.set(block.number, block.hash!);
+			_blockIndex.set(_block.number, _block.hash!);
 			return _blockIndex;
 		});
 		blockCacheStore.update((_blockCache) => {
-			_blockCache.set(block.hash!, block);
+			_blockCache.set(_block.hash!, _block);
 			return _blockCache;
 		});
 		blockListStore.update((_blockList) => {
 			_blockList = [
-				{ number: block.number, hash: block.hash!, timestamp: block.timestamp },
+				{ number: _block.number, hash: _block.hash!, timestamp: _block.timestamp },
 				..._blockList
 			];
 			return _blockList;
 		});
 		txCacheStore.update((_txCache) => {
-			block.prefetchedTransactions.forEach((tx) => {
-				_txCache.set(tx.hash, tx);
+			_block.prefetchedTransactions.forEach((_tx) => {
+				_txCache.set(_tx.hash, _tx);
 			});
 			return _txCache;
 		});
 		txListStore.update((_txList) => {
-			block.prefetchedTransactions.forEach((tx) => {
-				_txList = [{ hash: tx.hash, from: tx.from, number: block.number }, ..._txList];
+			_block.prefetchedTransactions.forEach((_tx) => {
+				_txList = [{ hash: _tx.hash, from: _tx.from, number: _block.number }, ..._txList];
 			});
 			return _txList;
 		});
@@ -164,11 +167,11 @@
 					throw new Error('unsupported search condition');
 				}
 			} else {
-				const blockNumber = parseInt(searchParam.trim());
-				if (isNaN(blockNumber)) {
+				const _blockNumber = parseInt(searchParam.trim());
+				if (isNaN(_blockNumber)) {
 					throw new Error('invalid block number');
 				}
-				goto(`/block/${blockNumber}`);
+				goto(`/block/${_blockNumber}`);
 			}
 		} catch (e: any) {
 			console.warn(e.toString());
@@ -186,7 +189,7 @@
 						<Input
 							placeholder="RPC endpoint"
 							bind:value={rpc}
-							disabled={syncStatus === 'processing'}
+							readonly={syncStatus === 'processing'}
 						/>
 					</div>
 					<div>

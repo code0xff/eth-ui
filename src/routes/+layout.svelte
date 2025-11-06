@@ -11,7 +11,7 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<Toaster />
+<Toaster position="top-right" />
 
 <ModeWatcher />
 

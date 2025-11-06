@@ -19,8 +19,8 @@
 
 	onMount(async () => {
 		if (!provider) {
-			const rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-			provider = new JsonRpcProvider(rpc);
+			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
+			provider = new JsonRpcProvider(_rpc);
 
 			providerStore.set(provider);
 		}

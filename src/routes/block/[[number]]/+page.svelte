@@ -22,16 +22,16 @@
 
 	onMount(async () => {
 		if (!provider) {
-			const rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-			provider = new JsonRpcProvider(rpc);
+			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
+			provider = new JsonRpcProvider(_rpc);
 
 			providerStore.set(provider);
 		}
 
-		const blockNumber = parseInt(data.number);
-		const hash = get(blockIndexStore).get(blockNumber);
+		const _blockNumber = parseInt(data.number);
+		const _hash = get(blockIndexStore).get(_blockNumber);
 
-		block = hash ? get(blockCacheStore).get(hash) : await provider.getBlock(blockNumber);
+		block = _hash ? get(blockCacheStore).get(_hash) : await provider.getBlock(_blockNumber);
 	});
 </script>
 
