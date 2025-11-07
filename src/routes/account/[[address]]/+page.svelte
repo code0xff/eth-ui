@@ -87,7 +87,7 @@
 										<Input bind:value={slot} />
 									</div>
 									<div>
-										<Button onclick={getStorageAt}>Get</Button>
+										<Button class="cursor-pointer" onclick={getStorageAt}>Get</Button>
 									</div>
 								</div>
 							</Table.Cell>

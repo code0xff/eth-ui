@@ -9,4 +9,5 @@ export const DEFAULT_RPC = 'https://ethereum-rpc.publicnode.com';
 export const GWEI = 1_000_000_000n;
 export const ETH = 1_000_000_000_000_000_000n;
 
-export const DEFAULT_CACHE_SIZE = 64;
+export const DEFAULT_CACHE_COUNT = 10;
+export const DEFAULT_SYNC_INTERVAL = 10000;

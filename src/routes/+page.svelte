@@ -3,11 +3,12 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { toggleMode } from 'mode-watcher';
-	import { SunMoon } from '@lucide/svelte';
+	import { CogIcon, SunMoon } from '@lucide/svelte';
 	import { get } from 'svelte/store';
 	import { toast } from 'svelte-sonner';
 	import Button from '@/components/ui/button/button.svelte';
 	import Input from '@/components/ui/input/input.svelte';
+	import * as Dialog from '@/components/ui/dialog/index.js';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
 	import * as stores from '@/stores';
@@ -20,6 +21,9 @@
 
 	let syncStatus: SyncStatus = 'pending';
 	let syncJobId: NodeJS.Timeout | undefined;
+	let syncInterval: number = constants.DEFAULT_SYNC_INTERVAL;
+	let cacheCount: number = constants.DEFAULT_CACHE_COUNT;
+	let settingOpen: boolean = false;
 
 	let number: number | undefined;
 	let blockList: BlockInfo[] = [];
@@ -45,6 +49,13 @@
 
 	onMount(async () => {
 		rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPC;
+
+		const _syncInterval = localStorage.getItem('syncInterval');
+		syncInterval = _syncInterval ? parseInt(_syncInterval) : constants.DEFAULT_SYNC_INTERVAL;
+
+		const _cacheCount = localStorage.getItem('cacheCount');
+		cacheCount = _cacheCount ? parseInt(_cacheCount) : constants.DEFAULT_CACHE_COUNT;
+
 		if (syncStatus === 'pending') {
 			await startSync(rpc);
 		}
@@ -95,7 +106,7 @@
 			if (_block) {
 				updateNewBlock(_block);
 			}
-		}, 1000);
+		}, syncInterval);
 		stores.syncJobIdStore.set(_syncJobId);
 	}
 
@@ -112,7 +123,7 @@
 			return;
 		}
 
-		while (get(stores.blockCacheStore).size >= constants.DEFAULT_CACHE_SIZE) {
+		while (get(stores.blockCacheStore).size >= cacheCount) {
 			stores.blockCacheStore.update((_blockCache) => {
 				const _cachedBlock = _blockCache.values().next().value;
 
@@ -188,6 +199,24 @@
 			toast.error('invalid search condition');
 		}
 	}
+
+	function saveSetting() {
+		if (!syncInterval || syncInterval < 300) {
+			toast('invalid sync interval: cache count must be at least 300ms');
+			return;
+		}
+		if (!cacheCount || cacheCount < 1) {
+			toast('invalid cache count: cache count must be at least 1');
+			return;
+		}
+
+		localStorage.setItem('syncInterval', syncInterval.toString());
+		localStorage.setItem('cacheCount', cacheCount.toString());
+
+		settingOpen = false;
+
+		toast('successfully saved')
+	}
 </script>
 
 <div>
@@ -206,8 +235,52 @@
 						<Button
 							onclick={() => (syncStatus === 'processing' ? stopSync() : startSync(rpc))}
 							class="w-[80px] cursor-pointer"
-							>{syncStatus === 'processing' ? 'Pause' : 'Start'}</Button
+							>{syncStatus === 'processing' ? 'Stop' : 'Start'}</Button
 						>
+					</div>
+					<div>
+						<Button
+							disabled={syncStatus === 'processing'}
+							class="cursor-pointer"
+							onclick={() => {
+								settingOpen = true;
+							}}
+						>
+							<CogIcon />
+						</Button>
+						<Dialog.Root bind:open={settingOpen}>
+							<Dialog.Content>
+								<Dialog.Header>
+									<Dialog.Title>Setting</Dialog.Title>
+									<Dialog.Description>
+										<Table.Root>
+											<Table.Body>
+												<Table.Row>
+													<Table.Cell>Sync interval (ms)</Table.Cell>
+													<Table.Cell>
+														<Input
+															type="number"
+															min={300}
+															placeholder="10000"
+															bind:value={syncInterval}
+														/>
+													</Table.Cell>
+												</Table.Row>
+												<Table.Row>
+													<Table.Cell>Block cache count</Table.Cell>
+													<Table.Cell>
+														<Input type="number" min={1} placeholder="10" bind:value={cacheCount} />
+													</Table.Cell>
+												</Table.Row>
+											</Table.Body>
+										</Table.Root>
+									</Dialog.Description>
+								</Dialog.Header>
+								<Dialog.Footer>
+									<Button class="cursor-pointer" onclick={saveSetting}>Save changes</Button>
+								</Dialog.Footer>
+							</Dialog.Content>
+						</Dialog.Root>
 					</div>
 					<div>
 						<Button onclick={toggleMode} class="cursor-pointer">
@@ -229,7 +302,7 @@
 						/>
 					</div>
 					<div>
-						<Button onclick={search}>Search</Button>
+						<Button class="cursor-pointer" onclick={search}>Search</Button>
 					</div>
 				</div>
 			</Card.Content>
