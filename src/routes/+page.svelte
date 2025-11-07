@@ -12,7 +12,7 @@
 	import * as Table from '@/components/ui/table/index.js';
 	import * as stores from '@/stores';
 	import * as helpers from '@/helpers';
-	import { ADDRESS_SIZE, DEFAULT_RPC, HASH_SIZE } from '@/constants';
+	import * as constants from '@/constants';
 	import type { BlockInfo, SyncStatus, TxInfo } from '@/types';
 
 	let rpc: string = '';
@@ -44,7 +44,7 @@
 	});
 
 	onMount(async () => {
-		rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
+		rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPC;
 		if (syncStatus === 'pending') {
 			await startSync(rpc);
 		}
@@ -57,7 +57,7 @@
 
 		rpc = _rpc.trim();
 		if (!rpc || rpc === '') {
-			rpc = DEFAULT_RPC;
+			rpc = constants.DEFAULT_RPC;
 		}
 
 		const _storedRpc = localStorage.getItem('rpc');
@@ -112,6 +112,29 @@
 			return;
 		}
 
+		while (get(stores.blockCacheStore).size >= constants.DEFAULT_CACHE_SIZE) {
+			stores.blockCacheStore.update((_blockCache) => {
+				const _cachedBlock = _blockCache.values().next().value;
+
+				if (_cachedBlock) {
+					stores.txCacheStore.update((_txCache) => {
+						_cachedBlock.transactions.forEach((_txHash) => {
+							_txCache.delete(_txHash);
+						});
+						return _txCache;
+					});
+
+					stores.blockIndexStore.update((_blockIndex) => {
+						_blockIndex.delete(_cachedBlock.number);
+						return _blockIndex;
+					});
+
+					_blockCache.delete(_cachedBlock.hash!);
+				}
+				return _blockCache;
+			});
+		}
+
 		stores.blockNumberStore.set(_block.number);
 		stores.blockIndexStore.update((_blockIndex) => {
 			_blockIndex.set(_block.number, _block.hash!);
@@ -146,9 +169,9 @@
 		try {
 			searchParam = searchParam.trim();
 			if (searchParam.startsWith('0x')) {
-				if (searchParam.length === ADDRESS_SIZE) {
+				if (searchParam.length === constants.ADDRESS_SIZE) {
 					goto(`/account/${searchParam}`);
-				} else if (searchParam.length === HASH_SIZE) {
+				} else if (searchParam.length === constants.HASH_SIZE) {
 					goto(`/tx/${searchParam}`);
 				} else {
 					throw new Error('unsupported search condition');
