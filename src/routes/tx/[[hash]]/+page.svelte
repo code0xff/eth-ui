@@ -9,7 +9,7 @@
 	import Textarea from '@/components/ui/textarea/textarea.svelte';
 	import { DEFAULT_RPC } from '@/constants';
 	import { printNumber, printWei, splitToChunks } from '@/helpers';
-	import { txCacheStore, providerStore } from '@/stores';
+	import { providerStore } from '@/stores';
 
 	export let data: { hash: string };
 
@@ -26,10 +26,9 @@
 			providerStore.set(provider);
 		}
 
-		tx = get(txCacheStore).get(data.hash) ?? (await provider.getTransaction(data.hash));
-
-		if (tx && provider) {
-			txReceipt = await provider.getTransactionReceipt(tx.hash);
+		if (provider) {
+			tx = await provider.getTransaction(data.hash);
+			txReceipt = await provider.getTransactionReceipt(data.hash);
 		}
 	});
 </script>

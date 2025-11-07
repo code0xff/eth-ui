@@ -77,7 +77,6 @@
 			stores.blockIndexStore.set(new Map());
 			stores.blockListStore.set([]);
 
-			stores.txCacheStore.set(new Map());
 			stores.txListStore.set([]);
 
 			stores.blockNumberStore.set(undefined);
@@ -128,13 +127,6 @@
 				const _cachedBlock = _blockCache.values().next().value;
 
 				if (_cachedBlock) {
-					stores.txCacheStore.update((_txCache) => {
-						_cachedBlock.transactions.forEach((_txHash) => {
-							_txCache.delete(_txHash);
-						});
-						return _txCache;
-					});
-
 					stores.blockIndexStore.update((_blockIndex) => {
 						_blockIndex.delete(_cachedBlock.number);
 						return _blockIndex;
@@ -161,12 +153,6 @@
 				..._blockList
 			];
 			return _blockList;
-		});
-		stores.txCacheStore.update((_txCache) => {
-			_block.prefetchedTransactions.forEach((_tx) => {
-				_txCache.set(_tx.hash, _tx);
-			});
-			return _txCache;
 		});
 		stores.txListStore.update((_txList) => {
 			_block.prefetchedTransactions.forEach((_tx) => {
@@ -215,7 +201,7 @@
 
 		settingOpen = false;
 
-		toast('successfully saved')
+		toast('successfully saved');
 	}
 </script>
 
