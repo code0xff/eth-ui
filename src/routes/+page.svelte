@@ -247,7 +247,7 @@
 														<Input
 															type="number"
 															min={300}
-															placeholder="10000"
+															placeholder={constants.DEFAULT_SYNC_INTERVAL.toString()}
 															bind:value={syncInterval}
 														/>
 													</Table.Cell>
@@ -255,7 +255,12 @@
 												<Table.Row>
 													<Table.Cell>Block cache count</Table.Cell>
 													<Table.Cell>
-														<Input type="number" min={1} placeholder="10" bind:value={cacheCount} />
+														<Input
+															type="number"
+															min={1}
+															placeholder={constants.DEFAULT_CACHE_COUNT.toString()}
+															bind:value={cacheCount}
+														/>
 													</Table.Cell>
 												</Table.Row>
 											</Table.Body>
