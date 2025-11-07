@@ -117,8 +117,8 @@
 		}
 	}
 
-	function updateNewBlock(_block: Block) {
-		if (get(stores.blockCacheStore).get(_block.hash!)) {
+	function updateNewBlock(_newBlock: Block) {
+		if (get(stores.blockCacheStore).get(_newBlock.hash!)) {
 			return;
 		}
 
@@ -138,25 +138,39 @@
 			});
 		}
 
-		stores.blockNumberStore.set(_block.number);
+		stores.blockNumberStore.set(_newBlock.number);
 		stores.blockIndexStore.update((_blockIndex) => {
-			_blockIndex.set(_block.number, _block.hash!);
+			_blockIndex.set(_newBlock.number, _newBlock.hash!);
 			return _blockIndex;
 		});
 		stores.blockCacheStore.update((_blockCache) => {
+			const _block = {
+				number: _newBlock.number,
+				hash: _newBlock.hash,
+				parentHash: _newBlock.parentHash,
+				timestamp: _newBlock.timestamp,
+				transactions: [..._newBlock.transactions],
+				miner: _newBlock.miner,
+				baseFeePerGas: _newBlock.baseFeePerGas,
+				gasUsed: _newBlock.gasUsed,
+				gasLimit: _newBlock.gasLimit
+			};
 			_blockCache.set(_block.hash!, _block);
 			return _blockCache;
 		});
 		stores.blockListStore.update((_blockList) => {
 			_blockList = [
-				{ number: _block.number, hash: _block.hash!, timestamp: _block.timestamp },
+				{ number: _newBlock.number, hash: _newBlock.hash!, timestamp: _newBlock.timestamp },
 				..._blockList
 			];
 			return _blockList;
 		});
 		stores.txListStore.update((_txList) => {
-			_block.prefetchedTransactions.forEach((_tx) => {
-				_txList = [{ hash: _tx.hash, from: _tx.from, number: _block.number }, ..._txList];
+			_newBlock.prefetchedTransactions.forEach((_tx) => {
+				_txList = [
+					{ hash: _tx.hash, from: _tx.from, to: _tx.to, number: _newBlock.number },
+					..._txList
+				];
 			});
 			return _txList;
 		});

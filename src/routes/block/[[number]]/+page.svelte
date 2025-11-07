@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { JsonRpcProvider, type Block } from 'ethers';
+	import { JsonRpcProvider } from 'ethers';
 	import { get } from 'svelte/store';
 	import { onMount } from 'svelte';
 	import * as Card from '@/components/ui/card/index.js';
@@ -7,6 +7,7 @@
 	import { DEFAULT_RPC } from '@/constants';
 	import { printNumber, printWei, timestampToDate } from '@/helpers';
 	import { blockIndexStore, blockCacheStore, providerStore } from '@/stores';
+	import type { Block } from '@/types';
 
 	export let data: { number: string };
 
@@ -25,7 +26,25 @@
 		const _blockNumber = parseInt(data.number);
 		const _hash = get(blockIndexStore).get(_blockNumber);
 
-		block = _hash ? get(blockCacheStore).get(_hash) : await provider.getBlock(_blockNumber);
+		if (_hash) {
+			block = get(blockCacheStore).get(_hash);
+		}
+		if (!block && provider) {
+			const _block = await provider.getBlock(_blockNumber);
+			if (_block) {
+				block = {
+					number: _block.number,
+					hash: _block.hash,
+					parentHash: _block.parentHash,
+					timestamp: _block.timestamp,
+					transactions: [..._block.transactions],
+					miner: _block.miner,
+					baseFeePerGas: _block.baseFeePerGas,
+					gasUsed: _block.gasUsed,
+					gasLimit: _block.gasLimit
+				};
+			}
+		}
 	});
 </script>
 
