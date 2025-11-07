@@ -26,7 +26,7 @@ export function printWei(wei: bigint | null): string {
 	} else if (wei > GWEI) {
 		return `${(wei / GWEI).toLocaleString()} gwei (${wei.toLocaleString()})`;
 	} else {
-		return wei.toLocaleString();
+		return `${wei.toLocaleString()} wei`;
 	}
 }
 
