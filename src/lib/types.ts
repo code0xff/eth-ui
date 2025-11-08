@@ -1,26 +1,15 @@
 export type BlockInfo = {
 	number: number;
-	hash: string;
+	hash: string | null;
 	timestamp: number;
+	transactions: string[];
 };
 
 export type TxInfo = {
 	hash: string;
 	from: string;
 	to: string | null;
-	number: number;
+	blockNumber: number | null;
 };
 
 export type SyncStatus = 'pending' | 'processing' | 'stopped';
-
-export type Block = {
-	number: number;
-	hash: string | null;
-	parentHash: string;
-	timestamp: number;
-	transactions: string[];
-	miner: string;
-	baseFeePerGas: bigint | null;
-	gasUsed: bigint;
-	gasLimit: bigint;
-};

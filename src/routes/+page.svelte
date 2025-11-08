@@ -22,7 +22,7 @@
 	let syncStatus: SyncStatus = 'pending';
 	let syncJobId: NodeJS.Timeout | undefined;
 	let syncInterval: number = constants.DEFAULT_SYNC_INTERVAL;
-	let cacheCount: number = constants.DEFAULT_CACHE_COUNT;
+	let blockListLimit: number = constants.DEFAULT_BLOCK_LIST_LIMIT;
 	let settingOpen: boolean = false;
 
 	let number: number | undefined;
@@ -40,11 +40,11 @@
 	stores.syncJobIdStore.subscribe((_syncJobId) => {
 		syncJobId = _syncJobId;
 	});
-	stores.blockListStore.subscribe((_blockList) => {
-		blockList = [..._blockList];
+	stores.blockStore.subscribe((_blocks) => {
+		blockList = _blocks.values().toArray().reverse();
 	});
-	stores.txListStore.subscribe((_txList) => {
-		txList = [..._txList];
+	stores.txStore.subscribe((_txs) => {
+		txList = _txs.values().toArray().reverse();
 	});
 
 	onMount(async () => {
@@ -53,8 +53,10 @@
 		const _syncInterval = localStorage.getItem('syncInterval');
 		syncInterval = _syncInterval ? parseInt(_syncInterval) : constants.DEFAULT_SYNC_INTERVAL;
 
-		const _cacheCount = localStorage.getItem('cacheCount');
-		cacheCount = _cacheCount ? parseInt(_cacheCount) : constants.DEFAULT_CACHE_COUNT;
+		const _blockListLimit = localStorage.getItem('blockListLimit');
+		blockListLimit = _blockListLimit
+			? parseInt(_blockListLimit)
+			: constants.DEFAULT_BLOCK_LIST_LIMIT;
 
 		if (syncStatus === 'pending') {
 			await startSync(rpc);
@@ -73,11 +75,8 @@
 
 		const _storedRpc = localStorage.getItem('rpc');
 		if (rpc !== _storedRpc) {
-			stores.blockCacheStore.set(new Map());
-			stores.blockIndexStore.set(new Map());
-			stores.blockListStore.set([]);
-
-			stores.txListStore.set([]);
+			stores.blockStore.set(new Map());
+			stores.txStore.set(new Map());
 
 			stores.blockNumberStore.set(undefined);
 			stores.providerStore.set(undefined);
@@ -118,61 +117,50 @@
 	}
 
 	function updateNewBlock(_newBlock: Block) {
-		if (get(stores.blockCacheStore).get(_newBlock.hash!)) {
+		const _blockStore = get(stores.blockStore);
+		if (_blockStore.has(_newBlock.number)) {
 			return;
 		}
 
-		while (get(stores.blockCacheStore).size >= cacheCount) {
-			stores.blockCacheStore.update((_blockCache) => {
-				const _cachedBlock = _blockCache.values().next().value;
-
-				if (_cachedBlock) {
-					stores.blockIndexStore.update((_blockIndex) => {
-						_blockIndex.delete(_cachedBlock.number);
-						return _blockIndex;
+		if (_blockStore.size >= blockListLimit) {
+			const _blockList = _blockStore.values().toArray();
+			const pruneBlockList = _blockList.slice(0, _blockList.length - blockListLimit + 1);
+			stores.txStore.update((_txs) => {
+				pruneBlockList.forEach((_block) => {
+					_block.transactions.forEach((_txHash) => {
+						_txs.delete(_txHash);
 					});
-
-					_blockCache.delete(_cachedBlock.hash!);
-				}
-				return _blockCache;
+				});
+				return _txs;
+			});
+			stores.blockStore.update((_blocks) => {
+				pruneBlockList.forEach((_block) => {
+					_blocks.delete(_block.number);
+				});
+				return _blocks;
 			});
 		}
 
 		stores.blockNumberStore.set(_newBlock.number);
-		stores.blockIndexStore.update((_blockIndex) => {
-			_blockIndex.set(_newBlock.number, _newBlock.hash!);
-			return _blockIndex;
-		});
-		stores.blockCacheStore.update((_blockCache) => {
-			const _block = {
+		stores.blockStore.update((_blocks) => {
+			_blocks.set(_newBlock.number, {
 				number: _newBlock.number,
 				hash: _newBlock.hash,
-				parentHash: _newBlock.parentHash,
 				timestamp: _newBlock.timestamp,
-				transactions: [..._newBlock.transactions],
-				miner: _newBlock.miner,
-				baseFeePerGas: _newBlock.baseFeePerGas,
-				gasUsed: _newBlock.gasUsed,
-				gasLimit: _newBlock.gasLimit
-			};
-			_blockCache.set(_block.hash!, _block);
-			return _blockCache;
-		});
-		stores.blockListStore.update((_blockList) => {
-			_blockList = [
-				{ number: _newBlock.number, hash: _newBlock.hash!, timestamp: _newBlock.timestamp },
-				..._blockList
-			];
-			return _blockList;
-		});
-		stores.txListStore.update((_txList) => {
-			_newBlock.prefetchedTransactions.forEach((_tx) => {
-				_txList = [
-					{ hash: _tx.hash, from: _tx.from, to: _tx.to, number: _newBlock.number },
-					..._txList
-				];
+				transactions: [..._newBlock.transactions]
 			});
-			return _txList;
+			return _blocks;
+		});
+		stores.txStore.update((_txs) => {
+			_newBlock.prefetchedTransactions.forEach((_tx) => {
+				_txs.set(_tx.hash, {
+					hash: _tx.hash,
+					from: _tx.from,
+					to: _tx.to,
+					blockNumber: _tx.blockNumber
+				});
+			});
+			return _txs;
 		});
 	}
 
@@ -202,16 +190,16 @@
 
 	function saveSetting() {
 		if (!syncInterval || syncInterval < 300) {
-			toast('invalid sync interval: cache count must be at least 300ms');
+			toast('invalid sync interval: sync interval must be at least 300ms');
 			return;
 		}
-		if (!cacheCount || cacheCount < 1) {
-			toast('invalid cache count: cache count must be at least 1');
-			return;
-		}
-
 		localStorage.setItem('syncInterval', syncInterval.toString());
-		localStorage.setItem('cacheCount', cacheCount.toString());
+
+		if (!blockListLimit || blockListLimit < 1) {
+			toast('invalid block list limit: block list limit must be at least 1');
+			return;
+		}
+		localStorage.setItem('blockListLimit', blockListLimit.toString());
 
 		settingOpen = false;
 
@@ -267,13 +255,13 @@
 													</Table.Cell>
 												</Table.Row>
 												<Table.Row>
-													<Table.Cell>Block cache count</Table.Cell>
+													<Table.Cell>Block list limit</Table.Cell>
 													<Table.Cell>
 														<Input
 															type="number"
 															min={1}
-															placeholder={constants.DEFAULT_CACHE_COUNT.toString()}
-															bind:value={cacheCount}
+															placeholder={constants.DEFAULT_BLOCK_LIST_LIMIT.toString()}
+															bind:value={blockListLimit}
 														/>
 													</Table.Cell>
 												</Table.Row>
@@ -361,7 +349,7 @@
 									<Table.Row onclick={() => goto(`/tx/${tx.hash}`)} class="cursor-pointer">
 										<Table.Cell>{helpers.compactHash(tx.hash)}</Table.Cell>
 										<Table.Cell>{helpers.compactAddress(tx.from)}</Table.Cell>
-										<Table.Cell>{helpers.printNumber(tx.number)}</Table.Cell>
+										<Table.Cell>{helpers.printNumber(tx.blockNumber)}</Table.Cell>
 									</Table.Row>
 								{/each}
 							</Table.Body>
