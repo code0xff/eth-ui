@@ -16,18 +16,25 @@ export function printNumber(num: number | bigint | null): string {
 	}
 }
 
-export function printWei(wei: bigint | null): string {
+export function printWei(wei: bigint | null, withOrigin = false): string {
 	if (wei === null) {
 		return '';
 	}
 
+	let value: bigint;
+	let unit: string;
 	if (wei > ETH) {
-		return `${(wei / ETH).toLocaleString()} eth (${wei.toLocaleString()})`;
+		value = wei / ETH;
+		unit = 'eth';
 	} else if (wei > GWEI) {
-		return `${(wei / GWEI).toLocaleString()} gwei (${wei.toLocaleString()})`;
+		value = wei / GWEI;
+		unit = 'gwei';
 	} else {
-		return `${wei.toLocaleString()} wei`;
+		value = wei;
+		unit = 'wei';
 	}
+
+	return `${value.toLocaleString()} ${unit} ${withOrigin ? `(${wei.toLocaleString()})` : ''}`;
 }
 
 export function splitToChunks(data: string): string {

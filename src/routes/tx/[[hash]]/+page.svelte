@@ -72,7 +72,7 @@
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Value</Table.Cell>
-							<Table.Cell class="w-5/6">{tx ? printWei(tx.value) : ''}</Table.Cell>
+							<Table.Cell class="w-5/6">{tx ? printWei(tx.value, true) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Gas Limit</Table.Cell>
@@ -80,15 +80,15 @@
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Gas Price</Table.Cell>
-							<Table.Cell class="w-5/6">{tx ? printWei(tx.gasPrice) : ''}</Table.Cell>
+							<Table.Cell class="w-5/6">{tx ? printWei(tx.gasPrice, true) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Fee</Table.Cell>
-							<Table.Cell class="w-5/6">{tx ? printWei(tx.maxFeePerGas) : ''}</Table.Cell>
+							<Table.Cell class="w-5/6">{tx ? printWei(tx.maxFeePerGas, true) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Tip</Table.Cell>
-							<Table.Cell class="w-5/6">{tx ? printWei(tx.maxPriorityFeePerGas) : ''}</Table.Cell>
+							<Table.Cell class="w-5/6">{tx ? printWei(tx.maxPriorityFeePerGas, true) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Data</Table.Cell>
@@ -121,7 +121,7 @@
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Actual Gas Price</Table.Cell>
-							<Table.Cell class="w-5/6">{txReceipt ? printWei(txReceipt.gasPrice) : ''}</Table.Cell>
+							<Table.Cell class="w-5/6">{txReceipt ? printWei(txReceipt.gasPrice, true) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Contract</Table.Cell>

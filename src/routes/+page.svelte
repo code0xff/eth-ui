@@ -308,7 +308,7 @@
 					<Card.Header>
 						<Card.Title>Blocks</Card.Title>
 					</Card.Header>
-					<Card.Content class="h-120 overflow-y-auto">
+					<Card.Content class="h-110 overflow-y-auto">
 						<Table.Root>
 							<Table.Header>
 								<Table.Row>
@@ -335,7 +335,7 @@
 					<Card.Header>
 						<Card.Title>Transactions</Card.Title>
 					</Card.Header>
-					<Card.Content class="h-120 overflow-y-auto">
+					<Card.Content class="h-110 overflow-y-auto">
 						<Table.Root>
 							<Table.Header>
 								<Table.Row>

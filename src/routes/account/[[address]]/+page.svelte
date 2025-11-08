@@ -54,7 +54,7 @@
 					<Table.Body>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Balance</Table.Cell>
-							<Table.Cell class="w-5/6">{balance ? printWei(balance) : ''}</Table.Cell>
+							<Table.Cell class="w-5/6">{balance ? printWei(balance, true) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Nonce</Table.Cell>
