@@ -7,7 +7,7 @@ export type BlockInfo = {
 
 export type TxInfo = {
 	hash: string;
-	from: string;
+	from: string | undefined;
 	to: string | null;
 	blockNumber: number | null;
 };

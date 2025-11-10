@@ -91,7 +91,7 @@
 
 		if (!number) {
 			number = await provider.getBlockNumber();
-			const _block = await provider.getBlock(number, true);
+			const _block = await provider.getBlock(number);
 
 			if (_block) {
 				updateNewBlock(_block);
@@ -99,7 +99,7 @@
 		}
 
 		const _syncJobId = setInterval(async () => {
-			const _block = await provider.getBlock(number! + 1, true);
+			const _block = await provider.getBlock(number! + 1);
 
 			if (_block) {
 				updateNewBlock(_block);
@@ -152,12 +152,12 @@
 			return _blocks;
 		});
 		stores.txStore.update((_txs) => {
-			_newBlock.prefetchedTransactions.forEach((_tx) => {
-				_txs.set(_tx.hash, {
-					hash: _tx.hash,
-					from: _tx.from,
-					to: _tx.to,
-					blockNumber: _tx.blockNumber
+			_newBlock.transactions.forEach((_txHash) => {
+				_txs.set(_txHash, {
+					hash: _txHash,
+					from: undefined,
+					to: null,
+					blockNumber: _newBlock.number
 				});
 			});
 			return _txs;
@@ -344,7 +344,6 @@
 							<Table.Header>
 								<Table.Row>
 									<Table.Head>Hash</Table.Head>
-									<Table.Head>From</Table.Head>
 									<Table.Head>Number</Table.Head>
 								</Table.Row>
 							</Table.Header>
@@ -352,7 +351,6 @@
 								{#each txList as tx}
 									<Table.Row onclick={() => goto(`/tx/${tx.hash}`)} class="cursor-pointer">
 										<Table.Cell>{helpers.compactHash(tx.hash)}</Table.Cell>
-										<Table.Cell>{helpers.compactAddress(tx.from)}</Table.Cell>
 										<Table.Cell>{helpers.printNumber(tx.blockNumber)}</Table.Cell>
 									</Table.Row>
 								{/each}
