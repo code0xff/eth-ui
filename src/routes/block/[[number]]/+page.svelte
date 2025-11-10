@@ -19,7 +19,6 @@
 		if (!provider) {
 			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
 			provider = new WebSocketProvider(_rpc);
-
 			providerStore.set(provider);
 		}
 

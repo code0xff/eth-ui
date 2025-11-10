@@ -16,11 +16,13 @@
 	import * as constants from '@/constants';
 	import type { BlockInfo, SyncStatus, TxInfo } from '@/types';
 
-	let rpc: string = '';
 	let provider: WebSocketProvider | undefined;
 
-	let syncStatus: SyncStatus = 'pending';
-	let blockListLimit: number | undefined;
+	let rpc: string = '';
+	let blockListLimit: number = constants.DEFAULT_BLOCK_LIST_LIMIT;
+	let syncStatus: SyncStatus = 'idle';
+
+	let settingBlockListLimit: number = blockListLimit;
 	let settingOpen: boolean = false;
 
 	let blockList: BlockInfo[] = [];
@@ -49,40 +51,48 @@
 			? parseInt(_blockListLimit)
 			: constants.DEFAULT_BLOCK_LIST_LIMIT;
 
-		if (syncStatus === 'pending') {
-			await startSync(rpc);
+		if (syncStatus === 'idle') {
+			await startSync();
 		}
 	});
 
-	async function startSync(_rpc: string) {
+	async function startSync() {
 		if (syncStatus === 'processing') {
 			return;
 		}
 
-		rpc = _rpc.trim();
+		rpc = rpc.trim();
 		if (!rpc || rpc === '') {
 			rpc = constants.DEFAULT_RPC;
 		}
 
-		stores.blockStore.set(new Map());
-		stores.txStore.set(new Map());
-		await get(stores.providerStore)?.destroy();
-		stores.providerStore.set(undefined);
+		try {
+			stores.blockStore.set(new Map());
+			stores.txStore.set(new Map());
 
-		stores.syncStatusStore.set('processing');
+			await get(stores.providerStore)?.destroy();
+			stores.providerStore.set(undefined);
 
-		if (!provider) {
-			provider = new WebSocketProvider(rpc);
-			stores.providerStore.set(provider);
-		}
+			stores.syncStatusStore.set('processing');
 
-		provider.on('block', async (_number) => {
-			const _block = await provider?.getBlock(_number);
-			if (_block) {
-				updateNewBlock(_block);
+			if (!provider) {
+				provider = new WebSocketProvider(rpc);
+				stores.providerStore.set(provider);
 			}
-		});
-		localStorage.setItem('rpc', rpc);
+
+			provider.on('block', async (_number) => {
+				const _block = await provider?.getBlock(_number);
+				if (_block) {
+					updateNewBlock(_block, blockListLimit);
+				}
+			});
+
+			localStorage.setItem('rpc', rpc);
+			localStorage.setItem('blockListLimit', blockListLimit.toString());
+		} catch (e: any) {
+			console.error(e.toString());
+			toast(e.toString());
+		}
 	}
 
 	function stopSync() {
@@ -95,15 +105,15 @@
 		}
 	}
 
-	function updateNewBlock(_newBlock: Block) {
+	function updateNewBlock(_newBlock: Block, _blockListLimit: number) {
 		const _blockStore = get(stores.blockStore);
 		if (_blockStore.has(_newBlock.number)) {
 			return;
 		}
 
-		if (blockListLimit && _blockStore.size >= blockListLimit) {
+		if (_blockListLimit && _blockStore.size >= _blockListLimit) {
 			const _blockList = _blockStore.values().toArray();
-			const pruneBlockList = _blockList.slice(0, _blockList.length - blockListLimit + 1);
+			const pruneBlockList = _blockList.slice(0, _blockList.length - _blockListLimit + 1);
 			stores.txStore.update((_txs) => {
 				pruneBlockList.forEach((_block) => {
 					_block.transactions.forEach((_txHash) => {
@@ -167,13 +177,14 @@
 	}
 
 	function saveSetting() {
-		if (!blockListLimit || blockListLimit < constants.MIN_BLOCK_LIST_LIMIT) {
+		if (!settingBlockListLimit || settingBlockListLimit < constants.MIN_BLOCK_LIST_LIMIT) {
 			toast(
 				`invalid block list limit: block list limit must be at least ${constants.MIN_BLOCK_LIST_LIMIT}`
 			);
 			return;
 		}
-		localStorage.setItem('blockListLimit', blockListLimit.toString());
+		blockListLimit = settingBlockListLimit;
+		localStorage.setItem('blockListLimit', settingBlockListLimit.toString());
 
 		settingOpen = false;
 
@@ -195,7 +206,7 @@
 					</div>
 					<div>
 						<Button
-							onclick={() => (syncStatus === 'processing' ? stopSync() : startSync(rpc))}
+							onclick={() => (syncStatus === 'processing' ? stopSync() : startSync())}
 							class="w-[80px] cursor-pointer"
 							>{syncStatus === 'processing' ? 'Stop' : 'Start'}</Button
 						>
@@ -223,7 +234,7 @@
 															type="number"
 															min={constants.MIN_BLOCK_LIST_LIMIT}
 															placeholder={constants.DEFAULT_BLOCK_LIST_LIMIT.toString()}
-															bind:value={blockListLimit}
+															bind:value={settingBlockListLimit}
 														/>
 													</Table.Cell>
 												</Table.Row>

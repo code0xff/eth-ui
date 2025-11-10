@@ -1,4 +1,4 @@
-import { CHUNK_SIZE, ETH, GWEI, SELECTOR_SIZE } from './constants';
+import * as constants from './constants';
 
 export function timestampToDate(timestamp: number): string {
 	const datetime = new Date(timestamp * 1000).toISOString();
@@ -23,11 +23,11 @@ export function printWei(wei: bigint | null, withOrigin: boolean = false): strin
 
 	let value: bigint;
 	let unit: string;
-	if (wei > ETH) {
-		value = wei / ETH;
+	if (wei > constants.ETH) {
+		value = wei / constants.ETH;
 		unit = 'eth';
-	} else if (wei > GWEI) {
-		value = wei / GWEI;
+	} else if (wei > constants.GWEI) {
+		value = wei / constants.GWEI;
 		unit = 'gwei';
 	} else {
 		value = wei;
@@ -40,15 +40,15 @@ export function printWei(wei: bigint | null, withOrigin: boolean = false): strin
 export function splitToChunks(data: string): string {
 	if (data.startsWith('0x') && data.length <= 2) {
 		return '0x';
-	} else if (data.length <= CHUNK_SIZE) {
+	} else if (data.length <= constants.CHUNK_SIZE) {
 		return data;
 	} else {
 		data = data.startsWith('0x') ? data.slice(2) : data;
-		const chunks: string[] = [`0x${data.slice(0, SELECTOR_SIZE)}`];
+		const chunks: string[] = [`0x${data.slice(0, constants.SELECTOR_SIZE)}`];
 
-		data = data.slice(SELECTOR_SIZE);
-		for (let i = 0; i < data.length; i += CHUNK_SIZE) {
-			chunks.push('0x' + data.slice(i, i + CHUNK_SIZE));
+		data = data.slice(constants.SELECTOR_SIZE);
+		for (let i = 0; i < data.length; i += constants.CHUNK_SIZE) {
+			chunks.push('0x' + data.slice(i, i + constants.CHUNK_SIZE));
 		}
 		return chunks.join('\n');
 	}

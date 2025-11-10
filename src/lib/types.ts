@@ -12,4 +12,4 @@ export type TxInfo = {
 	blockNumber: number | null;
 };
 
-export type SyncStatus = 'pending' | 'processing' | 'stopped';
+export type SyncStatus = 'idle' | 'processing' | 'stopped';

@@ -41,6 +41,7 @@
 			provider = new WebSocketProvider(rpc);
 			providerStore.set(provider);
 		}
+
 		if (provider) {
 			result = await provider.getStorage(data.address, slot);
 		}
