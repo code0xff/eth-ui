@@ -189,14 +189,18 @@
 	}
 
 	function saveSetting() {
-		if (!syncInterval || syncInterval < 300) {
-			toast('invalid sync interval: sync interval must be at least 300ms');
+		if (!syncInterval || syncInterval < constants.MIN_SYNC_INTERVAL) {
+			toast(
+				`invalid sync interval: sync interval must be at least ${constants.MIN_SYNC_INTERVAL}ms`
+			);
 			return;
 		}
 		localStorage.setItem('syncInterval', syncInterval.toString());
 
-		if (!blockListLimit || blockListLimit < 1) {
-			toast('invalid block list limit: block list limit must be at least 1');
+		if (!blockListLimit || blockListLimit < constants.MIN_BLOCK_LIST_LIMIT) {
+			toast(
+				`invalid block list limit: block list limit must be at least ${constants.MIN_BLOCK_LIST_LIMIT}`
+			);
 			return;
 		}
 		localStorage.setItem('blockListLimit', blockListLimit.toString());
@@ -248,7 +252,7 @@
 													<Table.Cell>
 														<Input
 															type="number"
-															min={300}
+															min={constants.MIN_SYNC_INTERVAL}
 															placeholder={constants.DEFAULT_SYNC_INTERVAL.toString()}
 															bind:value={syncInterval}
 														/>
@@ -259,7 +263,7 @@
 													<Table.Cell>
 														<Input
 															type="number"
-															min={1}
+															min={constants.MIN_BLOCK_LIST_LIMIT}
 															placeholder={constants.DEFAULT_BLOCK_LIST_LIMIT.toString()}
 															bind:value={blockListLimit}
 														/>
