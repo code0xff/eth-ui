@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Block, JsonRpcProvider } from 'ethers';
+	import { Block, WebSocketProvider } from 'ethers';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { toggleMode } from 'mode-watcher';
@@ -17,28 +17,19 @@
 	import type { BlockInfo, SyncStatus, TxInfo } from '@/types';
 
 	let rpc: string = '';
-	let provider: JsonRpcProvider;
+	let provider: WebSocketProvider | undefined;
 
 	let syncStatus: SyncStatus = 'pending';
-	let syncJobId: NodeJS.Timeout | undefined;
-	let syncInterval: number = constants.DEFAULT_SYNC_INTERVAL;
-	let blockListLimit: number = constants.DEFAULT_BLOCK_LIST_LIMIT;
+	let blockListLimit: number | undefined;
 	let settingOpen: boolean = false;
 
-	let number: number | undefined;
 	let blockList: BlockInfo[] = [];
 	let txList: TxInfo[] = [];
 
 	let searchParam: string = '';
 
-	stores.blockNumberStore.subscribe((_number) => {
-		number = _number;
-	});
 	stores.syncStatusStore.subscribe((_syncStatus) => {
 		syncStatus = _syncStatus;
-	});
-	stores.syncJobIdStore.subscribe((_syncJobId) => {
-		syncJobId = _syncJobId;
 	});
 	stores.blockStore.subscribe((_blocks) => {
 		blockList = _blocks.values().toArray().reverse();
@@ -46,12 +37,12 @@
 	stores.txStore.subscribe((_txs) => {
 		txList = _txs.values().toArray().reverse();
 	});
+	stores.providerStore.subscribe((_provider) => {
+		provider = _provider;
+	});
 
 	onMount(async () => {
 		rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPC;
-
-		const _syncInterval = localStorage.getItem('syncInterval');
-		syncInterval = _syncInterval ? parseInt(_syncInterval) : constants.DEFAULT_SYNC_INTERVAL;
 
 		const _blockListLimit = localStorage.getItem('blockListLimit');
 		blockListLimit = _blockListLimit
@@ -73,46 +64,34 @@
 			rpc = constants.DEFAULT_RPC;
 		}
 
-		const _storedRpc = localStorage.getItem('rpc');
-		if (rpc !== _storedRpc) {
-			stores.blockStore.set(new Map());
-			stores.txStore.set(new Map());
-
-			stores.blockNumberStore.set(undefined);
-			stores.providerStore.set(undefined);
-		}
+		stores.blockStore.set(new Map());
+		stores.txStore.set(new Map());
+		await get(stores.providerStore)?.destroy();
+		stores.providerStore.set(undefined);
 
 		stores.syncStatusStore.set('processing');
 
-		provider = new JsonRpcProvider(rpc);
-		stores.providerStore.set(provider);
-
-		localStorage.setItem('rpc', rpc);
-
-		if (!number) {
-			number = await provider.getBlockNumber();
-			const _block = await provider.getBlock(number);
-
-			if (_block) {
-				updateNewBlock(_block);
-			}
+		if (!provider) {
+			provider = new WebSocketProvider(rpc);
+			stores.providerStore.set(provider);
 		}
 
-		const _syncJobId = setInterval(async () => {
-			const _block = await provider.getBlock(number! + 1);
-
+		provider.on('block', async (_number) => {
+			const _block = await provider?.getBlock(_number);
 			if (_block) {
 				updateNewBlock(_block);
 			}
-		}, syncInterval);
-		stores.syncJobIdStore.set(_syncJobId);
+		});
+		localStorage.setItem('rpc', rpc);
 	}
 
 	function stopSync() {
-		stores.syncStatusStore.set('stopped');
-		if (syncJobId) {
-			clearInterval(syncJobId);
-			stores.syncJobIdStore.set(undefined);
+		try {
+			provider?.off('block');
+			stores.syncStatusStore.set('stopped');
+		} catch (e: any) {
+			console.error(e.toString());
+			toast(e.toString());
 		}
 	}
 
@@ -122,7 +101,7 @@
 			return;
 		}
 
-		if (_blockStore.size >= blockListLimit) {
+		if (blockListLimit && _blockStore.size >= blockListLimit) {
 			const _blockList = _blockStore.values().toArray();
 			const pruneBlockList = _blockList.slice(0, _blockList.length - blockListLimit + 1);
 			stores.txStore.update((_txs) => {
@@ -141,7 +120,6 @@
 			});
 		}
 
-		stores.blockNumberStore.set(_newBlock.number);
 		stores.blockStore.update((_blocks) => {
 			_blocks.set(_newBlock.number, {
 				number: _newBlock.number,
@@ -189,14 +167,6 @@
 	}
 
 	function saveSetting() {
-		if (!syncInterval || syncInterval < constants.MIN_SYNC_INTERVAL) {
-			toast(
-				`invalid sync interval: sync interval must be at least ${constants.MIN_SYNC_INTERVAL}ms`
-			);
-			return;
-		}
-		localStorage.setItem('syncInterval', syncInterval.toString());
-
 		if (!blockListLimit || blockListLimit < constants.MIN_BLOCK_LIST_LIMIT) {
 			toast(
 				`invalid block list limit: block list limit must be at least ${constants.MIN_BLOCK_LIST_LIMIT}`
@@ -232,7 +202,6 @@
 					</div>
 					<div>
 						<Button
-							disabled={syncStatus === 'processing'}
 							class="cursor-pointer"
 							onclick={() => {
 								settingOpen = true;
@@ -247,17 +216,6 @@
 									<Dialog.Description>
 										<Table.Root>
 											<Table.Body>
-												<Table.Row>
-													<Table.Cell>Sync interval (ms)</Table.Cell>
-													<Table.Cell>
-														<Input
-															type="number"
-															min={constants.MIN_SYNC_INTERVAL}
-															placeholder={constants.DEFAULT_SYNC_INTERVAL.toString()}
-															bind:value={syncInterval}
-														/>
-													</Table.Cell>
-												</Table.Row>
 												<Table.Row>
 													<Table.Cell>Block list limit</Table.Cell>
 													<Table.Cell>

@@ -16,7 +16,7 @@ export function printNumber(num: number | bigint | null): string {
 	}
 }
 
-export function printWei(wei: bigint | null, withOrigin = false): string {
+export function printWei(wei: bigint | null, withOrigin: boolean = false): string {
 	if (wei === null) {
 		return '';
 	}

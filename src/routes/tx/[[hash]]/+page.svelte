@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { TransactionReceipt, TransactionResponse } from 'ethers';
-	import { JsonRpcProvider } from 'ethers';
+	import { WebSocketProvider } from 'ethers';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
@@ -13,7 +13,7 @@
 
 	export let data: { hash: string };
 
-	let provider: JsonRpcProvider | undefined = get(providerStore);
+	let provider: WebSocketProvider | undefined = get(providerStore);
 
 	let tx: TransactionResponse | undefined | null;
 	let txReceipt: TransactionReceipt | undefined | null;
@@ -21,7 +21,7 @@
 	onMount(async () => {
 		if (!provider) {
 			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-			provider = new JsonRpcProvider(_rpc);
+			provider = new WebSocketProvider(_rpc);
 
 			providerStore.set(provider);
 		}
@@ -88,7 +88,9 @@
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Tip</Table.Cell>
-							<Table.Cell class="w-5/6">{tx ? printWei(tx.maxPriorityFeePerGas, true) : ''}</Table.Cell>
+							<Table.Cell class="w-5/6"
+								>{tx ? printWei(tx.maxPriorityFeePerGas, true) : ''}</Table.Cell
+							>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Data</Table.Cell>
@@ -121,7 +123,9 @@
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Actual Gas Price</Table.Cell>
-							<Table.Cell class="w-5/6">{txReceipt ? printWei(txReceipt.gasPrice, true) : ''}</Table.Cell>
+							<Table.Cell class="w-5/6"
+								>{txReceipt ? printWei(txReceipt.gasPrice, true) : ''}</Table.Cell
+							>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Contract</Table.Cell>

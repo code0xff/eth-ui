@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { JsonRpcProvider } from 'ethers';
+	import { WebSocketProvider } from 'ethers';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import { Button } from '@/components/ui/button';
@@ -12,7 +12,7 @@
 
 	export let data: { address: string };
 
-	let provider: JsonRpcProvider | undefined = get(providerStore);
+	let provider: WebSocketProvider | undefined = get(providerStore);
 
 	let balance: bigint;
 	let nonce: number;
@@ -24,22 +24,26 @@
 	onMount(async () => {
 		if (!provider) {
 			const rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-			provider = new JsonRpcProvider(rpc);
+			provider = new WebSocketProvider(rpc);
 			providerStore.set(provider);
 		}
 
-		balance = await provider.getBalance(data.address);
-		nonce = await provider.getTransactionCount(data.address);
-		code = await provider.getCode(data.address);
+		if (provider) {
+			balance = await provider.getBalance(data.address);
+			nonce = await provider.getTransactionCount(data.address);
+			code = await provider.getCode(data.address);
+		}
 	});
 
 	async function getStorageAt() {
 		if (!provider) {
 			const rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-			provider = new JsonRpcProvider(rpc);
+			provider = new WebSocketProvider(rpc);
 			providerStore.set(provider);
 		}
-		result = await provider.getStorage(data.address, slot);
+		if (provider) {
+			result = await provider.getStorage(data.address, slot);
+		}
 	}
 </script>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Block, JsonRpcProvider } from 'ethers';
+	import { Block, WebSocketProvider } from 'ethers';
 	import { get } from 'svelte/store';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
@@ -11,14 +11,14 @@
 
 	export let data: { number: string };
 
-	let provider: JsonRpcProvider | undefined = get(providerStore);
+	let provider: WebSocketProvider | undefined = get(providerStore);
 
 	let block: Block | undefined | null;
 
 	onMount(async () => {
 		if (!provider) {
 			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-			provider = new JsonRpcProvider(_rpc);
+			provider = new WebSocketProvider(_rpc);
 
 			providerStore.set(provider);
 		}
