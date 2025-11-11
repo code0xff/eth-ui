@@ -116,8 +116,8 @@
 								<Table.Row onclick={() => goto(`/tx/${tx.hash}`)} class="cursor-pointer">
 									<Table.Cell>{tx.index}</Table.Cell>
 									<Table.Cell>{helpers.compactHash(tx.hash)}</Table.Cell>
-									<Table.Cell>{helpers.compactAddress(tx.from)}</Table.Cell>
-									<Table.Cell>{helpers.compactAddress(tx.to)}</Table.Cell>
+									<Table.Cell>{helpers.compactHash(tx.from, 8)}</Table.Cell>
+									<Table.Cell>{helpers.compactHash(tx.to, 8)}</Table.Cell>
 									<Table.Cell>{helpers.printWei(tx.value)}</Table.Cell>
 								</Table.Row>
 							{/each}

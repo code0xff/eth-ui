@@ -82,7 +82,7 @@
 			}
 
 			provider.on('block', async (_number) => {
-				const _block = await provider?.getBlock(_number);
+				const _block = await provider?.getBlock(_number, true);
 				if (_block) {
 					updateNewBlock(_block, blockListLimit);
 				}
@@ -147,9 +147,9 @@
 		});
 		stores.txStore.update((_txs) => {
 			const _newTxs = new Map(
-				_newBlock.transactions.map((_hash) => [
-					_hash,
-					{ hash: _hash, from: undefined, to: null, blockNumber: _newBlock.number }
+				_newBlock.prefetchedTransactions.map((_tx) => [
+					_tx.hash,
+					{ hash: _tx.hash, from: _tx.from, to: _tx.to, blockNumber: _newBlock.number }
 				])
 			);
 			return new Map([..._newTxs, ..._txs]);
@@ -291,6 +291,7 @@
 								<Table.Row>
 									<Table.Head>Number</Table.Head>
 									<Table.Head>Hash</Table.Head>
+									<Table.Head>Txn</Table.Head>
 									<Table.Head>Time</Table.Head>
 								</Table.Row>
 							</Table.Header>
@@ -299,6 +300,7 @@
 									<Table.Row onclick={() => goto(`/block/${block.number}`)} class="cursor-pointer">
 										<Table.Cell>{helpers.printNumber(block.number)}</Table.Cell>
 										<Table.Cell>{helpers.compactHash(block.hash)}</Table.Cell>
+										<Table.Cell>{helpers.printNumber(block.transactions.length)}</Table.Cell>
 										<Table.Cell>{helpers.timestampToDate(block.timestamp)}</Table.Cell>
 									</Table.Row>
 								{/each}
@@ -317,6 +319,7 @@
 							<Table.Header>
 								<Table.Row>
 									<Table.Head>Hash</Table.Head>
+									<Table.Head>From</Table.Head>
 									<Table.Head>Number</Table.Head>
 								</Table.Row>
 							</Table.Header>
@@ -324,6 +327,7 @@
 								{#each txList as tx}
 									<Table.Row onclick={() => goto(`/tx/${tx.hash}`)} class="cursor-pointer">
 										<Table.Cell>{helpers.compactHash(tx.hash)}</Table.Cell>
+										<Table.Cell>{helpers.compactHash(tx.from)}</Table.Cell>
 										<Table.Cell>{helpers.printNumber(tx.blockNumber)}</Table.Cell>
 									</Table.Row>
 								{/each}

@@ -54,17 +54,9 @@ export function splitToChunks(data: string): string {
 	}
 }
 
-export function compactHash(hash: string | null): string {
+export function compactHash(hash: string | undefined | null, size: number = 8): string {
 	if (hash) {
-		return `${hash.slice(0, 18)}...${hash.slice(-16)}`;
-	} else {
-		return '';
-	}
-}
-
-export function compactAddress(address: string | null): string {
-	if (address) {
-		return `${address.slice(0, 10)}...${address.slice(-8)}`;
+		return `${hash.slice(0, size + 2)}...${hash.slice(-size)}`;
 	} else {
 		return '';
 	}
