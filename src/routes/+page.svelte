@@ -50,6 +50,7 @@
 		blockListLimit = _blockListLimit
 			? parseInt(_blockListLimit)
 			: constants.DEFAULT_BLOCK_LIST_LIMIT;
+		settingBlockListLimit = blockListLimit;
 
 		if (syncStatus === 'idle') {
 			await startSync();
