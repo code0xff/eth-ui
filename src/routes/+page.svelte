@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Block, WebSocketProvider } from 'ethers';
+	import { Block, WebSocketProvider, type Provider } from 'ethers';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { toggleMode } from 'mode-watcher';
@@ -16,7 +16,7 @@
 	import * as constants from '@/constants';
 	import type { BlockInfo, SyncStatus, TxInfo } from '@/types';
 
-	let provider: WebSocketProvider | undefined;
+	let provider: Provider | undefined;
 
 	let rpc: string = '';
 	let blockListLimit: number = constants.DEFAULT_BLOCK_LIST_LIMIT;

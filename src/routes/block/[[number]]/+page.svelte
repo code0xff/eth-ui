@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { Block, WebSocketProvider } from 'ethers';
+	import { type Provider, Block, WebSocketProvider } from 'ethers';
 	import { get } from 'svelte/store';
 	import { onMount } from 'svelte';
+	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
@@ -11,21 +12,25 @@
 
 	export let data: { number: string };
 
-	let provider: WebSocketProvider | undefined = get(providerStore);
+	let provider: Provider | undefined;
 
 	let block: Block | undefined | null;
 
 	onMount(async () => {
-		if (!provider) {
-			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-			provider = new WebSocketProvider(_rpc);
-			providerStore.set(provider);
-		}
+		try {
+			provider = get(providerStore);
 
-		const _blockNumber = parseInt(data.number);
+			if (!provider) {
+				const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
+				provider = new WebSocketProvider(_rpc);
+				providerStore.set(provider);
+			}
 
-		if (provider) {
+			const _blockNumber = parseInt(data.number);
 			block = await provider.getBlock(_blockNumber, true);
+		} catch (e: any) {
+			console.error(e.toString());
+			toast(e.toString());
 		}
 	});
 </script>

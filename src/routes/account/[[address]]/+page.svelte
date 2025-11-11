@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { WebSocketProvider } from 'ethers';
+	import { type Provider, WebSocketProvider } from 'ethers';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
+	import { toast } from 'svelte-sonner';
 	import { Button } from '@/components/ui/button';
 	import * as Card from '@/components/ui/card';
 	import { Input } from '@/components/ui/input';
@@ -12,7 +13,7 @@
 
 	export let data: { address: string };
 
-	let provider: WebSocketProvider | undefined = get(providerStore);
+	let provider: Provider | undefined;
 
 	let balance: bigint;
 	let nonce: number;
@@ -22,28 +23,36 @@
 	let result: string;
 
 	onMount(async () => {
-		if (!provider) {
-			const rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-			provider = new WebSocketProvider(rpc);
-			providerStore.set(provider);
-		}
+		try {
+			provider = get(providerStore);
 
-		if (provider) {
+			if (!provider) {
+				const rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
+				provider = new WebSocketProvider(rpc);
+				providerStore.set(provider);
+			}
+
 			balance = await provider.getBalance(data.address);
 			nonce = await provider.getTransactionCount(data.address);
 			code = await provider.getCode(data.address);
+		} catch (e: any) {
+			console.error(e.toString());
+			toast(e.toString());
 		}
 	});
 
 	async function getStorageAt() {
-		if (!provider) {
-			const rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-			provider = new WebSocketProvider(rpc);
-			providerStore.set(provider);
-		}
+		try {
+			if (!provider) {
+				const rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
+				provider = new WebSocketProvider(rpc);
+				providerStore.set(provider);
+			}
 
-		if (provider) {
 			result = await provider.getStorage(data.address, slot);
+		} catch (e: any) {
+			console.error(e.toString());
+			toast(e.toString());
 		}
 	}
 </script>

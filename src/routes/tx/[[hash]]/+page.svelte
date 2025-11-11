@@ -1,9 +1,10 @@
 <script lang="ts">
 	import type { TransactionReceipt, TransactionResponse } from 'ethers';
-	import { WebSocketProvider } from 'ethers';
+	import { type Provider, WebSocketProvider } from 'ethers';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
+	import { toast } from 'svelte-sonner';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
 	import Textarea from '@/components/ui/textarea/textarea.svelte';
@@ -13,21 +14,26 @@
 
 	export let data: { hash: string };
 
-	let provider: WebSocketProvider | undefined = get(providerStore);
+	let provider: Provider | undefined;
 
 	let tx: TransactionResponse | undefined | null;
 	let txReceipt: TransactionReceipt | undefined | null;
 
 	onMount(async () => {
-		if (!provider) {
-			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-			provider = new WebSocketProvider(_rpc);
-			providerStore.set(provider);
-		}
+		try {
+			provider = get(providerStore);
 
-		if (provider) {
+			if (!provider) {
+				const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
+				provider = new WebSocketProvider(_rpc);
+				providerStore.set(provider);
+			}
+
 			tx = await provider.getTransaction(data.hash);
 			txReceipt = await provider.getTransactionReceipt(data.hash);
+		} catch (e: any) {
+			console.error(e.toString());
+			toast(e.toString());
 		}
 	});
 </script>
