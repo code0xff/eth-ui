@@ -188,7 +188,7 @@
 			return;
 		}
 		blockListLimit = settingBlockListLimit;
-		localStorage.setItem('blockListLimit', settingBlockListLimit.toString());
+		localStorage.setItem('blockListLimit', blockListLimit.toString());
 
 		settingOpen = false;
 
