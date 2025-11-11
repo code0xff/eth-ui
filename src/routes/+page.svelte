@@ -34,10 +34,10 @@
 		syncStatus = _syncStatus;
 	});
 	stores.blockStore.subscribe((_blocks) => {
-		blockList = _blocks.values().toArray().reverse();
+		blockList = [..._blocks.values()];
 	});
 	stores.txStore.subscribe((_txs) => {
-		txList = _txs.values().toArray().reverse();
+		txList = [..._txs.values()];
 	});
 	stores.providerStore.subscribe((_provider) => {
 		provider = _provider;
@@ -112,8 +112,8 @@
 		}
 
 		if (_blockListLimit && _blockStore.size >= _blockListLimit) {
-			const _blockList = _blockStore.values().toArray();
-			const pruneBlockList = _blockList.slice(0, _blockList.length - _blockListLimit + 1);
+			const _blockList = [..._blockStore.values()];
+			const pruneBlockList = _blockList.slice(_blockListLimit - 1);
 			stores.txStore.update((_txs) => {
 				pruneBlockList.forEach((_block) => {
 					_block.transactions.forEach((_txHash) => {
@@ -131,24 +131,27 @@
 		}
 
 		stores.blockStore.update((_blocks) => {
-			_blocks.set(_newBlock.number, {
-				number: _newBlock.number,
-				hash: _newBlock.hash,
-				timestamp: _newBlock.timestamp,
-				transactions: [..._newBlock.transactions]
-			});
-			return _blocks;
+			return new Map([
+				[
+					_newBlock.number,
+					{
+						number: _newBlock.number,
+						hash: _newBlock.hash,
+						timestamp: _newBlock.timestamp,
+						transactions: [..._newBlock.transactions]
+					}
+				],
+				..._blocks
+			]);
 		});
 		stores.txStore.update((_txs) => {
-			_newBlock.transactions.forEach((_txHash) => {
-				_txs.set(_txHash, {
-					hash: _txHash,
-					from: undefined,
-					to: null,
-					blockNumber: _newBlock.number
-				});
-			});
-			return _txs;
+			const _newTxs = new Map(
+				_newBlock.transactions.map((_hash) => [
+					_hash,
+					{ hash: _hash, from: undefined, to: null, blockNumber: _newBlock.number }
+				])
+			);
+			return new Map([..._newTxs, ..._txs]);
 		});
 	}
 
