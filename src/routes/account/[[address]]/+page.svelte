@@ -180,38 +180,6 @@
 	<div class="m-4">
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Storage</Card.Title>
-			</Card.Header>
-			<Card.Content>
-				<Table.Root>
-					<Table.Body>
-						<Table.Row>
-							<Table.Cell class="w-1/6">Slot</Table.Cell>
-							<Table.Cell class="w-5/6">
-								<div class="flex flex-row gap-4">
-									<div class="w-full">
-										<Input bind:value={slot} />
-									</div>
-									<div>
-										<Button class="cursor-pointer" onclick={getStorageAt}>Get</Button>
-									</div>
-								</div>
-							</Table.Cell>
-						</Table.Row>
-						<Table.Row>
-							<Table.Cell class="w-1/6">Value</Table.Cell>
-							<Table.Cell class="w-5/6">
-								<Input readonly bind:value={result} />
-							</Table.Cell>
-						</Table.Row>
-					</Table.Body>
-				</Table.Root>
-			</Card.Content>
-		</Card.Root>
-	</div>
-	<div class="m-4">
-		<Card.Root>
-			<Card.Header>
 				<Card.Title>Call</Card.Title>
 			</Card.Header>
 			<Card.Content>
@@ -219,7 +187,7 @@
 					<div class="flex flex-row gap-4">
 						<div class="w-full">
 							<Select.Root type="single" bind:value={selectedAbi}>
-								<Select.Trigger class="w-full">{selectedAbi}</Select.Trigger>
+								<Select.Trigger class="w-full cursor-pointer">{selectedAbi}</Select.Trigger>
 								<Select.Content>
 									{#each DEFAULT_ABIS as abi}
 										<Select.Item value={abi}>{abi}</Select.Item>
@@ -318,6 +286,38 @@
 						</Table.Root>
 					</div>
 				</div>
+			</Card.Content>
+		</Card.Root>
+	</div>
+	<div class="m-4">
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>Storage</Card.Title>
+			</Card.Header>
+			<Card.Content>
+				<Table.Root>
+					<Table.Body>
+						<Table.Row>
+							<Table.Cell class="w-1/6">Slot</Table.Cell>
+							<Table.Cell class="w-5/6">
+								<div class="flex flex-row gap-4">
+									<div class="w-full">
+										<Input bind:value={slot} />
+									</div>
+									<div>
+										<Button class="cursor-pointer" onclick={getStorageAt}>Get</Button>
+									</div>
+								</div>
+							</Table.Cell>
+						</Table.Row>
+						<Table.Row>
+							<Table.Cell class="w-1/6">Value</Table.Cell>
+							<Table.Cell class="w-5/6">
+								<Input readonly bind:value={result} />
+							</Table.Cell>
+						</Table.Row>
+					</Table.Body>
+				</Table.Root>
 			</Card.Content>
 		</Card.Root>
 	</div>
