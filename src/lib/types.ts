@@ -13,3 +13,14 @@ export type TxInfo = {
 };
 
 export type SyncStatus = 'idle' | 'processing' | 'stopped';
+
+export type Argument = {
+	name: string;
+	type: string;
+};
+
+export type Function = {
+	name: string;
+	inputs: Argument[];
+	outputs: Argument[];
+};
