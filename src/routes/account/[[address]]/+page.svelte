@@ -1,7 +1,6 @@
 <script lang="ts">
 	import * as ethers from 'ethers';
 	import { onMount } from 'svelte';
-	import { get } from 'svelte/store';
 	import { toast } from 'svelte-sonner';
 	import { Minus, Plus } from '@lucide/svelte';
 	import { Button } from '@/components/ui/button';
@@ -12,7 +11,6 @@
 	import * as Select from '$lib/components/ui/select';
 	import { DEFAULT_ABIS, DEFAULT_RPC } from '@/constants';
 	import { getProvider, printNumber, printWei } from '@/helpers';
-	import { providerStore } from '@/stores';
 	import * as types from '@/types';
 
 	export let data: { address: string };
@@ -86,7 +84,7 @@
 		try {
 			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
 			provider = getProvider(_rpc);
-			
+
 			const _contract = new ethers.Contract(
 				data.address,
 				new ethers.Interface([selectedAbi]),

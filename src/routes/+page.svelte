@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Block, WebSocketProvider, type Provider } from 'ethers';
+	import { Block, type Provider } from 'ethers';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { toggleMode } from 'mode-watcher';
@@ -16,6 +16,7 @@
 	import * as constants from '@/constants';
 	import type { BlockInfo, SyncStatus, TxInfo } from '@/types';
 	import { getProvider } from '@/helpers';
+	import { WebSocketProvider } from 'ethers';
 
 	let provider: Provider | undefined;
 
@@ -40,11 +41,11 @@
 	stores.txStore.subscribe((_txs) => {
 		txList = [..._txs.values()];
 	});
+	stores.providerStore.subscribe((_provider) => {
+		provider = _provider;
+	});
 
 	onMount(async () => {
-		rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPC;
-		provider = getProvider(rpc);
-
 		const _blockListLimit = localStorage.getItem('blockListLimit');
 		blockListLimit = _blockListLimit
 			? parseInt(_blockListLimit)
@@ -70,8 +71,11 @@
 			stores.blockStore.set(new Map());
 			stores.txStore.set(new Map());
 
-			await get(stores.providerStore)?.destroy();
-			stores.providerStore.set(undefined);
+			const _provider = get(stores.providerStore);
+			if (_provider) {
+				await _provider.destroy();
+				stores.providerStore.set(undefined);
+			}
 
 			stores.syncStatusStore.set('processing');
 
@@ -92,7 +96,13 @@
 
 	function stopSync() {
 		try {
-			provider?.off('block');
+			if (
+				provider &&
+				provider instanceof WebSocketProvider &&
+				(provider as WebSocketProvider).ready
+			) {
+				provider?.off('block');
+			}
 			stores.syncStatusStore.set('stopped');
 		} catch (e: any) {
 			console.error(e.toString());

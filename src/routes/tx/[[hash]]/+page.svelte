@@ -1,9 +1,8 @@
 <script lang="ts">
 	import type { TransactionReceipt, TransactionResponse } from 'ethers';
-	import { type Provider, WebSocketProvider } from 'ethers';
+	import { type Provider } from 'ethers';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { get } from 'svelte/store';
 	import { toast } from 'svelte-sonner';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
