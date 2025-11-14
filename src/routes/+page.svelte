@@ -24,7 +24,6 @@
 	let blockListLimit: number = constants.DEFAULT_BLOCK_LIST_LIMIT;
 	let syncStatus: SyncStatus = 'idle';
 
-	let settingBlockListLimit: number = blockListLimit;
 	let settingOpen: boolean = false;
 
 	let blockList: BlockInfo[] = [];
@@ -52,7 +51,6 @@
 		blockListLimit = _blockListLimit
 			? parseInt(_blockListLimit)
 			: constants.DEFAULT_BLOCK_LIST_LIMIT;
-		settingBlockListLimit = blockListLimit;
 
 		if (syncStatus === 'idle') {
 			await startSync();
@@ -85,7 +83,7 @@
 			provider.on('block', async (_number) => {
 				const _block = await provider?.getBlock(_number, true);
 				if (_block) {
-					updateNewBlock(_block, blockListLimit);
+					updateNewBlock(_block);
 				}
 			});
 
@@ -112,12 +110,13 @@
 		}
 	}
 
-	function updateNewBlock(_newBlock: Block, _blockListLimit: number) {
+	function updateNewBlock(_newBlock: Block) {
 		const _blockStore = get(stores.blockStore);
 		if (_blockStore.has(_newBlock.number)) {
 			return;
 		}
 
+		const _blockListLimit = get(stores.blockListLimitStore);
 		if (_blockListLimit && _blockStore.size >= _blockListLimit) {
 			const _blockList = [..._blockStore.values()];
 			const pruneBlockList = _blockList.slice(_blockListLimit - 1);
@@ -187,17 +186,16 @@
 	}
 
 	function saveSetting() {
-		if (!settingBlockListLimit || settingBlockListLimit < constants.MIN_BLOCK_LIST_LIMIT) {
+		if (!blockListLimit || blockListLimit < constants.MIN_BLOCK_LIST_LIMIT) {
 			toast(
 				`invalid block list limit: block list limit must be at least ${constants.MIN_BLOCK_LIST_LIMIT}`
 			);
 			return;
 		}
-		blockListLimit = settingBlockListLimit;
 		localStorage.setItem('blockListLimit', blockListLimit.toString());
-
+		stores.blockListLimitStore.set(blockListLimit);
 		settingOpen = false;
-
+		
 		toast('successfully saved');
 	}
 </script>
@@ -244,7 +242,7 @@
 															type="number"
 															min={constants.MIN_BLOCK_LIST_LIMIT}
 															placeholder={constants.DEFAULT_BLOCK_LIST_LIMIT.toString()}
-															bind:value={settingBlockListLimit}
+															bind:value={blockListLimit}
 														/>
 													</Table.Cell>
 												</Table.Row>
