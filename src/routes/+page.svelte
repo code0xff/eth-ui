@@ -46,6 +46,8 @@
 	});
 
 	onMount(async () => {
+		rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPC;
+
 		const _blockListLimit = localStorage.getItem('blockListLimit');
 		blockListLimit = _blockListLimit
 			? parseInt(_blockListLimit)
