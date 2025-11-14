@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { type Provider, Block, WebSocketProvider } from 'ethers';
-	import { get } from 'svelte/store';
+	import { type Provider, Block } from 'ethers';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
@@ -8,7 +7,6 @@
 	import * as Table from '@/components/ui/table/index.js';
 	import { DEFAULT_RPC } from '@/constants';
 	import * as helpers from '@/helpers';
-	import { providerStore } from '@/stores';
 
 	export let data: { number: string };
 
@@ -18,13 +16,8 @@
 
 	onMount(async () => {
 		try {
-			provider = get(providerStore);
-
-			if (!provider) {
-				const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-				provider = new WebSocketProvider(_rpc);
-				providerStore.set(provider);
-			}
+			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
+			provider = helpers.getProvider(_rpc);
 
 			const _blockNumber = parseInt(data.number);
 			block = await provider.getBlock(_blockNumber, true);

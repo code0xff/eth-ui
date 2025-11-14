@@ -9,8 +9,7 @@
 	import * as Table from '@/components/ui/table/index.js';
 	import Textarea from '@/components/ui/textarea/textarea.svelte';
 	import { DEFAULT_RPC } from '@/constants';
-	import { printNumber, printWei, splitToChunks } from '@/helpers';
-	import { providerStore } from '@/stores';
+	import * as helpers from '@/helpers';
 
 	export let data: { hash: string };
 
@@ -21,13 +20,8 @@
 
 	onMount(async () => {
 		try {
-			provider = get(providerStore);
-
-			if (!provider) {
-				const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-				provider = new WebSocketProvider(_rpc);
-				providerStore.set(provider);
-			}
+			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
+			provider = helpers.getProvider(_rpc);
 
 			tx = await provider.getTransaction(data.hash);
 			txReceipt = await provider.getTransactionReceipt(data.hash);
@@ -52,7 +46,7 @@
 							<Table.Cell
 								class="w-4/5 cursor-pointer"
 								onclick={tx?.blockNumber ? () => goto(`/block/${tx!.blockNumber}`) : null}
-								>{tx ? printNumber(tx.blockNumber) : ''}</Table.Cell
+								>{tx ? helpers.printNumber(tx.blockNumber) : ''}</Table.Cell
 							>
 						</Table.Row>
 						<Table.Row>
@@ -77,30 +71,36 @@
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Value</Table.Cell>
-							<Table.Cell class="w-5/6">{tx ? printWei(tx.value, true) : ''}</Table.Cell>
+							<Table.Cell class="w-5/6">{tx ? helpers.printWei(tx.value, true) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Gas Limit</Table.Cell>
-							<Table.Cell class="w-5/6">{tx ? printNumber(tx.gasLimit) : ''}</Table.Cell>
+							<Table.Cell class="w-5/6">{tx ? helpers.printNumber(tx.gasLimit) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Gas Price</Table.Cell>
-							<Table.Cell class="w-5/6">{tx ? printWei(tx.gasPrice, true) : ''}</Table.Cell>
+							<Table.Cell class="w-5/6">{tx ? helpers.printWei(tx.gasPrice, true) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Fee</Table.Cell>
-							<Table.Cell class="w-5/6">{tx ? printWei(tx.maxFeePerGas, true) : ''}</Table.Cell>
+							<Table.Cell class="w-5/6"
+								>{tx ? helpers.printWei(tx.maxFeePerGas, true) : ''}</Table.Cell
+							>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Tip</Table.Cell>
 							<Table.Cell class="w-5/6"
-								>{tx ? printWei(tx.maxPriorityFeePerGas, true) : ''}</Table.Cell
+								>{tx ? helpers.printWei(tx.maxPriorityFeePerGas, true) : ''}</Table.Cell
 							>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Data</Table.Cell>
 							<Table.Cell class="w-5/6">
-								<Textarea readonly class="resize-none" value={tx ? splitToChunks(tx.data) : ''} />
+								<Textarea
+									readonly
+									class="resize-none"
+									value={tx ? helpers.splitToChunks(tx.data) : ''}
+								/>
 							</Table.Cell>
 						</Table.Row>
 					</Table.Body>
@@ -123,13 +123,13 @@
 						<Table.Row>
 							<Table.Cell class="w-1/6">Gas Used</Table.Cell>
 							<Table.Cell class="w-5/6"
-								>{txReceipt ? printNumber(txReceipt.gasUsed) : ''}</Table.Cell
+								>{txReceipt ? helpers.printNumber(txReceipt.gasUsed) : ''}</Table.Cell
 							>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Actual Gas Price</Table.Cell>
 							<Table.Cell class="w-5/6"
-								>{txReceipt ? printWei(txReceipt.gasPrice, true) : ''}</Table.Cell
+								>{txReceipt ? helpers.printWei(txReceipt.gasPrice, true) : ''}</Table.Cell
 							>
 						</Table.Row>
 						<Table.Row>

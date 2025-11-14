@@ -15,6 +15,7 @@
 	import * as helpers from '@/helpers';
 	import * as constants from '@/constants';
 	import type { BlockInfo, SyncStatus, TxInfo } from '@/types';
+	import { getProvider } from '@/helpers';
 
 	let provider: Provider | undefined;
 
@@ -39,12 +40,10 @@
 	stores.txStore.subscribe((_txs) => {
 		txList = [..._txs.values()];
 	});
-	stores.providerStore.subscribe((_provider) => {
-		provider = _provider;
-	});
 
 	onMount(async () => {
 		rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPC;
+		provider = getProvider(rpc);
 
 		const _blockListLimit = localStorage.getItem('blockListLimit');
 		blockListLimit = _blockListLimit
@@ -76,11 +75,7 @@
 
 			stores.syncStatusStore.set('processing');
 
-			if (!provider) {
-				provider = new WebSocketProvider(rpc);
-				stores.providerStore.set(provider);
-			}
-
+			provider = getProvider(rpc);
 			provider.on('block', async (_number) => {
 				const _block = await provider?.getBlock(_number, true);
 				if (_block) {
@@ -89,7 +84,6 @@
 			});
 
 			localStorage.setItem('rpc', rpc);
-			localStorage.setItem('blockListLimit', blockListLimit.toString());
 		} catch (e: any) {
 			console.error(e.toString());
 			toast(e.toString());

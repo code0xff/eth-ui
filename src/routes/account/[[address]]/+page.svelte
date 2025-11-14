@@ -11,7 +11,7 @@
 	import * as Table from '@/components/ui/table';
 	import * as Select from '$lib/components/ui/select';
 	import { DEFAULT_ABIS, DEFAULT_RPC } from '@/constants';
-	import { printNumber, printWei } from '@/helpers';
+	import { getProvider, printNumber, printWei } from '@/helpers';
 	import { providerStore } from '@/stores';
 	import * as types from '@/types';
 
@@ -58,13 +58,8 @@
 			}
 			selectedAbi = DEFAULT_ABIS[0];
 
-			provider = get(providerStore);
-
-			if (!provider) {
-				const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-				provider = new ethers.WebSocketProvider(_rpc);
-				providerStore.set(provider);
-			}
+			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
+			provider = getProvider(_rpc);
 
 			balance = await provider.getBalance(data.address);
 			nonce = await provider.getTransactionCount(data.address);
@@ -77,11 +72,8 @@
 
 	async function getStorageAt() {
 		try {
-			if (!provider) {
-				const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-				provider = new ethers.WebSocketProvider(_rpc);
-				providerStore.set(provider);
-			}
+			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
+			provider = getProvider(_rpc);
 
 			result = await provider.getStorage(data.address, slot);
 		} catch (e: any) {
@@ -92,12 +84,9 @@
 
 	async function call() {
 		try {
-			if (!provider) {
-				const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-				provider = new ethers.WebSocketProvider(_rpc);
-				providerStore.set(provider);
-			}
-
+			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
+			provider = getProvider(_rpc);
+			
 			const _contract = new ethers.Contract(
 				data.address,
 				new ethers.Interface([selectedAbi]),
