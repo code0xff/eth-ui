@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Block, type Provider } from 'ethers';
+	import * as ethers from 'ethers';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { toggleMode } from 'mode-watcher';
@@ -16,9 +16,8 @@
 	import * as constants from '@/constants';
 	import type { BlockInfo, SyncStatus, TxInfo } from '@/types';
 	import { getProvider } from '@/helpers';
-	import { WebSocketProvider } from 'ethers';
 
-	let provider: Provider | undefined;
+	let provider: ethers.Provider | undefined;
 
 	let rpc: string = '';
 	let blockListLimit: number = constants.DEFAULT_BLOCK_LIST_LIMIT;
@@ -98,8 +97,8 @@
 		try {
 			if (
 				provider &&
-				provider instanceof WebSocketProvider &&
-				(provider as WebSocketProvider).ready
+				provider instanceof ethers.WebSocketProvider &&
+				(provider as ethers.WebSocketProvider).ready
 			) {
 				provider?.off('block');
 			}
@@ -110,7 +109,7 @@
 		}
 	}
 
-	function updateNewBlock(_newBlock: Block) {
+	function updateNewBlock(_newBlock: ethers.Block) {
 		const _blockStore = get(stores.blockStore);
 		if (_blockStore.has(_newBlock.number)) {
 			return;

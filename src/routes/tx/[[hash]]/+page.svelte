@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { TransactionReceipt, TransactionResponse } from 'ethers';
-	import { type Provider } from 'ethers';
+	import * as ethers from 'ethers';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
@@ -12,10 +11,10 @@
 
 	export let data: { hash: string };
 
-	let provider: Provider | undefined;
+	let provider: ethers.Provider | undefined;
 
-	let tx: TransactionResponse | undefined | null;
-	let txReceipt: TransactionReceipt | undefined | null;
+	let tx: ethers.TransactionResponse | undefined | null;
+	let txReceipt: ethers.TransactionReceipt | undefined | null;
 
 	onMount(async () => {
 		try {

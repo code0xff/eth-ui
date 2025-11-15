@@ -8,9 +8,9 @@
 	import * as Card from '@/components/ui/card';
 	import * as Dialog from '@/components/ui/dialog';
 	import * as Table from '@/components/ui/table';
-	import * as Select from '$lib/components/ui/select';
+	import * as Select from '@/components/ui/select';
 	import { DEFAULT_ABIS, DEFAULT_RPC } from '@/constants';
-	import { getProvider, printNumber, printWei } from '@/helpers';
+	import * as helpers from '@/helpers';
 	import * as types from '@/types';
 
 	export let data: { address: string };
@@ -57,7 +57,7 @@
 			selectedAbi = DEFAULT_ABIS[0];
 
 			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-			provider = getProvider(_rpc);
+			provider = helpers.getProvider(_rpc);
 
 			balance = await provider.getBalance(data.address);
 			nonce = await provider.getTransactionCount(data.address);
@@ -71,7 +71,7 @@
 	async function getStorageAt() {
 		try {
 			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-			provider = getProvider(_rpc);
+			provider = helpers.getProvider(_rpc);
 
 			result = await provider.getStorage(data.address, slot);
 		} catch (e: any) {
@@ -83,7 +83,7 @@
 	async function call() {
 		try {
 			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-			provider = getProvider(_rpc);
+			provider = helpers.getProvider(_rpc);
 
 			const _contract = new ethers.Contract(
 				data.address,
@@ -147,11 +147,12 @@
 					<Table.Body>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Balance</Table.Cell>
-							<Table.Cell class="w-5/6">{balance ? printWei(balance, true) : ''}</Table.Cell>
+							<Table.Cell class="w-5/6">{balance ? helpers.printWei(balance, true) : ''}</Table.Cell
+							>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Nonce</Table.Cell>
-							<Table.Cell class="w-5/6">{nonce ? printNumber(nonce) : ''}</Table.Cell>
+							<Table.Cell class="w-5/6">{nonce ? helpers.printNumber(nonce) : ''}</Table.Cell>
 						</Table.Row>
 						<!-- <Table.Row>
 							<Table.Cell>Code</Table.Cell>
@@ -256,7 +257,11 @@
 								<Table.Row>
 									<Table.Cell class="w-1/6">Inputs</Table.Cell>
 									<Table.Cell class="w-5/6"
-										><Input bind:value={inputs} placeholder={inputsPlaceholder} /></Table.Cell
+										><Input
+											placeholder={inputsPlaceholder}
+											readonly={inputsPlaceholder === ''}
+											bind:value={inputs}
+										/></Table.Cell
 									>
 								</Table.Row>
 								<Table.Row>
@@ -264,8 +269,8 @@
 									<Table.Cell class="w-5/6"
 										><Input
 											readonly
-											bind:value={outputs}
 											placeholder={outputsPlaceholder}
+											bind:value={outputs}
 										/></Table.Cell
 									>
 								</Table.Row>
