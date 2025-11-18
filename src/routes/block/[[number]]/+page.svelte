@@ -62,7 +62,11 @@
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Etherbase</Table.Cell>
-							<Table.Cell class="w-5/6">{block ? block.miner : ''}</Table.Cell>
+							<Table.Cell
+								class="w-5/6 cursor-pointer"
+								onclick={block?.miner ? () => goto(`/account/${block!.miner}`) : null}
+								>{block ? block.miner : ''}</Table.Cell
+							>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Base Fee</Table.Cell>
