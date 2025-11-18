@@ -194,7 +194,7 @@
 		localStorage.setItem('blockListLimit', blockListLimit.toString());
 		stores.blockListLimitStore.set(blockListLimit);
 		settingOpen = false;
-		
+
 		toast('successfully saved');
 	}
 </script>
@@ -206,7 +206,7 @@
 				<div class="flex flex-row gap-4">
 					<div class="w-full">
 						<Input
-							placeholder="RPC endpoint"
+							placeholder={`RPC endpoint (default: ${constants.DEFAULT_RPC})`}
 							bind:value={rpc}
 							readonly={syncStatus === 'processing'}
 						/>
