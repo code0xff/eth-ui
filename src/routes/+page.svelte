@@ -14,19 +14,19 @@
 	import * as stores from '@/stores';
 	import * as helpers from '@/helpers';
 	import * as constants from '@/constants';
-	import type { BlockInfo, SyncStatus, TxInfo } from '@/types';
+	import * as types from '@/types';
 	import { getProvider } from '@/helpers';
 
 	let provider: ethers.Provider | undefined;
 
 	let rpc: string = '';
 	let blockListLimit: number = constants.DEFAULT_BLOCK_LIST_LIMIT;
-	let syncStatus: SyncStatus = 'idle';
+	let syncStatus: types.SyncStatus = 'idle';
 
 	let settingOpen: boolean = false;
 
-	let blockList: BlockInfo[] = [];
-	let txList: TxInfo[] = [];
+	let blockList: types.BlockInfo[] = [];
+	let txList: types.TxInfo[] = [];
 
 	let searchParam: string = '';
 
