@@ -88,6 +88,8 @@
 
 			localStorage.setItem('rpc', rpc);
 		} catch (e: any) {
+			stopSync();
+
 			console.error(e.toString());
 			toast(e.toString());
 		}
