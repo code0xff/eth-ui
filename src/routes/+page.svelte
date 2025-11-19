@@ -15,7 +15,6 @@
 	import * as helpers from '@/helpers';
 	import * as constants from '@/constants';
 	import * as types from '@/types';
-	import { getProvider } from '@/helpers';
 
 	let provider: ethers.Provider | undefined;
 
@@ -45,11 +44,13 @@
 
 	onMount(async () => {
 		rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPC;
+		stores.rpcStore.set(rpc);
 
 		const _blockListLimit = localStorage.getItem('blockListLimit');
 		blockListLimit = _blockListLimit
 			? parseInt(_blockListLimit)
 			: constants.DEFAULT_BLOCK_LIST_LIMIT;
+		stores.blockListLimitStore.set(blockListLimit);
 
 		if (syncStatus === 'idle') {
 			await startSync();
@@ -76,22 +77,23 @@
 				stores.providerStore.set(undefined);
 			}
 
+			stores.rpcStore.set(rpc);
+			localStorage.setItem('rpc', rpc);
+
 			stores.syncStatusStore.set('processing');
 
-			provider = getProvider(rpc);
+			provider = helpers.getProvider();
 			provider.on('block', async (_number) => {
 				const _block = await provider?.getBlock(_number, true);
 				if (_block) {
 					updateNewBlock(_block);
 				}
 			});
-
-			localStorage.setItem('rpc', rpc);
-		} catch (e: any) {
+		} catch (_e: any) {
 			stopSync();
 
-			console.error(e.toString());
-			toast(e.toString());
+			console.error(_e.toString());
+			toast(_e.toString());
 		}
 	}
 
@@ -105,9 +107,9 @@
 				provider?.off('block');
 			}
 			stores.syncStatusStore.set('stopped');
-		} catch (e: any) {
-			console.error(e.toString());
-			toast(e.toString());
+		} catch (_e: any) {
+			console.error(_e.toString());
+			toast(_e.toString());
 		}
 	}
 
@@ -120,9 +122,9 @@
 		const _blockListLimit = get(stores.blockListLimitStore);
 		if (_blockListLimit && _blockStore.size >= _blockListLimit) {
 			const _blockList = [..._blockStore.values()];
-			const pruneBlockList = _blockList.slice(_blockListLimit - 1);
+			const _pruneBlockList = _blockList.slice(_blockListLimit - 1);
 			stores.txStore.update((_txs) => {
-				pruneBlockList.forEach((_block) => {
+				_pruneBlockList.forEach((_block) => {
 					_block.transactions.forEach((_txHash) => {
 						_txs.delete(_txHash);
 					});
@@ -130,7 +132,7 @@
 				return _txs;
 			});
 			stores.blockStore.update((_blocks) => {
-				pruneBlockList.forEach((_block) => {
+				_pruneBlockList.forEach((_block) => {
 					_blocks.delete(_block.number);
 				});
 				return _blocks;
@@ -180,8 +182,8 @@
 				}
 				goto(`/block/${_blockNumber}`);
 			}
-		} catch (e: any) {
-			console.warn(e.toString());
+		} catch (_e: any) {
+			console.warn(_e.toString());
 			toast.error('invalid search condition');
 		}
 	}

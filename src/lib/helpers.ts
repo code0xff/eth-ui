@@ -1,8 +1,7 @@
-import type { Provider } from 'ethers';
-import * as constants from './constants';
-import { providerStore } from './stores';
+import * as ethers from 'ethers';
 import { get } from 'svelte/store';
-import { WebSocketProvider } from 'ethers';
+import * as constants from './constants';
+import * as stores from './stores';
 
 export function timestampToDate(timestamp: number): string {
 	const datetime = new Date(timestamp * 1000).toISOString();
@@ -66,12 +65,13 @@ export function compactHash(hash: string | undefined | null, size: number = 8): 
 	}
 }
 
-export function getProvider(url: string): Provider {
-	let provider = get(providerStore);
+export function getProvider(): ethers.Provider {
+	let _provider = get(stores.providerStore);
 
-	if (!provider) {
-		provider = new WebSocketProvider(url);
-		providerStore.set(provider);
+	if (!_provider) {
+		const _rpc = get(stores.rpcStore);
+		_provider = new ethers.WebSocketProvider(_rpc);
+		stores.providerStore.set(_provider);
 	}
-	return provider;
+	return _provider;
 }

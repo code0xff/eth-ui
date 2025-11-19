@@ -9,9 +9,10 @@
 	import * as Dialog from '@/components/ui/dialog';
 	import * as Table from '@/components/ui/table';
 	import * as Select from '@/components/ui/select';
-	import { DEFAULT_ABIS, DEFAULT_RPC } from '@/constants';
+	import * as constants from '@/constants';
 	import * as helpers from '@/helpers';
 	import * as types from '@/types';
+	import * as stores from '@/stores';
 
 	export let data: { address: string };
 
@@ -54,10 +55,12 @@
 			if (_savedAbis) {
 				abis = [...JSON.parse(_savedAbis)];
 			}
-			selectedAbi = DEFAULT_ABIS[0];
+			selectedAbi = constants.DEFAULT_ABIS[0];
 
-			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-			provider = helpers.getProvider(_rpc);
+			const _rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPC;
+			stores.rpcStore.set(_rpc);
+
+			provider = helpers.getProvider();
 
 			balance = await provider.getBalance(data.address);
 			nonce = await provider.getTransactionCount(data.address);
@@ -70,20 +73,18 @@
 
 	async function getStorageAt() {
 		try {
-			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-			provider = helpers.getProvider(_rpc);
+			provider = helpers.getProvider();
 
 			result = await provider.getStorage(data.address, slot);
-		} catch (e: any) {
-			console.error(e.toString());
-			toast(e.toString());
+		} catch (_e: any) {
+			console.error(_e.toString());
+			toast(_e.toString());
 		}
 	}
 
 	async function call() {
 		try {
-			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-			provider = helpers.getProvider(_rpc);
+			provider = helpers.getProvider();
 
 			const _contract = new ethers.Contract(
 				data.address,
@@ -102,9 +103,9 @@
 			} else {
 				outputs = _outputs.toString();
 			}
-		} catch (e: any) {
-			console.error(e.toString());
-			toast(e.toString());
+		} catch (_e: any) {
+			console.error(_e.toString());
+			toast(_e.toString());
 		}
 	}
 
@@ -114,8 +115,7 @@
 				globalThis.open('https://metamask.io/download');
 			}
 
-			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-			provider = helpers.getProvider(_rpc);
+			provider = helpers.getProvider();
 
 			const _network = await provider.getNetwork();
 			const _provider = new ethers.BrowserProvider((globalThis as any).ethereum, _network);
@@ -161,6 +161,7 @@
 		try {
 			abis.splice(index, 1);
 			abis = [...abis];
+			
 			localStorage.setItem('abis', JSON.stringify(abis));
 		} catch (_e: any) {
 			console.error(_e.toString());
@@ -210,7 +211,7 @@
 							<Select.Root type="single" bind:value={selectedAbi}>
 								<Select.Trigger class="w-full cursor-pointer">{selectedAbi}</Select.Trigger>
 								<Select.Content>
-									{#each DEFAULT_ABIS as abi}
+									{#each constants.DEFAULT_ABIS as abi}
 										<Select.Item value={abi}>{abi}</Select.Item>
 									{/each}
 									{#each abis as abi}
@@ -251,7 +252,7 @@
 															</Table.Row>
 														</Table.Header>
 														<Table.Body>
-															{#each DEFAULT_ABIS as abi}
+															{#each constants.DEFAULT_ABIS as abi}
 																<Table.Row>
 																	<Table.Cell class="w-full">
 																		<Input value={abi} />

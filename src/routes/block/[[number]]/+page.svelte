@@ -5,8 +5,9 @@
 	import { goto } from '$app/navigation';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
-	import { DEFAULT_RPC } from '@/constants';
+	import * as constants from '@/constants';
 	import * as helpers from '@/helpers';
+	import * as stores from '@/stores';
 
 	export let data: { number: string };
 
@@ -16,14 +17,16 @@
 
 	onMount(async () => {
 		try {
-			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
-			provider = helpers.getProvider(_rpc);
+			const _rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPC;
+			stores.rpcStore.set(_rpc);
+
+			provider = helpers.getProvider();
 
 			const _blockNumber = parseInt(data.number);
 			block = await provider.getBlock(_blockNumber, true);
-		} catch (e: any) {
-			console.error(e.toString());
-			toast(e.toString());
+		} catch (_e: any) {
+			console.error(_e.toString());
+			toast(_e.toString());
 		}
 	});
 </script>
