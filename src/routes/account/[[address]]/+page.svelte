@@ -108,6 +108,39 @@
 		}
 	}
 
+	async function sendTx() {
+		try {
+			if (!(globalThis as any).ethereum) {
+				globalThis.open('https://metamask.io/download');
+			}
+
+			const _rpc = localStorage.getItem('rpc') ?? DEFAULT_RPC;
+			provider = helpers.getProvider(_rpc);
+
+			const _network = await provider.getNetwork();
+			const _provider = new ethers.BrowserProvider((globalThis as any).ethereum, _network);
+			await _provider.send('eth_requestAccounts', []);
+
+			const _signer = await _provider.getSigner();
+			const _contract = new ethers.Contract(
+				data.address,
+				new ethers.Interface([selectedAbi]),
+				_signer
+			);
+			let _response: ethers.TransactionResponse;
+			if (func.inputs.length > 0) {
+				const _inputs = inputs.split(',');
+				_response = await _contract[func.name](..._inputs);
+			} else {
+				_response = await _contract[func.name]();
+			}
+			outputs = _response.hash;
+		} catch (_e: any) {
+			console.error(_e.toString());
+			toast(_e.toString());
+		}
+	}
+
 	async function addAbi() {
 		try {
 			const _interface = new ethers.Interface([abiInput]);
@@ -249,6 +282,9 @@
 						</div>
 						<div>
 							<Button class="cursor-pointer" onclick={call}>Call</Button>
+						</div>
+						<div>
+							<Button class="cursor-pointer" onclick={sendTx}>Send Tx</Button>
 						</div>
 					</div>
 					<div class="mt-4">
