@@ -13,8 +13,13 @@ export const DEFAULT_BLOCK_LIST_LIMIT = 10;
 
 export const MIN_BLOCK_LIST_LIMIT = 1;
 
-export const DEFAULT_ABIS = [
+export const DEFAULT_CALL_ABIS = [
 	'function totalSupply() external view returns (uint256)',
 	'function balanceOf(address owner) view returns (uint256)',
 	'function allowance(address owner, address spender) external view returns (uint256)'
+];
+
+export const DEFAULT_TX_ABIS = [
+	'function transfer(address recipient, uint256 amount) external returns (bool)',
+	'function approve(address spender, uint256 amount) external returns (bool)'
 ];
