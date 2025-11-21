@@ -7,9 +7,10 @@
 	import { get } from 'svelte/store';
 	import { toast } from 'svelte-sonner';
 	import Button from '@/components/ui/button/button.svelte';
-	import Input from '@/components/ui/input/input.svelte';
-	import * as Dialog from '@/components/ui/dialog/index.js';
 	import * as Card from '@/components/ui/card/index.js';
+	import * as Dialog from '@/components/ui/dialog/index.js';
+	import Input from '@/components/ui/input/input.svelte';
+	import * as Select from '@/components/ui/select';
 	import * as Table from '@/components/ui/table/index.js';
 	import * as stores from '@/stores';
 	import * as helpers from '@/helpers';
@@ -43,7 +44,7 @@
 	});
 
 	onMount(async () => {
-		rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPC;
+		rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPCS[0];
 		stores.rpcStore.set(rpc);
 
 		const _blockListLimit = localStorage.getItem('blockListLimit');
@@ -64,7 +65,9 @@
 
 		rpc = rpc.trim();
 		if (!rpc || rpc === '') {
-			rpc = constants.DEFAULT_RPC;
+			console.warn(`invalid rpc: ${rpc}`);
+			toast(`invalid rpc: ${rpc}`);
+			return;
 		}
 
 		try {
@@ -209,11 +212,14 @@
 			<Card.Content>
 				<div class="flex flex-row gap-4">
 					<div class="w-full">
-						<Input
-							placeholder={`RPC endpoint (default: ${constants.DEFAULT_RPC})`}
-							bind:value={rpc}
-							readonly={syncStatus === 'processing'}
-						/>
+						<Select.Root type="single" disabled={syncStatus === 'processing'} bind:value={rpc}>
+							<Select.Trigger class="w-full cursor-pointer">{rpc}</Select.Trigger>
+							<Select.Content>
+								{#each constants.DEFAULT_RPCS as rpc}
+									<Select.Item value={rpc}>{rpc}</Select.Item>
+								{/each}
+							</Select.Content>
+						</Select.Root>
 					</div>
 					<div>
 						<Button

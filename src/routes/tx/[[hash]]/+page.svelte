@@ -19,7 +19,7 @@
 
 	onMount(async () => {
 		try {
-			const _rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPC;
+			const _rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPCS[0];
 			stores.rpcStore.set(_rpc);
 
 			provider = helpers.getProvider();

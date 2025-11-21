@@ -31,13 +31,13 @@
 			if (_savedCallAbis) {
 				callAbis = [...JSON.parse(_savedCallAbis)];
 			}
-			
+
 			const _savedTxAbis = localStorage.getItem('tx_abis');
 			if (_savedTxAbis) {
 				txAbis = [...JSON.parse(_savedTxAbis)];
 			}
-			
-			const _rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPC;
+
+			const _rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPCS[0];
 			stores.rpcStore.set(_rpc);
 
 			provider = helpers.getProvider();
