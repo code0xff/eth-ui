@@ -1,15 +1,18 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
+	import { Minus } from '@lucide/svelte';
+	import type { Writable } from 'svelte/store';
 	import Button from '@/components/ui/button/button.svelte';
 	import * as Dialog from '@/components/ui/dialog/index.js';
 	import Input from '@/components/ui/input/input.svelte';
 	import * as Table from '@/components/ui/table/index.js';
-	import { Minus } from '@lucide/svelte';
 
 	export let open = false;
 
 	export let name = '';
 	export let storage = '';
+
+	export let store: Writable<string[]>;
 
 	let input = '';
 	let items: string[] = [];
@@ -23,6 +26,7 @@
 		try {
 			items = [...items, input];
 			localStorage.setItem(storage, JSON.stringify(items));
+			store.set(items);
 
 			input = '';
 		} catch (_e: any) {
@@ -36,7 +40,8 @@
 			items.splice(_index, 1);
 			items = [...items];
 
-			localStorage.setItem('rpcs', JSON.stringify(items));
+			localStorage.setItem(storage, JSON.stringify(items));
+			store.set(items);
 		} catch (_e: any) {
 			console.error(_e.toString());
 			toast(_e.toString());
@@ -44,7 +49,7 @@
 	}
 </script>
 
-<Dialog.Root bind:open={open}>
+<Dialog.Root bind:open>
 	<Dialog.Content>
 		<Dialog.Header>
 			<Dialog.Title>{name} Editor</Dialog.Title>

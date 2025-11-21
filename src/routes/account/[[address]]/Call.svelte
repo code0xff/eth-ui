@@ -1,22 +1,22 @@
 <script lang="ts">
 	import * as ethers from 'ethers';
-	import { Minus, Plus } from '@lucide/svelte';
+	import { Plus } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
 	import { Button } from '@/components/ui/button';
 	import * as Card from '@/components/ui/card';
-	import * as Dialog from '@/components/ui/dialog';
 	import { Input } from '@/components/ui/input';
 	import * as Select from '@/components/ui/select';
 	import * as Table from '@/components/ui/table';
 	import * as constants from '@/constants';
+	import * as stores from '@/stores';
 	import * as types from '@/types';
+	import Editor from '../../Editor.svelte';
 
 	export let address = '';
 	export let provider: ethers.Provider | undefined;
 	export let abis: string[] = [];
 
 	let selectedAbi = constants.DEFAULT_CALL_ABIS[0];
-	let abiInput = '';
 	let abiOpen = false;
 	let inputs: string = '';
 	let outputs: string = '';
@@ -35,34 +35,6 @@
 
 		inputsPlaceholder = func.inputs.map((input) => input.type).join(',');
 		outputsPlaceholder = func.outputs.map((output) => output.type).join(',');
-	}
-
-	async function addAbi() {
-		try {
-			const _interface = new ethers.Interface([abiInput]);
-			if (!_interface) {
-				throw new Error('invalid abi');
-			}
-			abis = [...abis, abiInput];
-			localStorage.setItem('abis', JSON.stringify(abis));
-
-			abiInput = '';
-		} catch (_e: any) {
-			console.error(_e.toString());
-			toast(_e.toString());
-		}
-	}
-
-	async function removeAbi(_index: number) {
-		try {
-			abis.splice(_index, 1);
-			abis = [...abis];
-
-			localStorage.setItem('abis', JSON.stringify(abis));
-		} catch (_e: any) {
-			console.error(_e.toString());
-			toast(_e.toString());
-		}
 	}
 
 	async function call() {
@@ -116,49 +88,7 @@
 					>
 						<Plus />
 					</Button>
-					<Dialog.Root bind:open={abiOpen}>
-						<Dialog.Content>
-							<Dialog.Header>
-								<Dialog.Title>Edit ABIs</Dialog.Title>
-								<Dialog.Description>
-									<div class="mt-4">
-										<div class="flex flex-row gap-4">
-											<div class="w-full">
-												<Input bind:value={abiInput} />
-											</div>
-											<div>
-												<Button class="cursor-pointer" onclick={addAbi}>Add</Button>
-											</div>
-										</div>
-										<div class="mt-4 max-h-55 overflow-y-auto">
-											<Table.Root>
-												<Table.Header>
-													<Table.Row>
-														<Table.Head>Registered ABI</Table.Head>
-														<Table.Head>Remove</Table.Head>
-													</Table.Row>
-												</Table.Header>
-												<Table.Body>
-													{#each abis as abi, index}
-														<Table.Row>
-															<Table.Cell class="w-full">
-																<Input value={abi} />
-															</Table.Cell>
-															<Table.Cell>
-																<Button class="cursor-pointer" onclick={() => removeAbi(index)}>
-																	<Minus />
-																</Button>
-															</Table.Cell>
-														</Table.Row>
-													{/each}
-												</Table.Body>
-											</Table.Root>
-										</div>
-									</div>
-								</Dialog.Description>
-							</Dialog.Header>
-						</Dialog.Content>
-					</Dialog.Root>
+					<Editor bind:open={abiOpen} name="ABI" storage="call_abis" store={stores.callAbisStore} />
 				</div>
 				<div>
 					<Button class="cursor-pointer" onclick={call}>Call</Button>

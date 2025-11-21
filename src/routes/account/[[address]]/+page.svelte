@@ -25,6 +25,13 @@
 	let slot: string;
 	let result: string;
 
+	stores.callAbisStore.subscribe((_callAbis) => {
+		callAbis = _callAbis;
+	});
+	stores.txAbisStore.subscribe((_txAbis) => {
+		txAbis = _txAbis;
+	});
+
 	onMount(async () => {
 		try {
 			const _savedCallAbis = localStorage.getItem('call_abis');

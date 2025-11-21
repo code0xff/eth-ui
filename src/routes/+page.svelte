@@ -49,6 +49,9 @@
 	stores.providerStore.subscribe((_provider) => {
 		provider = _provider;
 	});
+	stores.rpcsStore.subscribe((_rpcs) => {
+		rpcs = _rpcs;
+	});
 
 	onMount(async () => {
 		rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPCS[0];
@@ -244,7 +247,7 @@
 						>
 							<Plus />
 						</Button>
-						<Editor bind:open={rpcOpen} name="RPC" storage="rpcs" />
+						<Editor bind:open={rpcOpen} name="RPC" storage="rpcs" store={stores.rpcsStore} />
 					</div>
 					<div>
 						<Button
