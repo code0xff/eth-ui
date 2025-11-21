@@ -96,7 +96,7 @@
 		<Call address={data.address} {provider} abis={callAbis} />
 	</div>
 	<div class="m-4">
-		<Tx address={data.address} {provider} abis={txAbis} />
+		<Tx address={data.address} abis={txAbis} />
 	</div>
 	<div class="m-4">
 		<Card.Root>

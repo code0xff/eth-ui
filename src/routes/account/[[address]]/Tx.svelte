@@ -12,7 +12,6 @@
 	import * as types from '@/types';
 
 	export let address = '';
-	export let provider: ethers.Provider | undefined;
 	export let abis: string[] = [];
 
 	let selectedAbi = constants.DEFAULT_TX_ABIS[0];
@@ -69,8 +68,7 @@
 				globalThis.open('https://metamask.io/download');
 			}
 
-			const _network = await provider?.getNetwork();
-			const _provider = new ethers.BrowserProvider((globalThis as any).ethereum, _network);
+			const _provider = new ethers.BrowserProvider((globalThis as any).ethereum);
 			await _provider.send('eth_requestAccounts', []);
 
 			const _signer = await _provider.getSigner();
