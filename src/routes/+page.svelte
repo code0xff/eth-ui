@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { toggleMode } from 'mode-watcher';
-	import { CogIcon, Minus, Plus, SunMoon } from '@lucide/svelte';
+	import { CogIcon, Plus, SunMoon } from '@lucide/svelte';
 	import { get } from 'svelte/store';
 	import { toast } from 'svelte-sonner';
 	import Button from '@/components/ui/button/button.svelte';
@@ -16,13 +16,13 @@
 	import * as helpers from '@/helpers';
 	import * as constants from '@/constants';
 	import * as types from '@/types';
+	import Editor from './Editor.svelte';
 
 	let provider: ethers.Provider | undefined;
 
 	let rpc = '';
 	let rpcs: string[] = [];
 	let rpcOpen = false;
-	let rpcInput = '';
 
 	let blockListLimit: number = constants.DEFAULT_BLOCK_LIST_LIMIT;
 	let syncStatus: types.SyncStatus = 'idle';
@@ -215,30 +215,6 @@
 
 		toast('successfully saved');
 	}
-
-	async function addRpc() {
-		try {
-			rpcs = [...rpcs, rpcInput];
-			localStorage.setItem('rpcs', JSON.stringify(rpcs));
-
-			rpcInput = '';
-		} catch (_e: any) {
-			console.error(_e.toString());
-			toast(_e.toString());
-		}
-	}
-
-	async function removeRpc(_index: number) {
-		try {
-			rpcs.splice(_index, 1);
-			rpcs = [...rpcs];
-
-			localStorage.setItem('rpcs', JSON.stringify(rpcs));
-		} catch (_e: any) {
-			console.error(_e.toString());
-			toast(_e.toString());
-		}
-	}
 </script>
 
 <div>
@@ -268,49 +244,7 @@
 						>
 							<Plus />
 						</Button>
-						<Dialog.Root bind:open={rpcOpen}>
-							<Dialog.Content>
-								<Dialog.Header>
-									<Dialog.Title>Edit RPCs</Dialog.Title>
-									<Dialog.Description>
-										<div class="mt-4">
-											<div class="flex flex-row gap-4">
-												<div class="w-full">
-													<Input bind:value={rpcInput} />
-												</div>
-												<div>
-													<Button class="cursor-pointer" onclick={addRpc}>Add</Button>
-												</div>
-											</div>
-											<div class="mt-4 max-h-55 overflow-y-auto">
-												<Table.Root>
-													<Table.Header>
-														<Table.Row>
-															<Table.Head>Registered RPC</Table.Head>
-															<Table.Head>Remove</Table.Head>
-														</Table.Row>
-													</Table.Header>
-													<Table.Body>
-														{#each rpcs as rpc, index}
-															<Table.Row>
-																<Table.Cell class="w-full">
-																	<Input value={rpc} />
-																</Table.Cell>
-																<Table.Cell>
-																	<Button class="cursor-pointer" onclick={() => removeRpc(index)}>
-																		<Minus />
-																	</Button>
-																</Table.Cell>
-															</Table.Row>
-														{/each}
-													</Table.Body>
-												</Table.Root>
-											</div>
-										</div>
-									</Dialog.Description>
-								</Dialog.Header>
-							</Dialog.Content>
-						</Dialog.Root>
+						<Editor bind:open={rpcOpen} name="RPC" storage="rpcs" />
 					</div>
 					<div>
 						<Button
