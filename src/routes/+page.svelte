@@ -2,8 +2,7 @@
 	import * as ethers from 'ethers';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { toggleMode } from 'mode-watcher';
-	import { CogIcon, Plus, SunMoon } from '@lucide/svelte';
+	import { CogIcon, Plus } from '@lucide/svelte';
 	import { get } from 'svelte/store';
 	import { toast } from 'svelte-sonner';
 	import Button from '@/components/ui/button/button.svelte';
@@ -292,11 +291,6 @@
 								</Dialog.Footer>
 							</Dialog.Content>
 						</Dialog.Root>
-					</div>
-					<div>
-						<Button onclick={toggleMode} class="cursor-pointer">
-							<SunMoon />
-						</Button>
 					</div>
 				</div>
 			</Card.Content>

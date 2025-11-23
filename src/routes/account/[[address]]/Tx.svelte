@@ -92,7 +92,7 @@
 					<Editor bind:open={abiOpen} name="ABI" storage="tx_abis" store={stores.txAbisStore} />
 				</div>
 				<div>
-					<Button class="cursor-pointer" onclick={sendTx}>Send Tx</Button>
+					<Button class="cursor-pointer" onclick={sendTx}>Send</Button>
 				</div>
 			</div>
 			<div class="mt-4">
