@@ -101,6 +101,8 @@
 			provider = services.defaultBlockProvider(rpc);
 			await provider.connect();
 			provider.onNewBlock(updateNewBlock);
+
+			stores.providerStore.set(provider);
 		} catch (_e: unknown) {
 			if (_e instanceof Error) {
 				console.error(_e.toString());
