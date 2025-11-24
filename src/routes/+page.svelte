@@ -1,5 +1,4 @@
 <script lang="ts">
-	import * as ethers from 'ethers';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { CogIcon, Plus } from '@lucide/svelte';
@@ -14,10 +13,11 @@
 	import * as stores from '@/stores';
 	import * as helpers from '@/helpers';
 	import * as constants from '@/constants';
+	import * as services from '@/services';
 	import * as types from '@/types';
 	import Editor from './Editor.svelte';
 
-	let provider: ethers.Provider | undefined;
+	let provider: services.BlockProvider | undefined;
 
 	let rpc = '';
 	let rpcs: string[] = [];
@@ -89,7 +89,7 @@
 
 			const _provider = get(stores.providerStore);
 			if (_provider) {
-				await _provider.destroy();
+				await _provider.disconnect();
 				stores.providerStore.set(undefined);
 			}
 
@@ -98,38 +98,34 @@
 
 			stores.syncStatusStore.set('processing');
 
-			provider = helpers.getProvider();
-			provider.on('block', async (_number) => {
-				const _block = await provider?.getBlock(_number, true);
-				if (_block) {
-					updateNewBlock(_block);
-				}
-			});
-		} catch (_e: any) {
-			stopSync();
-
-			console.error(_e.toString());
-			toast(_e.toString());
-		}
-	}
-
-	function stopSync() {
-		try {
-			if (
-				provider &&
-				provider instanceof ethers.WebSocketProvider &&
-				(provider as ethers.WebSocketProvider).ready
-			) {
-				provider?.off('block');
+			provider = services.defaultBlockProvider(rpc);
+			await provider.connect();
+			provider.onNewBlock(updateNewBlock);
+		} catch (_e: unknown) {
+			if (_e instanceof Error) {
+				console.error(_e.toString());
+				toast(_e.toString());
 			}
-			stores.syncStatusStore.set('stopped');
-		} catch (_e: any) {
-			console.error(_e.toString());
-			toast(_e.toString());
+
+			stopSync();
 		}
 	}
 
-	function updateNewBlock(_newBlock: ethers.Block) {
+	async function stopSync() {
+		try {
+			provider?.offNewBlock();
+
+			stores.providerStore.set(undefined);
+			stores.syncStatusStore.set('stopped');
+		} catch (_e: unknown) {
+			if (_e instanceof Error) {
+				console.error(_e.toString());
+				toast(_e.toString());
+			}
+		}
+	}
+
+	function updateNewBlock(_newBlock: types.BlockInfo) {
 		const _blockStore = get(stores.blockStore);
 		if (_blockStore.has(_newBlock.number)) {
 			return;
@@ -156,26 +152,10 @@
 		}
 
 		stores.blockStore.update((_blocks) => {
-			return new Map([
-				[
-					_newBlock.number,
-					{
-						number: _newBlock.number,
-						hash: _newBlock.hash,
-						timestamp: _newBlock.timestamp,
-						transactions: [..._newBlock.transactions]
-					}
-				],
-				..._blocks
-			]);
+			return new Map([[_newBlock.number, _newBlock], ..._blocks]);
 		});
 		stores.txStore.update((_txs) => {
-			const _newTxs = new Map(
-				_newBlock.prefetchedTransactions.map((_tx) => [
-					_tx.hash,
-					{ hash: _tx.hash, from: _tx.from, to: _tx.to, blockNumber: _newBlock.number }
-				])
-			);
+			const _newTxs = new Map(_newBlock.prefetchedTransactions.map((_tx) => [_tx.hash, _tx]));
 			return new Map([..._newTxs, ..._txs]);
 		});
 	}
@@ -198,9 +178,11 @@
 				}
 				goto(`/block/${_blockNumber}`);
 			}
-		} catch (_e: any) {
-			console.warn(_e.toString());
-			toast.error('invalid search condition');
+		} catch (_e: unknown) {
+			if (_e instanceof Error) {
+				console.error(_e.toString());
+				toast(_e.toString());
+			}
 		}
 	}
 
@@ -250,7 +232,8 @@
 					</div>
 					<div>
 						<Button
-							onclick={() => (syncStatus === 'processing' ? stopSync() : startSync())}
+							onclick={async () =>
+								syncStatus === 'processing' ? await stopSync() : await startSync()}
 							class="w-[80px] cursor-pointer"
 							>{syncStatus === 'processing' ? 'Stop' : 'Start'}</Button
 						>

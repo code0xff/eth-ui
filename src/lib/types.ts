@@ -1,8 +1,10 @@
 export type BlockInfo = {
 	number: number;
 	hash: string | null;
+	parentHash: string;
 	timestamp: number;
 	transactions: string[];
+	prefetchedTransactions: TxInfo[];
 };
 
 export type TxInfo = {
@@ -23,4 +25,9 @@ export type Function = {
 	name: string;
 	inputs: Argument[];
 	outputs: Argument[];
+};
+
+export type Network = {
+	chainId: bigint;
+	name: string;
 };

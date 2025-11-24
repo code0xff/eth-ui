@@ -29,9 +29,11 @@
 			store.set(items);
 
 			input = '';
-		} catch (_e: any) {
-			console.error(_e.toString());
-			toast(_e.toString());
+		} catch (_e: unknown) {
+			if (_e instanceof Error) {
+				console.error(_e.toString());
+				toast(_e.toString());
+			}
 		}
 	}
 
@@ -42,9 +44,11 @@
 
 			localStorage.setItem(storage, JSON.stringify(items));
 			store.set(items);
-		} catch (_e: any) {
-			console.error(_e.toString());
-			toast(_e.toString());
+		} catch (_e: unknown) {
+			if (_e instanceof Error) {
+				console.error(_e.toString());
+				toast(_e.toString());
+			}
 		}
 	}
 </script>

@@ -1,3 +1,5 @@
+export const DEFAULT_RETRY_COUNT = 3;
+
 export const CHUNK_SIZE = 64;
 export const SELECTOR_SIZE = 8;
 
