@@ -91,19 +91,19 @@
 					<Table.Body>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Inputs</Table.Cell>
-							<Table.Cell class="w-5/6"
-								><Input
+							<Table.Cell class="w-5/6">
+								<Input
 									placeholder={inputsPlaceholder}
 									readonly={inputsPlaceholder === ''}
 									bind:value={inputs}
-								/></Table.Cell
-							>
+								/>
+							</Table.Cell>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Outputs</Table.Cell>
-							<Table.Cell class="w-5/6"
-								><Input readonly bind:value={outputs} placeholder="hash" /></Table.Cell
-							>
+							<Table.Cell class="w-5/6">
+								<Input readonly bind:value={outputs} placeholder="hash" />
+							</Table.Cell>
 						</Table.Row>
 					</Table.Body>
 				</Table.Root>

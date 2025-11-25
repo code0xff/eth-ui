@@ -104,12 +104,14 @@
 							<Table.Cell class="w-1/6">Nonce</Table.Cell>
 							<Table.Cell class="w-5/6">{nonce ? helpers.printNumber(nonce) : ''}</Table.Cell>
 						</Table.Row>
-						<!-- <Table.Row>
+						<Table.Row>
 							<Table.Cell>Code</Table.Cell>
 							<Table.Cell>
-								<Textarea readonly class="resize-none" value={code} />
+								{#if code && code.startsWith('0xef0100')}
+									<Input readonly bind:value={code} />
+								{/if}
 							</Table.Cell>
-						</Table.Row> -->
+						</Table.Row>
 					</Table.Body>
 				</Table.Root>
 			</Card.Content>
