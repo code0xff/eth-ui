@@ -186,8 +186,8 @@
 			}
 		} catch (_e: unknown) {
 			if (_e instanceof Error) {
-				console.error(_e.toString());
-				toast(_e.toString());
+				console.error(_e.message);
+				toast(_e.message);
 			}
 		}
 	}
@@ -343,7 +343,7 @@
 							<Table.Header>
 								<Table.Row>
 									<Table.Head>Hash</Table.Head>
-									<Table.Head>From</Table.Head>
+									<Table.Head>Addresses</Table.Head>
 									<Table.Head>Number</Table.Head>
 								</Table.Row>
 							</Table.Header>
@@ -351,7 +351,16 @@
 								{#each txList as tx}
 									<Table.Row onclick={() => goto(`/tx/${tx.hash}`)} class="cursor-pointer">
 										<Table.Cell>{helpers.compactHash(tx.hash)}</Table.Cell>
-										<Table.Cell>{helpers.compactHash(tx.from)}</Table.Cell>
+										<Table.Cell>
+											<div>
+												<div>
+													from&nbsp{helpers.compactHash(tx.from)}
+												</div>
+												<div>
+													to&nbsp;&nbsp;&nbsp;{helpers.compactHash(tx.to)}
+												</div>
+											</div>
+										</Table.Cell>
 										<Table.Cell>{helpers.printNumber(tx.blockNumber)}</Table.Cell>
 									</Table.Row>
 								{/each}
