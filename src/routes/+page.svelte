@@ -165,6 +165,10 @@
 	function search() {
 		try {
 			searchParam = searchParam.trim();
+			if (searchParam.length === 0) {
+				return;
+			}
+
 			if (searchParam.startsWith('0x')) {
 				if (searchParam.length === constants.ADDRESS_SIZE) {
 					goto(`/account/${searchParam}`);
