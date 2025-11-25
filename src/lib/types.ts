@@ -1,17 +1,38 @@
-export type BlockInfo = {
+export type Block = {
 	number: number;
 	hash: string | null;
 	parentHash: string;
 	timestamp: number;
+	miner: string;
+	baseFeePerGas: bigint | null;
+	gasUsed: bigint;
+	gasLimit: bigint;
 	transactions: string[];
-	prefetchedTransactions: TxInfo[];
+	prefetchedTransactions: TxResponse[];
 };
 
-export type TxInfo = {
+export type TxResponse = {
 	hash: string;
+	type: number;
 	from: string | undefined;
 	to: string | null;
+	index: number;
+	value: bigint;
+	gasLimit: bigint;
+	gasPrice: bigint;
+	maxFeePerGas: bigint | null;
+	maxPriorityFeePerGas: bigint | null;
+	data: string;
 	blockNumber: number | null;
+};
+
+export type TxReceipt = {
+	status: number | null;
+	gasUsed: bigint;
+	gasPrice: bigint;
+	contractAddress: string | null;
+	logsBloom: string;
+	logs: string[];
 };
 
 export type SyncStatus = 'idle' | 'processing' | 'stopped';

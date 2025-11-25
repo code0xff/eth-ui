@@ -28,8 +28,8 @@
 
 	let settingOpen: boolean = false;
 
-	let blockList: types.BlockInfo[] = [];
-	let txList: types.TxInfo[] = [];
+	let blockList: types.Block[] = [];
+	let txList: types.TxResponse[] = [];
 
 	let searchParam: string = '';
 
@@ -127,7 +127,7 @@
 		}
 	}
 
-	function updateNewBlock(_newBlock: types.BlockInfo) {
+	function updateNewBlock(_newBlock: types.Block) {
 		const _blockStore = get(stores.blockStore);
 		if (_blockStore.has(_newBlock.number)) {
 			return;

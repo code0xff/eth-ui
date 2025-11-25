@@ -1,5 +1,4 @@
 <script lang="ts">
-	import * as ethers from 'ethers';
 	import { Plus } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
 	import { Button } from '@/components/ui/button';
@@ -8,12 +7,13 @@
 	import * as Select from '@/components/ui/select';
 	import * as Table from '@/components/ui/table';
 	import * as constants from '@/constants';
+	import * as services from '@/services';
 	import * as stores from '@/stores';
 	import * as types from '@/types';
 	import Editor from '../../Editor.svelte';
 
 	export let address = '';
-	export let provider: ethers.Provider | undefined;
+	export let provider: services.BlockProvider | undefined;
 	export let abis: string[] = [];
 
 	let selectedAbi = constants.DEFAULT_CALL_ABIS[0];
@@ -28,33 +28,27 @@
 		inputs = '';
 		outputs = '';
 
-		const _interface = JSON.parse(new ethers.Interface([selectedAbi]).formatJson());
-		if (_interface && _interface.length > 0) {
-			func = _interface[0];
-		}
+		try {
+			func = services.AbiParser.parse(selectedAbi);
 
-		inputsPlaceholder = func.inputs.map((input) => input.type).join(',');
-		outputsPlaceholder = func.outputs.map((output) => output.type).join(',');
+			inputsPlaceholder = func.inputs.map((input) => input.type).join(',');
+			outputsPlaceholder = func.outputs.map((output) => output.type).join(',');
+		} catch (_e: unknown) {
+			if (_e instanceof Error) {
+				console.warn(_e.message);
+				toast(_e.message);
+			}
+		}
 	}
 
 	async function call() {
 		try {
-			const _contract = new ethers.Contract(address, new ethers.Interface([selectedAbi]), provider);
-			let _outputs: any;
-			if (func.inputs.length > 0) {
-				const _inputs = inputs.split(',');
-				_outputs = await _contract[func.name](..._inputs);
-			} else {
-				_outputs = await _contract[func.name]();
+			outputs = (await provider?.call(address, selectedAbi, inputs)) ?? '';
+		} catch (_e: unknown) {
+			if (_e instanceof Error) {
+				console.error(_e.message);
+				toast(_e.message);
 			}
-			if (_outputs instanceof Array) {
-				outputs = _outputs.map((output) => output.toString()).join(',');
-			} else {
-				outputs = _outputs.toString();
-			}
-		} catch (_e: any) {
-			console.error(_e.toString());
-			toast(_e.toString());
 		}
 	}
 </script>

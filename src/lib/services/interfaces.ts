@@ -6,8 +6,21 @@ export interface BlockProvider {
 	reconnect(count: number): Promise<void>;
 
 	getSyncedBlockNumber(): number | undefined;
-	getBlockByNumber(blockNumber: number): Promise<types.BlockInfo | null>;
+	getBlockByNumber(blockNumber: number, prefetchTxs?: boolean): Promise<types.Block | null>;
+	getTx(hash: string): Promise<types.TxResponse | null>;
+	getTxReceipt(hash: string): Promise<types.TxReceipt | null>;
+	getBalance(address: string): Promise<bigint>;
+	getTransactionCount(address: string): Promise<number>;
+	getCode(address: string): Promise<string>;
+	getStorage(address: string, slot: string): Promise<string>;
 
-	onNewBlock(callback: (block: types.BlockInfo) => void): Promise<void>;
+	call(address: string, abi: string, inputs: string): Promise<string>;
+	sendTx(address: string, abi: string, inputs: string): Promise<string>;
+
+	onNewBlock(callback: (block: types.Block) => void): Promise<void>;
 	offNewBlock(callback?: () => void): Promise<void>;
+}
+
+export interface AbiParser {
+	parse(abi: string): types.Function;
 }

@@ -1,32 +1,41 @@
 <script lang="ts">
-	import { type Provider, Block } from 'ethers';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
+	import { get } from 'svelte/store';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
 	import * as constants from '@/constants';
 	import * as helpers from '@/helpers';
+	import * as services from '@/services';
 	import * as stores from '@/stores';
+	import * as types from '@/types';
 
 	export let data: { number: string };
 
-	let provider: Provider | undefined;
+	let provider: services.BlockProvider | undefined;
 
-	let block: Block | undefined | null;
+	let block: types.Block | undefined | null;
 
 	onMount(async () => {
 		try {
 			const _rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPCS[0];
 			stores.rpcStore.set(_rpc);
 
-			provider = helpers.getProvider();
+			provider = get(stores.providerStore);
+			if (!provider) {
+				provider = services.defaultBlockProvider(_rpc);
+				stores.providerStore.set(provider);
+			}
 
 			const _blockNumber = parseInt(data.number);
-			block = await provider.getBlock(_blockNumber, true);
-		} catch (_e: any) {
-			console.error(_e.toString());
-			toast(_e.toString());
+
+			block = await provider.getBlockByNumber(_blockNumber, true);
+		} catch (_e: unknown) {
+			if (_e instanceof Error) {
+				console.error(_e.toString());
+				toast(_e.toString());
+			}
 		}
 	});
 </script>

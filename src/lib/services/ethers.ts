@@ -1,9 +1,10 @@
 import * as ethers from 'ethers';
 import * as constants from '@/constants';
 import * as types from '@/types';
-import type { BlockProvider } from './interfaces';
+import * as interfaces from './interfaces';
+import { AbiParser } from '.';
 
-export class EthersBlockProvider implements BlockProvider {
+export class EthersBlockProvider implements interfaces.BlockProvider {
 	private url: string | undefined;
 	private provider: ethers.Provider | undefined;
 	private network: types.Network | undefined;
@@ -38,8 +39,8 @@ export class EthersBlockProvider implements BlockProvider {
 		this.syncedBlockNumber = undefined;
 	}
 
-	async reconnect(_count: number = constants.DEFAULT_RETRY_COUNT): Promise<void> {
-		if (!this.url || _count <= 0) return;
+	async reconnect(count: number = constants.DEFAULT_RETRY_COUNT): Promise<void> {
+		if (!this.url || count <= 0) return;
 		try {
 			await this.connect();
 			if (this.provider && this.network) {
@@ -50,9 +51,9 @@ export class EthersBlockProvider implements BlockProvider {
 				console.warn((_e as Error).toString());
 			}
 
-			if (_count > 0) {
+			if (count > 0) {
 				setTimeout(async () => {
-					await this.reconnect(_count - 1);
+					await this.reconnect(count - 1);
 				}, 1000);
 			} else {
 				throw new Error(`failed to connect to ${this.url}`);
@@ -64,15 +65,12 @@ export class EthersBlockProvider implements BlockProvider {
 		return this.syncedBlockNumber;
 	}
 
-	async getBlockByNumber(
-		_blockNumber: number,
-		prefetchTxs?: boolean
-	): Promise<types.BlockInfo | null> {
+	async getBlockByNumber(blockNumber: number, prefetchTxs?: boolean): Promise<types.Block | null> {
 		if (!this.provider) {
 			await this.reconnect();
 		}
 
-		const _block = await this.provider?.getBlock(_blockNumber, prefetchTxs);
+		const _block = await this.provider?.getBlock(blockNumber, prefetchTxs);
 		if (!_block) return null;
 
 		return {
@@ -80,14 +78,143 @@ export class EthersBlockProvider implements BlockProvider {
 			hash: _block.hash,
 			parentHash: _block.parentHash,
 			timestamp: _block.timestamp,
+			miner: _block.miner,
+			baseFeePerGas: _block.baseFeePerGas,
+			gasUsed: _block.gasUsed,
+			gasLimit: _block.gasLimit,
 			transactions: [..._block.transactions],
 			prefetchedTransactions: _block.prefetchedTransactions.map((_tx) => {
-				return { hash: _tx.hash, from: _tx.from, to: _tx.to, blockNumber: _tx.blockNumber };
+				return {
+					hash: _tx.hash,
+					from: _tx.from,
+					to: _tx.to,
+					index: _tx.index,
+					value: _tx.value,
+					blockNumber: _tx.blockNumber,
+					type: _tx.type,
+					gasLimit: _tx.gasLimit,
+					gasPrice: _tx.gasPrice,
+					maxFeePerGas: _tx.maxFeePerGas,
+					maxPriorityFeePerGas: _tx.maxPriorityFeePerGas,
+					data: _tx.data
+				};
 			})
 		};
 	}
 
-	async onNewBlock(_callback: (block: types.BlockInfo) => void): Promise<void> {
+	async getTx(hash: string): Promise<types.TxResponse | null> {
+		if (!this.provider) {
+			await this.reconnect();
+		}
+
+		const _tx = await this.provider!.getTransaction(hash);
+		if (!_tx) return null;
+
+		return {
+			hash: _tx.hash,
+			type: _tx.type,
+			from: _tx.from,
+			to: _tx.to,
+			index: _tx.index,
+			value: _tx.value,
+			gasLimit: _tx.gasLimit,
+			blockNumber: _tx.blockNumber,
+			gasPrice: _tx.gasPrice,
+			maxFeePerGas: _tx.maxFeePerGas,
+			maxPriorityFeePerGas: _tx.maxPriorityFeePerGas,
+			data: _tx.data
+		};
+	}
+
+	async getTxReceipt(hash: string): Promise<types.TxReceipt | null> {
+		if (!this.provider) {
+			await this.reconnect();
+		}
+
+		const _txReceipt = await this.provider!.getTransactionReceipt(hash);
+		if (!_txReceipt) return null;
+
+		return {
+			status: _txReceipt.status,
+			gasUsed: _txReceipt.gasUsed,
+			gasPrice: _txReceipt.gasPrice,
+			contractAddress: _txReceipt.contractAddress,
+			logsBloom: _txReceipt.logsBloom,
+			logs: _txReceipt.logs.map((log) => JSON.stringify(log, null, 2))
+		};
+	}
+
+	async getBalance(address: string): Promise<bigint> {
+		if (!this.provider) {
+			await this.reconnect();
+		}
+		return await this.provider!.getBalance(address);
+	}
+
+	async getTransactionCount(address: string): Promise<number> {
+		if (!this.provider) {
+			await this.reconnect();
+		}
+		return await this.provider!.getTransactionCount(address);
+	}
+
+	async getCode(address: string): Promise<string> {
+		if (!this.provider) {
+			await this.reconnect();
+		}
+		return await this.provider!.getCode(address);
+	}
+
+	async getStorage(address: string, slot: string): Promise<string> {
+		if (!this.provider) {
+			await this.reconnect();
+		}
+		return await this.provider!.getStorage(address, slot);
+	}
+
+	async call(address: string, abi: string, inputs: string): Promise<string> {
+		const _func = AbiParser.parse(abi);
+
+		const _contract = new ethers.Contract(address, new ethers.Interface([abi]), this.provider);
+		let _outputs: any;
+		if (_func.inputs.length > 0) {
+			const _inputs = inputs.split(',');
+			_outputs = await _contract[_func.name](..._inputs);
+		} else {
+			_outputs = await _contract[_func.name]();
+		}
+		if (_outputs instanceof Array) {
+			return _outputs.map((output) => output.toString()).join(',');
+		} else {
+			return _outputs.toString();
+		}
+	}
+
+	async sendTx(address: string, abi: string, inputs: string): Promise<string> {
+		if (!(globalThis as any).ethereum) {
+			globalThis.open('https://metamask.io/download');
+			throw new Error('wallet not exist');
+		}
+
+		const _provider = new ethers.BrowserProvider((globalThis as any).ethereum);
+		await _provider.send('eth_requestAccounts', []);
+
+		const _signer = await _provider.getSigner();
+		const _contract = new ethers.Contract(address, new ethers.Interface([abi]), _signer);
+
+		const _func = AbiParser.parse(abi);
+
+		let _response: ethers.TransactionResponse;
+		if (_func.inputs.length > 0) {
+			const _inputs = inputs.split(',');
+			_response = await _contract[_func.name](..._inputs);
+		} else {
+			_response = await _contract[_func.name]();
+		}
+		return _response.hash;
+	}
+
+	async onNewBlock(callback: (block: types.Block) => void): Promise<void> {
 		if (!this.provider) {
 			await this.reconnect();
 		}
@@ -97,31 +224,42 @@ export class EthersBlockProvider implements BlockProvider {
 				if (!this.syncedBlockNumber) {
 					this.syncedBlockNumber = await this.provider!.getBlockNumber();
 				} else {
-					const _blockInfo = await this.getBlockByNumber(this.syncedBlockNumber + 1, true);
-					if (_blockInfo) {
-						this.syncedBlockNumber = _blockInfo.number;
-						_callback(_blockInfo);
+					const _block = await this.getBlockByNumber(this.syncedBlockNumber + 1, true);
+					if (_block) {
+						this.syncedBlockNumber = _block.number;
+						callback(_block);
 					}
 				}
 			}, 1000);
 		} else {
 			this.provider!.on('block', async (_blockNumber: number) => {
-				const _blockInfo = await this.getBlockByNumber(_blockNumber, true);
-				if (_blockInfo) {
-					this.syncedBlockNumber = _blockInfo.number;
-					_callback(_blockInfo);
+				const _block = await this.getBlockByNumber(_blockNumber, true);
+				if (_block) {
+					this.syncedBlockNumber = _block.number;
+					callback(_block);
 				}
 			});
 		}
 	}
 
-	async offNewBlock(_callback?: () => void): Promise<void> {
+	async offNewBlock(callback?: () => void): Promise<void> {
 		if (this.provider instanceof ethers.WebSocketProvider) {
 			this.provider.off('block');
 		} else if (this.intervalId) {
 			clearInterval(this.intervalId);
 			this.intervalId = undefined;
 		}
-		_callback?.();
+		callback?.();
+	}
+}
+
+export class EthersAbiParser implements interfaces.AbiParser {
+	parse(abi: string): types.Function {
+		const _interface = JSON.parse(new ethers.Interface([abi]).formatJson());
+		if (_interface && _interface.length > 0) {
+			return _interface[0];
+		} else {
+			throw new Error(`invalid abi: ${abi}`);
+		}
 	}
 }

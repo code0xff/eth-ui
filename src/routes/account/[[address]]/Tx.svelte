@@ -1,5 +1,4 @@
 <script lang="ts">
-	import * as ethers from 'ethers';
 	import { Plus } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
 	import { Button } from '@/components/ui/button';
@@ -8,11 +7,13 @@
 	import * as Select from '@/components/ui/select';
 	import * as Table from '@/components/ui/table';
 	import * as constants from '@/constants';
+	import * as services from '@/services';
 	import * as stores from '@/stores';
 	import * as types from '@/types';
 	import Editor from '../../Editor.svelte';
 
 	export let address = '';
+	export let provider: services.BlockProvider | undefined;
 	export let abis: string[] = [];
 
 	let selectedAbi = constants.DEFAULT_TX_ABIS[0];
@@ -26,36 +27,26 @@
 		inputs = '';
 		outputs = '';
 
-		const _interface = JSON.parse(new ethers.Interface([selectedAbi]).formatJson());
-		if (_interface && _interface.length > 0) {
-			func = _interface[0];
-		}
+		try {
+			func = services.AbiParser.parse(selectedAbi);
 
-		inputsPlaceholder = func.inputs.map((input) => input.type).join(',');
+			inputsPlaceholder = func.inputs.map((input) => input.type).join(',');
+		} catch (_e: unknown) {
+			if (_e instanceof Error) {
+				console.warn(_e.message);
+				toast(_e.message);
+			}
+		}
 	}
 
 	async function sendTx() {
 		try {
-			if (!(globalThis as any).ethereum) {
-				globalThis.open('https://metamask.io/download');
+			outputs = (await provider?.sendTx(address, selectedAbi, inputs)) ?? '';
+		} catch (_e: unknown) {
+			if (_e instanceof Error) {
+				console.error(_e.toString());
+				toast(_e.toString());
 			}
-
-			const _provider = new ethers.BrowserProvider((globalThis as any).ethereum);
-			await _provider.send('eth_requestAccounts', []);
-
-			const _signer = await _provider.getSigner();
-			const _contract = new ethers.Contract(address, new ethers.Interface([selectedAbi]), _signer);
-			let _response: ethers.TransactionResponse;
-			if (func.inputs.length > 0) {
-				const _inputs = inputs.split(',');
-				_response = await _contract[func.name](..._inputs);
-			} else {
-				_response = await _contract[func.name]();
-			}
-			outputs = _response.hash;
-		} catch (_e: any) {
-			console.error(_e.toString());
-			toast(_e.toString());
 		}
 	}
 </script>

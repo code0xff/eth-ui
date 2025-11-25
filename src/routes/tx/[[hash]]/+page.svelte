@@ -1,34 +1,42 @@
 <script lang="ts">
-	import * as ethers from 'ethers';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
+	import { get } from 'svelte/store';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
 	import Textarea from '@/components/ui/textarea/textarea.svelte';
 	import * as constants from '@/constants';
 	import * as helpers from '@/helpers';
+	import * as services from '@/services';
 	import * as stores from '@/stores';
+	import * as types from '@/types';
 
 	export let data: { hash: string };
 
-	let provider: ethers.Provider | undefined;
+	let provider: services.BlockProvider | undefined;
 
-	let tx: ethers.TransactionResponse | undefined | null;
-	let txReceipt: ethers.TransactionReceipt | undefined | null;
+	let tx: types.TxResponse | undefined | null;
+	let txReceipt: types.TxReceipt | undefined | null;
 
 	onMount(async () => {
 		try {
 			const _rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPCS[0];
 			stores.rpcStore.set(_rpc);
 
-			provider = helpers.getProvider();
+			provider = get(stores.providerStore);
+			if (!provider) {
+				provider = services.defaultBlockProvider(_rpc);
+				stores.providerStore.set(provider);
+			}
 
-			tx = await provider.getTransaction(data.hash);
-			txReceipt = await provider.getTransactionReceipt(data.hash);
-		} catch (_e: any) {
-			console.error(_e.toString());
-			toast(_e.toString());
+			tx = await provider.getTx(data.hash);
+			txReceipt = await provider.getTxReceipt(data.hash);
+		} catch (_e: unknown) {
+			if (_e instanceof Error) {
+				console.error(_e.toString());
+				toast(_e.toString());
+			}
 		}
 	});
 </script>
@@ -160,7 +168,7 @@
 							{#each txReceipt.logs as log}
 								<Table.Row>
 									<Table.Cell>
-										<Textarea readonly class="resize-none" value={JSON.stringify(log, null, 2)} />
+										<Textarea readonly class="resize-none" value={log} />
 									</Table.Cell>
 								</Table.Row>
 							{/each}
