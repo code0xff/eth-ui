@@ -59,8 +59,8 @@
 			code = await provider.getCode(data.address);
 		} catch (_e: unknown) {
 			if (_e instanceof Error) {
-				console.error(_e.toString());
-				toast(_e.toString());
+				console.error(_e.message);
+				toast(_e.message);
 			}
 		}
 	});
@@ -79,8 +79,8 @@
 			result = await provider.getStorage(data.address, slot);
 		} catch (_e: unknown) {
 			if (_e instanceof Error) {
-				console.error(_e.toString());
-				toast(_e.toString());
+				console.error(_e.message);
+				toast(_e.message);
 			}
 		}
 	}

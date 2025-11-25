@@ -44,8 +44,8 @@
 			outputs = (await provider?.sendTx(address, selectedAbi, inputs)) ?? '';
 		} catch (_e: unknown) {
 			if (_e instanceof Error) {
-				console.error(_e.toString());
-				toast(_e.toString());
+				console.error(_e.message);
+				toast(_e.message);
 			}
 		}
 	}

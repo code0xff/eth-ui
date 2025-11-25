@@ -105,8 +105,8 @@
 			stores.providerStore.set(provider);
 		} catch (_e: unknown) {
 			if (_e instanceof Error) {
-				console.error(_e.toString());
-				toast(_e.toString());
+				console.error(_e.message);
+				toast(_e.message);
 			}
 
 			stopSync();
@@ -121,8 +121,8 @@
 			stores.syncStatusStore.set('stopped');
 		} catch (_e: unknown) {
 			if (_e instanceof Error) {
-				console.error(_e.toString());
-				toast(_e.toString());
+				console.error(_e.message);
+				toast(_e.message);
 			}
 		}
 	}
