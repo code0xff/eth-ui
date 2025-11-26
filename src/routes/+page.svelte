@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import { toast } from 'svelte-sonner';
-	import { Plus } from '@lucide/svelte';
 	import Button from '@/components/ui/button/button.svelte';
 	import * as Card from '@/components/ui/card/index.js';
 	import Input from '@/components/ui/input/input.svelte';
@@ -19,6 +17,10 @@
 	let provider: services.BlockProvider | undefined;
 
 	let rpc = '';
+	$: if (rpc) {
+		stores.rpcStore.set(rpc);
+		localStorage.setItem('rpc', rpc);
+	}
 	let rpcs: string[] = [];
 
 	let syncStatus: types.SyncStatus = 'idle';
@@ -37,48 +39,23 @@
 	stores.txStore.subscribe((updatedTxs) => {
 		txList = [...updatedTxs.values()];
 	});
-	stores.rpcStore.subscribe((updatedRpc) => {
-		rpc = updatedRpc;
-	});
 	stores.providerStore.subscribe((updatedProvider) => {
 		provider = updatedProvider;
+	});
+	stores.rpcStore.subscribe((updatedRpc) => {
+		rpc = updatedRpc;
 	});
 	stores.rpcsStore.subscribe((updatedRpcs) => {
 		rpcs = updatedRpcs;
 	});
-
-	onMount(async () => {
-		rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPCS[0];
-		stores.rpcStore.set(rpc);
-		const _rpcs = localStorage.getItem('rpcs');
-		if (_rpcs) {
-			rpcs = [...JSON.parse(_rpcs)];
-		}
-
-		const _blockListLimit = localStorage.getItem('blockListLimit');
-		if (_blockListLimit) {
-			stores.blockListLimitStore.set(parseInt(_blockListLimit));
-		}
-
-		const _interval = localStorage.getItem('interval');
-		if (_interval) {
-			stores.intervalStore.set(parseInt(_interval));
-		}
-
-		if (syncStatus === 'idle') {
+	stores.initializedStore.subscribe(async (initialized) => {
+		if (initialized) {
 			await startSync();
 		}
 	});
 
 	async function startSync() {
 		if (syncStatus === 'processing') {
-			return;
-		}
-
-		rpc = rpc.trim();
-		if (!rpc || rpc === '') {
-			console.warn(`invalid rpc: ${rpc}`);
-			toast(`invalid rpc: ${rpc}`);
 			return;
 		}
 
@@ -91,9 +68,6 @@
 				await _provider.disconnect();
 				stores.providerStore.set(undefined);
 			}
-
-			stores.rpcStore.set(rpc);
-			localStorage.setItem('rpc', rpc);
 
 			stores.syncStatusStore.set('processing');
 
@@ -134,10 +108,10 @@
 			return;
 		}
 
-		const _blockListLimit = get(stores.blockListLimitStore);
-		if (_blockListLimit && _blockStore.size >= _blockListLimit) {
+		const _blocklistLimit = get(stores.blocklistLimitStore);
+		if (_blocklistLimit && _blockStore.size >= _blocklistLimit) {
 			const _blockList = [..._blockStore.values()];
-			const _pruneBlockList = _blockList.slice(_blockListLimit - 1);
+			const _pruneBlockList = _blockList.slice(_blocklistLimit - 1);
 			stores.txStore.update((_txs) => {
 				_pruneBlockList.forEach((_block) => {
 					_block.transactions.forEach((_txHash) => {

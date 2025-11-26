@@ -1,14 +1,48 @@
 <script lang="ts">
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
-	import { ModeWatcher } from 'mode-watcher';
-	import { toggleMode } from 'mode-watcher';
+	import { ModeWatcher, toggleMode } from 'mode-watcher';
 	import { SunMoon } from '@lucide/svelte';
 	import { Toaster } from '@/components/ui/sonner';
 	import { Button } from '@/components/ui/button';
 	import Config from './Config.svelte';
+	import { onMount } from 'svelte';
+	import * as constants from '@/constants';
+	import * as stores from '@/stores';
 
 	let { children } = $props();
+
+	onMount(async () => {
+		const _rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPCS[0];
+		stores.rpcStore.set(_rpc);
+
+		const _rpcs = localStorage.getItem('rpcs');
+		if (_rpcs) {
+			stores.rpcsStore.set(JSON.parse(_rpcs));
+		}
+
+		const _blocklistLimit = localStorage.getItem('blocklist_limit');
+		if (_blocklistLimit) {
+			stores.blocklistLimitStore.set(parseInt(_blocklistLimit));
+		}
+
+		const _interval = localStorage.getItem('interval');
+		if (_interval) {
+			stores.intervalStore.set(parseInt(_interval));
+		}
+
+		const _callAbis = localStorage.getItem('call_abis');
+		if (_callAbis) {
+			stores.callAbisStore.set(JSON.parse(_callAbis));
+		}
+
+		const _txAbis = localStorage.getItem('tx_abis');
+		if (_txAbis) {
+			stores.callAbisStore.set(JSON.parse(_txAbis));
+		}
+
+		stores.initializedStore.set(true);
+	});
 </script>
 
 <svelte:head>

@@ -10,16 +10,16 @@
 	import { get } from 'svelte/store';
 
 	let open = false;
-	let blockListLimit = constants.DEFAULT_BLOCK_LIST_LIMIT;
+	let blocklistLimit = constants.DEFAULT_BLOCK_LIST_LIMIT;
 	let interval = constants.MIN_INTERVAL;
 
 	$: if (open) {
-		blockListLimit = get(stores.blockListLimitStore);
+		blocklistLimit = get(stores.blocklistLimitStore);
 		interval = get(stores.intervalStore);
 	}
 
 	function saveSetting() {
-		if (!blockListLimit || blockListLimit < constants.MIN_BLOCK_LIST_LIMIT) {
+		if (!blocklistLimit || blocklistLimit < constants.MIN_BLOCK_LIST_LIMIT) {
 			toast(
 				`invalid blocklist limit: blocklist limit must be at least ${constants.MIN_BLOCK_LIST_LIMIT}`
 			);
@@ -29,8 +29,8 @@
 			toast(`invalid interval: interval must be at least ${constants.MIN_INTERVAL}`);
 			return;
 		}
-		localStorage.setItem('blockListLimit', blockListLimit.toString());
-		stores.blockListLimitStore.set(blockListLimit);
+		localStorage.setItem('blocklist_limit', blocklistLimit.toString());
+		stores.blocklistLimitStore.set(blocklistLimit);
 
 		localStorage.setItem('interval', interval.toString());
 		stores.intervalStore.set(interval);
@@ -63,7 +63,7 @@
 										type="number"
 										min={constants.MIN_BLOCK_LIST_LIMIT}
 										placeholder={constants.DEFAULT_BLOCK_LIST_LIMIT.toString()}
-										bind:value={blockListLimit}
+										bind:value={blocklistLimit}
 									/>
 								</Table.Cell>
 							</Table.Row>
