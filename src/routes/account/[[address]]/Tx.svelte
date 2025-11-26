@@ -17,7 +17,6 @@
 	export let abis: string[] = constants.DEFAULT_TX_ABIS;
 
 	let selectedAbi = constants.DEFAULT_TX_ABIS[0];
-	let abiOpen = false;
 	let inputs: string = '';
 	let outputs: string = '';
 	let func: types.Function;
@@ -72,15 +71,7 @@
 					</Select.Root>
 				</div>
 				<div>
-					<Button
-						class="cursor-pointer"
-						onclick={() => {
-							abiOpen = true;
-						}}
-					>
-						<Plus />
-					</Button>
-					<Editor bind:open={abiOpen} name="ABI" storage="tx_abis" store={stores.txAbisStore} />
+					<Editor name="ABI" storage="tx_abis" store={stores.txAbisStore} />
 				</div>
 				<div>
 					<Button class="cursor-pointer" onclick={sendTx}>Send</Button>

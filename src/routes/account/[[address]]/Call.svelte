@@ -17,7 +17,6 @@
 	export let abis: string[] = constants.DEFAULT_CALL_ABIS;
 
 	let selectedAbi = constants.DEFAULT_CALL_ABIS[0];
-	let abiOpen = false;
 	let inputs: string = '';
 	let outputs: string = '';
 	let func: types.Function;
@@ -74,15 +73,7 @@
 					</Select.Root>
 				</div>
 				<div>
-					<Button
-						class="cursor-pointer"
-						onclick={() => {
-							abiOpen = true;
-						}}
-					>
-						<Plus />
-					</Button>
-					<Editor bind:open={abiOpen} name="ABI" storage="call_abis" store={stores.callAbisStore} />
+					<Editor name="ABI" storage="call_abis" store={stores.callAbisStore} />
 				</div>
 				<div>
 					<Button class="cursor-pointer" onclick={call}>Call</Button>

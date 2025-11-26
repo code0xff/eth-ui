@@ -20,7 +20,6 @@
 
 	let rpc = '';
 	let rpcs: string[] = [];
-	let rpcOpen = false;
 
 	let syncStatus: types.SyncStatus = 'idle';
 
@@ -214,15 +213,7 @@
 						</Select.Root>
 					</div>
 					<div>
-						<Button
-							class="cursor-pointer"
-							onclick={() => {
-								rpcOpen = true;
-							}}
-						>
-							<Plus />
-						</Button>
-						<Editor bind:open={rpcOpen} name="RPC" storage="rpcs" store={stores.rpcsStore} />
+						<Editor name="RPC" storage="rpcs" store={stores.rpcsStore} />
 					</div>
 					<div>
 						<Button

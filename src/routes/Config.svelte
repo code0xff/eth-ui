@@ -10,8 +10,13 @@
 	import { get } from 'svelte/store';
 
 	let open = false;
-	let blockListLimit = get(stores.blockListLimitStore);
-	let interval = get(stores.intervalStore);
+	let blockListLimit = constants.DEFAULT_BLOCK_LIST_LIMIT;
+	let interval = constants.MIN_INTERVAL;
+
+	$: if (open) {
+		blockListLimit = get(stores.blockListLimitStore);
+		interval = get(stores.intervalStore);
+	}
 
 	function saveSetting() {
 		if (!blockListLimit || blockListLimit < constants.MIN_BLOCK_LIST_LIMIT) {
@@ -21,9 +26,7 @@
 			return;
 		}
 		if (!interval || interval < constants.MIN_INTERVAL) {
-			toast(
-				`invalid interval: interval must be at least ${constants.MIN_INTERVAL}`
-			);
+			toast(`invalid interval: interval must be at least ${constants.MIN_INTERVAL}`);
 			return;
 		}
 		localStorage.setItem('blockListLimit', blockListLimit.toString());
@@ -80,7 +83,7 @@
 				</Dialog.Description>
 			</Dialog.Header>
 			<Dialog.Footer>
-				<Button class="cursor-pointer" onclick={saveSetting}>Save changes</Button>
+				<Button class="cursor-pointer" onclick={saveSetting}>Save</Button>
 			</Dialog.Footer>
 		</Dialog.Content>
 	</Dialog.Root>
