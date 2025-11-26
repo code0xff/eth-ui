@@ -23,10 +23,10 @@ export function printWei(wei: bigint | null, withOrigin: boolean = false): strin
 
 	let value: bigint;
 	let unit: string;
-	if (wei > constants.ETH) {
+	if (wei >= constants.ETH) {
 		value = wei / constants.ETH;
 		unit = 'eth';
-	} else if (wei > constants.GWEI) {
+	} else if (wei >= constants.GWEI) {
 		value = wei / constants.GWEI;
 		unit = 'gwei';
 	} else {
