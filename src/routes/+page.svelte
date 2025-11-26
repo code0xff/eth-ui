@@ -28,23 +28,23 @@
 
 	let searchParam: string = '';
 
-	stores.syncStatusStore.subscribe((_syncStatus) => {
-		syncStatus = _syncStatus;
+	stores.syncStatusStore.subscribe((updatedSyncStatus) => {
+		syncStatus = updatedSyncStatus;
 	});
-	stores.blockStore.subscribe((_blocks) => {
-		blockList = [..._blocks.values()];
+	stores.blockStore.subscribe((updatedBlocks) => {
+		blockList = [...updatedBlocks.values()];
 	});
-	stores.txStore.subscribe((_txs) => {
-		txList = [..._txs.values()];
+	stores.txStore.subscribe((updatedTxs) => {
+		txList = [...updatedTxs.values()];
 	});
-	stores.rpcStore.subscribe((_rpc) => {
-		rpc = _rpc;
+	stores.rpcStore.subscribe((updatedRpc) => {
+		rpc = updatedRpc;
 	});
-	stores.providerStore.subscribe((_provider) => {
-		provider = _provider;
+	stores.providerStore.subscribe((updatedProvider) => {
+		provider = updatedProvider;
 	});
-	stores.rpcsStore.subscribe((_rpcs) => {
-		rpcs = _rpcs;
+	stores.rpcsStore.subscribe((updatedRpcs) => {
+		rpcs = updatedRpcs;
 	});
 
 	onMount(async () => {
