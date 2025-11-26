@@ -14,7 +14,7 @@
 
 	export let address = '';
 	export let provider: services.BlockProvider | undefined;
-	export let abis: string[] = [];
+	export let abis: string[] = constants.DEFAULT_CALL_ABIS;
 
 	let selectedAbi = constants.DEFAULT_CALL_ABIS[0];
 	let abiOpen = false;

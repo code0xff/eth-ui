@@ -6,7 +6,6 @@
 	import { toast } from 'svelte-sonner';
 	import Button from '@/components/ui/button/button.svelte';
 	import * as Card from '@/components/ui/card/index.js';
-	import * as Dialog from '@/components/ui/dialog/index.js';
 	import Input from '@/components/ui/input/input.svelte';
 	import * as Select from '@/components/ui/select';
 	import * as Table from '@/components/ui/table/index.js';
@@ -16,6 +15,7 @@
 	import * as services from '@/services';
 	import * as types from '@/types';
 	import Editor from './Editor.svelte';
+	import Config from './Config.svelte';
 
 	let provider: services.BlockProvider | undefined;
 
@@ -51,6 +51,9 @@
 	stores.rpcsStore.subscribe((_rpcs) => {
 		rpcs = _rpcs;
 	});
+	stores.blockListLimitStore.subscribe((_blockListLimit) => {
+		blockListLimit = _blockListLimit;
+	});
 
 	onMount(async () => {
 		rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPCS[0];
@@ -61,10 +64,9 @@
 		}
 
 		const _blockListLimit = localStorage.getItem('blockListLimit');
-		blockListLimit = _blockListLimit
-			? parseInt(_blockListLimit)
-			: constants.DEFAULT_BLOCK_LIST_LIMIT;
-		stores.blockListLimitStore.set(blockListLimit);
+		if (_blockListLimit) {
+			stores.blockListLimitStore.set(parseInt(_blockListLimit));
+		}
 
 		if (syncStatus === 'idle') {
 			await startSync();
@@ -191,20 +193,6 @@
 			}
 		}
 	}
-
-	function saveSetting() {
-		if (!blockListLimit || blockListLimit < constants.MIN_BLOCK_LIST_LIMIT) {
-			toast(
-				`invalid block list limit: block list limit must be at least ${constants.MIN_BLOCK_LIST_LIMIT}`
-			);
-			return;
-		}
-		localStorage.setItem('blockListLimit', blockListLimit.toString());
-		stores.blockListLimitStore.set(blockListLimit);
-		settingOpen = false;
-
-		toast('successfully saved');
-	}
 </script>
 
 <div>
@@ -253,33 +241,7 @@
 						>
 							<CogIcon />
 						</Button>
-						<Dialog.Root bind:open={settingOpen}>
-							<Dialog.Content>
-								<Dialog.Header>
-									<Dialog.Title>Setting</Dialog.Title>
-									<Dialog.Description>
-										<Table.Root>
-											<Table.Body>
-												<Table.Row>
-													<Table.Cell>Block list limit</Table.Cell>
-													<Table.Cell>
-														<Input
-															type="number"
-															min={constants.MIN_BLOCK_LIST_LIMIT}
-															placeholder={constants.DEFAULT_BLOCK_LIST_LIMIT.toString()}
-															bind:value={blockListLimit}
-														/>
-													</Table.Cell>
-												</Table.Row>
-											</Table.Body>
-										</Table.Root>
-									</Dialog.Description>
-								</Dialog.Header>
-								<Dialog.Footer>
-									<Button class="cursor-pointer" onclick={saveSetting}>Save changes</Button>
-								</Dialog.Footer>
-							</Dialog.Content>
-						</Dialog.Root>
+						<Config bind:open={settingOpen} bind:blockListLimit />
 					</div>
 				</div>
 			</Card.Content>
