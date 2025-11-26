@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { CogIcon, Plus } from '@lucide/svelte';
 	import { get } from 'svelte/store';
 	import { toast } from 'svelte-sonner';
+	import { Plus } from '@lucide/svelte';
 	import Button from '@/components/ui/button/button.svelte';
 	import * as Card from '@/components/ui/card/index.js';
 	import Input from '@/components/ui/input/input.svelte';
@@ -15,7 +15,6 @@
 	import * as services from '@/services';
 	import * as types from '@/types';
 	import Editor from './Editor.svelte';
-	import Config from './Config.svelte';
 
 	let provider: services.BlockProvider | undefined;
 
@@ -23,10 +22,7 @@
 	let rpcs: string[] = [];
 	let rpcOpen = false;
 
-	let blockListLimit: number = constants.DEFAULT_BLOCK_LIST_LIMIT;
 	let syncStatus: types.SyncStatus = 'idle';
-
-	let settingOpen: boolean = false;
 
 	let blockList: types.Block[] = [];
 	let txList: types.TxResponse[] = [];
@@ -50,9 +46,6 @@
 	});
 	stores.rpcsStore.subscribe((_rpcs) => {
 		rpcs = _rpcs;
-	});
-	stores.blockListLimitStore.subscribe((_blockListLimit) => {
-		blockListLimit = _blockListLimit;
 	});
 
 	onMount(async () => {
@@ -231,17 +224,6 @@
 							class="w-[80px] cursor-pointer"
 							>{syncStatus === 'processing' ? 'Stop' : 'Start'}</Button
 						>
-					</div>
-					<div>
-						<Button
-							class="cursor-pointer"
-							onclick={() => {
-								settingOpen = true;
-							}}
-						>
-							<CogIcon />
-						</Button>
-						<Config bind:open={settingOpen} bind:blockListLimit />
 					</div>
 				</div>
 			</Card.Content>

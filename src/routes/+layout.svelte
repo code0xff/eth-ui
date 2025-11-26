@@ -6,6 +6,7 @@
 	import { SunMoon } from '@lucide/svelte';
 	import { Toaster } from '@/components/ui/sonner';
 	import { Button } from '@/components/ui/button';
+	import Config from './Config.svelte';
 
 	let { children } = $props();
 </script>
@@ -27,11 +28,15 @@
 			ETH UI
 		</a>
 	</div>
-	<div class="mr-4 flex-1 flex justify-end">
-		<Button onclick={toggleMode} class="cursor-pointer">
-			<SunMoon />
-		</Button>
+	<div class="mr-4 flex flex-1 justify-end gap-4">
+		<div>
+			<Config />
+		</div>
+		<div>
+			<Button class="cursor-pointer" onclick={toggleMode}>
+				<SunMoon />
+			</Button>
+		</div>
 	</div>
 </div>
-<hr />
 {@render children?.()}
