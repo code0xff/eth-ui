@@ -14,6 +14,7 @@ export const ETH = 1_000_000_000_000_000_000n;
 export const DEFAULT_BLOCK_LIST_LIMIT = 10;
 
 export const MIN_BLOCK_LIST_LIMIT = 1;
+export const MIN_INTERVAL = 300;
 
 export const DEFAULT_CALL_ABIS = [
 	'function totalSupply() external view returns (uint256)',

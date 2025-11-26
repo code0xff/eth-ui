@@ -46,9 +46,9 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 			if (this.provider && this.network) {
 				return;
 			}
-		} catch (_e: unknown) {
-			if (_e instanceof Error) {
-				console.warn((_e as Error).toString());
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				console.warn((e as Error).toString());
 			}
 
 			if (count > 0) {
@@ -214,7 +214,10 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 		return _response.hash;
 	}
 
-	async onNewBlock(callback: (block: types.Block) => void): Promise<void> {
+	async onNewBlock(
+		callback: (block: types.Block) => void,
+		interval: number = constants.MIN_INTERVAL
+	): Promise<void> {
 		if (!this.provider) {
 			await this.reconnect();
 		}
@@ -230,7 +233,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 						callback(_block);
 					}
 				}
-			}, 1000);
+			}, interval);
 		} else {
 			this.provider!.on('block', async (_blockNumber: number) => {
 				const _block = await this.getBlockByNumber(_blockNumber, true);

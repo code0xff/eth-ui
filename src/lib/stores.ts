@@ -12,3 +12,4 @@ export const blockListLimitStore = writable<number>(constants.DEFAULT_BLOCK_LIST
 export const rpcsStore = writable<string[]>([]);
 export const callAbisStore = writable<string[]>([]);
 export const txAbisStore = writable<string[]>([]);
+export const intervalStore = writable<number>(constants.MIN_INTERVAL);

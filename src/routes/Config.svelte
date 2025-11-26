@@ -11,18 +11,28 @@
 
 	let open = false;
 	let blockListLimit = get(stores.blockListLimitStore);
+	let interval = get(stores.intervalStore);
 
 	function saveSetting() {
 		if (!blockListLimit || blockListLimit < constants.MIN_BLOCK_LIST_LIMIT) {
 			toast(
-				`invalid block list limit: block list limit must be at least ${constants.MIN_BLOCK_LIST_LIMIT}`
+				`invalid blocklist limit: blocklist limit must be at least ${constants.MIN_BLOCK_LIST_LIMIT}`
+			);
+			return;
+		}
+		if (!interval || interval < constants.MIN_INTERVAL) {
+			toast(
+				`invalid interval: interval must be at least ${constants.MIN_INTERVAL}`
 			);
 			return;
 		}
 		localStorage.setItem('blockListLimit', blockListLimit.toString());
 		stores.blockListLimitStore.set(blockListLimit);
-		open = false;
 
+		localStorage.setItem('interval', interval.toString());
+		stores.intervalStore.set(interval);
+
+		open = false;
 		toast('successfully saved');
 	}
 </script>
@@ -51,6 +61,17 @@
 										min={constants.MIN_BLOCK_LIST_LIMIT}
 										placeholder={constants.DEFAULT_BLOCK_LIST_LIMIT.toString()}
 										bind:value={blockListLimit}
+									/>
+								</Table.Cell>
+							</Table.Row>
+							<Table.Row>
+								<Table.Cell>Interval</Table.Cell>
+								<Table.Cell>
+									<Input
+										type="number"
+										min={constants.MIN_INTERVAL}
+										placeholder={`${constants.MIN_INTERVAL.toString()} ms`}
+										bind:value={interval}
 									/>
 								</Table.Cell>
 							</Table.Row>

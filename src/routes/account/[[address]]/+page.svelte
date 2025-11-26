@@ -51,16 +51,17 @@
 			provider = get(stores.providerStore);
 			if (!provider) {
 				provider = services.defaultBlockProvider(_rpc);
+				
 				stores.providerStore.set(provider);
 			}
 
 			balance = await provider.getBalance(data.address);
 			nonce = await provider.getTransactionCount(data.address);
 			code = await provider.getCode(data.address);
-		} catch (_e: unknown) {
-			if (_e instanceof Error) {
-				console.error(_e.message);
-				toast(_e.message);
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				console.error(e.message);
+				toast(e.message);
 			}
 		}
 	});
@@ -77,10 +78,10 @@
 			}
 
 			result = await provider.getStorage(data.address, slot);
-		} catch (_e: unknown) {
-			if (_e instanceof Error) {
-				console.error(_e.message);
-				toast(_e.message);
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				console.error(e.message);
+				toast(e.message);
 			}
 		}
 	}

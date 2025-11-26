@@ -32,10 +32,10 @@
 
 			tx = await provider.getTx(data.hash);
 			txReceipt = await provider.getTxReceipt(data.hash);
-		} catch (_e: unknown) {
-			if (_e instanceof Error) {
-				console.error(_e.message);
-				toast(_e.message);
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				console.error(e.message);
+				toast(e.message);
 			}
 		}
 	});

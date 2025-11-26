@@ -61,6 +61,11 @@
 			stores.blockListLimitStore.set(parseInt(_blockListLimit));
 		}
 
+		const _interval = localStorage.getItem('interval');
+		if (_interval) {
+			stores.intervalStore.set(parseInt(_interval));
+		}
+
 		if (syncStatus === 'idle') {
 			await startSync();
 		}
@@ -95,13 +100,15 @@
 
 			provider = services.defaultBlockProvider(rpc);
 			await provider.connect();
-			provider.onNewBlock(updateNewBlock);
+
+			const _interval = get(stores.intervalStore);
+			provider.onNewBlock(updateNewBlock, _interval);
 
 			stores.providerStore.set(provider);
-		} catch (_e: unknown) {
-			if (_e instanceof Error) {
-				console.error(_e.message);
-				toast(_e.message);
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				console.error(e.message);
+				toast(e.message);
 			}
 
 			stopSync();
@@ -114,17 +121,17 @@
 
 			stores.providerStore.set(undefined);
 			stores.syncStatusStore.set('stopped');
-		} catch (_e: unknown) {
-			if (_e instanceof Error) {
-				console.error(_e.message);
-				toast(_e.message);
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				console.error(e.message);
+				toast(e.message);
 			}
 		}
 	}
 
-	function updateNewBlock(_newBlock: types.Block) {
+	function updateNewBlock(newBlock: types.Block) {
 		const _blockStore = get(stores.blockStore);
-		if (_blockStore.has(_newBlock.number)) {
+		if (_blockStore.has(newBlock.number)) {
 			return;
 		}
 
@@ -148,12 +155,12 @@
 			});
 		}
 
-		stores.blockStore.update((_blocks) => {
-			return new Map([[_newBlock.number, _newBlock], ..._blocks]);
+		stores.blockStore.update((blocks) => {
+			return new Map([[newBlock.number, newBlock], ...blocks]);
 		});
-		stores.txStore.update((_txs) => {
-			const _newTxs = new Map(_newBlock.prefetchedTransactions.map((_tx) => [_tx.hash, _tx]));
-			return new Map([..._newTxs, ..._txs]);
+		stores.txStore.update((txs) => {
+			const _newTxs = new Map(newBlock.prefetchedTransactions.map((tx) => [tx.hash, tx]));
+			return new Map([..._newTxs, ...txs]);
 		});
 	}
 
@@ -179,10 +186,10 @@
 				}
 				goto(`/block/${_blockNumber}`);
 			}
-		} catch (_e: unknown) {
-			if (_e instanceof Error) {
-				console.error(_e.message);
-				toast(_e.message);
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				console.error(e.message);
+				toast(e.message);
 			}
 		}
 	}

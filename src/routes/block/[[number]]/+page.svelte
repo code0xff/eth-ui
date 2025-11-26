@@ -31,10 +31,10 @@
 			const _blockNumber = parseInt(data.number);
 
 			block = await provider.getBlockByNumber(_blockNumber, true);
-		} catch (_e: unknown) {
-			if (_e instanceof Error) {
-				console.error(_e.message);
-				toast(_e.message);
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				console.error(e.message);
+				toast(e.message);
 			}
 		}
 	});

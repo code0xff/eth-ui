@@ -31,10 +31,10 @@
 			func = services.AbiParser.parse(selectedAbi);
 
 			inputsPlaceholder = func.inputs.map((input) => input.type).join(',');
-		} catch (_e: unknown) {
-			if (_e instanceof Error) {
-				console.warn(_e.message);
-				toast(_e.message);
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				console.warn(e.message);
+				toast(e.message);
 			}
 		}
 	}
@@ -42,10 +42,10 @@
 	async function sendTx() {
 		try {
 			outputs = (await provider?.sendTx(address, selectedAbi, inputs)) ?? '';
-		} catch (_e: unknown) {
-			if (_e instanceof Error) {
-				console.error(_e.message);
-				toast(_e.message);
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				console.error(e.message);
+				toast(e.message);
 			}
 		}
 	}
