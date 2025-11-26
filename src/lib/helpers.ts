@@ -44,13 +44,20 @@ export function splitToChunks(data: string): string {
 		return data;
 	} else {
 		data = data.startsWith('0x') ? data.slice(2) : data;
-		const chunks: string[] = [`0x${data.slice(0, constants.SELECTOR_SIZE)}`];
-
-		data = data.slice(constants.SELECTOR_SIZE);
-		for (let i = 0; i < data.length; i += constants.CHUNK_SIZE) {
-			chunks.push('0x' + data.slice(i, i + constants.CHUNK_SIZE));
+		let chunks: string[] = [];
+		if (data.length % constants.CHUNK_SIZE === constants.SELECTOR_SIZE) {
+			chunks.push(`0x${data.slice(0, constants.SELECTOR_SIZE)}`);
+			data = data.slice(constants.SELECTOR_SIZE);
+			for (let i = 0; i < data.length; i += constants.CHUNK_SIZE) {
+				chunks.push(`0x${data.slice(i, i + constants.CHUNK_SIZE)}`);
+			}
+			return chunks.join('\n');
+		} else {
+			for (let i = 0; i < data.length; i += constants.CHUNK_SIZE) {
+				chunks.push(data.slice(i, i + constants.CHUNK_SIZE));
+			}
+			return chunks.join('\n');
 		}
-		return chunks.join('\n');
 	}
 }
 
