@@ -14,8 +14,6 @@
 	import * as types from '@/types';
 	import Editor from './Editor.svelte';
 
-	let provider: services.BlockProvider | undefined;
-
 	let rpc = '';
 	$: if (rpc) {
 		stores.rpcStore.set(rpc);
@@ -39,9 +37,6 @@
 	stores.txStore.subscribe((updatedTxs) => {
 		txList = [...updatedTxs.values()];
 	});
-	stores.providerStore.subscribe((updatedProvider) => {
-		provider = updatedProvider;
-	});
 	stores.rpcStore.subscribe((updatedRpc) => {
 		rpc = updatedRpc;
 	});
@@ -63,7 +58,7 @@
 			stores.blockStore.set(new Map());
 			stores.txStore.set(new Map());
 
-			const _provider = get(stores.providerStore);
+			let _provider = get(stores.providerStore);
 			if (_provider) {
 				await _provider.disconnect();
 				stores.providerStore.set(undefined);
@@ -71,26 +66,26 @@
 
 			stores.syncStatusStore.set('processing');
 
-			provider = services.defaultBlockProvider(rpc);
-			await provider.connect();
+			_provider = services.defaultBlockProvider(rpc);
+			await _provider.connect();
 
 			const _interval = get(stores.intervalStore);
-			provider.onNewBlock(updateNewBlock, _interval);
+			_provider.onNewBlock(updateNewBlock, _interval);
 
-			stores.providerStore.set(provider);
+			stores.providerStore.set(_provider);
 		} catch (e: unknown) {
 			if (e instanceof Error) {
 				console.error(e.message);
 				toast(e.message);
 			}
 
-			stopSync();
+			await stopSync();
 		}
 	}
 
 	async function stopSync() {
 		try {
-			provider?.offNewBlock();
+			get(stores.providerStore)?.offNewBlock();
 
 			stores.providerStore.set(undefined);
 			stores.syncStatusStore.set('stopped');
