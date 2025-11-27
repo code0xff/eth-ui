@@ -65,12 +65,12 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 		return this.syncedBlockNumber;
 	}
 
-	async getBlockByNumber(blockNumber: number, prefetchTxs?: boolean): Promise<types.Block | null> {
+	async getBlock(blockTag: string | number, prefetchTxs?: boolean): Promise<types.Block | null> {
 		if (!this.provider) {
 			await this.reconnect();
 		}
 
-		const _block = await this.provider?.getBlock(blockNumber, prefetchTxs);
+		const _block = await this.provider?.getBlock(blockTag, prefetchTxs);
 		if (!_block) return null;
 
 		return {
@@ -227,7 +227,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 				if (!this.syncedBlockNumber) {
 					this.syncedBlockNumber = await this.provider!.getBlockNumber();
 				} else {
-					const _block = await this.getBlockByNumber(this.syncedBlockNumber + 1, true);
+					const _block = await this.getBlock(this.syncedBlockNumber + 1, true);
 					if (_block) {
 						this.syncedBlockNumber = _block.number;
 						callback(_block);
@@ -236,7 +236,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 			}, interval);
 		} else {
 			this.provider!.on('block', async (_blockNumber: number) => {
-				const _block = await this.getBlockByNumber(_blockNumber, true);
+				const _block = await this.getBlock(_blockNumber, true);
 				if (_block) {
 					this.syncedBlockNumber = _block.number;
 					callback(_block);
