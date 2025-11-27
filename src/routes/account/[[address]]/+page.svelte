@@ -45,13 +45,12 @@
 				txAbis = [...JSON.parse(_savedTxAbis)];
 			}
 
-			const _rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPCS[0];
-			stores.rpcStore.set(_rpc);
-
 			provider = get(stores.providerStore);
 			if (!provider) {
-				provider = services.defaultBlockProvider(_rpc);
+				const _rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPCS[0];
+				stores.rpcStore.set(_rpc);
 				
+				provider = services.defaultBlockProvider(_rpc);
 				stores.providerStore.set(provider);
 			}
 
