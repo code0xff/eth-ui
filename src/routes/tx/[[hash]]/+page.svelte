@@ -1,21 +1,48 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import * as Card from '@/components/ui/card/index.js';
-	import * as Table from '@/components/ui/table/index.js';
+	import { get } from 'svelte/store';
+	import { toast } from 'svelte-sonner';
+	import * as Card from '@/components/ui/card';
+	import * as Table from '@/components/ui/table';
 	import Textarea from '@/components/ui/textarea/textarea.svelte';
 	import * as helpers from '@/helpers';
+	import * as services from '@/services';
+	import * as stores from '@/stores';
 	import * as types from '@/types';
 
-	export let data: { tx: types.TxResponse; txReceipt: types.TxReceipt };
+	export let data: { hash: string };
 
-	let tx: types.TxResponse;
-	let txReceipt: types.TxReceipt;
+	let tx: types.TxResponse | null;
+	let txReceipt: types.TxReceipt | null;
 
-	$: if (data.tx) {
-		tx = data.tx;
-	}
-	$: if (data.txReceipt) {
-		txReceipt = data.txReceipt;
+	stores.initializedStore.subscribe(async (initialized) => {
+		if (initialized) {
+			await fetchTx(data.hash);
+		}
+	});
+
+	async function fetchTx(hash: string) {
+		try {
+			if (!data.hash) {
+				throw new Error(`invalid tx hash: ${hash}`);
+			}
+
+			let _provider = get(stores.providerStore);
+			if (!_provider) {
+				const _rpc = get(stores.rpcStore);
+
+				_provider = services.defaultBlockProvider(_rpc);
+				stores.providerStore.set(_provider);
+			}
+
+			tx = await _provider.getTx(hash);
+			txReceipt = await _provider.getTxReceipt(hash);
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				console.error(e.message);
+				toast(e.message);
+			}
+		}
 	}
 </script>
 

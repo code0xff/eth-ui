@@ -1,16 +1,54 @@
 <script lang="ts">
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
 	import * as helpers from '@/helpers';
+	import * as services from '@/services';
+	import * as stores from '@/stores';
 	import * as types from '@/types';
+	import { toast } from 'svelte-sonner';
+	import { get } from 'svelte/store';
 
-	export let data: { block: types.Block };
-	
-	let block: types.Block;
+	export let data: { tag: string };
+
+	let block: types.Block | null;
+
+	stores.initializedStore.subscribe(async (initialized) => {
+		if (initialized) {
+			await fetchBlock(data.tag);
+		}
+	});
 
 	$: if (data) {
-		block = data.block;
+		fetchBlock(data.tag);
+	}
+
+	async function fetchBlock(blockTag: string) {
+		try {
+			if (!blockTag) {
+				throw new Error(`invalid block tag: ${blockTag}`);
+			}
+
+			let _provider = get(stores.providerStore);
+			if (!_provider) {
+				const _rpc = get(stores.rpcStore);
+
+				_provider = services.defaultBlockProvider(_rpc);
+				stores.providerStore.set(_provider);
+			}
+
+			let _blockTag: string | number = blockTag;
+			if (!_blockTag?.startsWith('0x')) {
+				_blockTag = parseInt(_blockTag);
+			}
+
+			block = await _provider.getBlock(_blockTag, true);
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				console.error(e.message);
+				toast(e.message);
+			}
+		}
 	}
 </script>
 
@@ -36,12 +74,7 @@
 							<Table.Cell class="w-1/6">Parent</Table.Cell>
 							<Table.Cell
 								class="w-5/6 cursor-pointer"
-								onclick={block?.parentHash
-									? async () => {
-											await goto(`/block/${block?.parentHash}`);
-											await invalidateAll();
-										}
-									: null}
+								onclick={block?.parentHash ? async () => goto(`/block/${block?.parentHash}`) : null}
 								>{block ? block.parentHash : ''}
 							</Table.Cell>
 						</Table.Row>

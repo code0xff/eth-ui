@@ -25,7 +25,7 @@
 			}
 			const _txAbis = localStorage.getItem('tx_abis');
 			if (_txAbis) {
-				stores.callAbisStore.set(JSON.parse(_txAbis));
+				stores.txAbisStore.set(JSON.parse(_txAbis));
 			}
 
 			const _blocklistLimit = localStorage.getItem('blocklist_limit');
@@ -40,6 +40,7 @@
 			const _rpc = localStorage.getItem('rpc');
 			if (_rpc) {
 				stores.rpcStore.set(_rpc);
+				
 				const _provider = services.defaultBlockProvider(_rpc);
 				stores.providerStore.set(_provider);
 			}
