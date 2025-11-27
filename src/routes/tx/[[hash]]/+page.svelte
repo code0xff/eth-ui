@@ -1,45 +1,22 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
-	import { toast } from 'svelte-sonner';
-	import { get } from 'svelte/store';
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
 	import Textarea from '@/components/ui/textarea/textarea.svelte';
-	import * as constants from '@/constants';
 	import * as helpers from '@/helpers';
-	import * as services from '@/services';
-	import * as stores from '@/stores';
 	import * as types from '@/types';
 
-	export let data: { hash: string };
+	export let data: { tx: types.TxResponse; txReceipt: types.TxReceipt };
 
-	let provider: services.BlockProvider | undefined;
+	let tx: types.TxResponse;
+	let txReceipt: types.TxReceipt;
 
-	let tx: types.TxResponse | undefined | null;
-	let txReceipt: types.TxReceipt | undefined | null;
-
-	onMount(async () => {
-		try {
-			provider = get(stores.providerStore);
-
-			if (!provider) {
-				const _rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPCS[0];
-				stores.rpcStore.set(_rpc);
-
-				provider = services.defaultBlockProvider(_rpc);
-				stores.providerStore.set(provider);
-			}
-
-			tx = await provider.getTx(data.hash);
-			txReceipt = await provider.getTxReceipt(data.hash);
-		} catch (e: unknown) {
-			if (e instanceof Error) {
-				console.error(e.message);
-				toast(e.message);
-			}
-		}
-	});
+	$: if (data.tx) {
+		tx = data.tx;
+	}
+	$: if (data.txReceipt) {
+		txReceipt = data.txReceipt;
+	}
 </script>
 
 <div>
