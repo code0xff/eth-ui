@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { get } from 'svelte/store';
 	import { toast } from 'svelte-sonner';
 	import * as Card from '@/components/ui/card';
 	import { Button } from '@/components/ui/button';
 	import { Input } from '@/components/ui/input';
 	import * as Table from '@/components/ui/table';
-	import * as services from '@/services';
-	import * as stores from '@/stores';
+	import * as helpers from '@/helpers';
 
 	export let address = '';
 
@@ -15,13 +13,7 @@
 
 	async function getStorageAt() {
 		try {
-			let _provider = get(stores.providerStore);
-			if (!_provider) {
-				const _rpc = get(stores.rpcStore);
-
-				_provider = services.defaultBlockProvider(_rpc);
-				stores.providerStore.set(_provider);
-			}
+			const _provider = helpers.ensureProvider();
 
 			result = await _provider.getStorage(address, slot);
 		} catch (e: unknown) {

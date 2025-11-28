@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { get } from 'svelte/store';
 	import { toast } from 'svelte-sonner';
 	import { Button } from '@/components/ui/button';
 	import * as Card from '@/components/ui/card';
@@ -7,6 +6,7 @@
 	import * as Select from '@/components/ui/select';
 	import * as Table from '@/components/ui/table';
 	import * as constants from '@/constants';
+	import * as helpers from '@/helpers';
 	import * as services from '@/services';
 	import * as stores from '@/stores';
 	import * as types from '@/types';
@@ -45,13 +45,7 @@
 
 	async function call() {
 		try {
-			let _provider = get(stores.providerStore);
-			if (!_provider) {
-				const _rpc = get(stores.rpcStore);
-
-				_provider = services.defaultBlockProvider(_rpc);
-				stores.providerStore.set(_provider);
-			}
+			const _provider = helpers.ensureProvider();
 
 			outputs = await _provider.call(address, selectedAbi, inputs);
 		} catch (e: unknown) {

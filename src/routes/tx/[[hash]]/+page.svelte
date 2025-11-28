@@ -1,12 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { get } from 'svelte/store';
 	import { toast } from 'svelte-sonner';
 	import * as Card from '@/components/ui/card';
 	import * as Table from '@/components/ui/table';
 	import Textarea from '@/components/ui/textarea/textarea.svelte';
 	import * as helpers from '@/helpers';
-	import * as services from '@/services';
 	import * as stores from '@/stores';
 	import * as types from '@/types';
 
@@ -27,13 +25,7 @@
 				throw new Error(`invalid tx hash: ${hash}`);
 			}
 
-			let _provider = get(stores.providerStore);
-			if (!_provider) {
-				const _rpc = get(stores.rpcStore);
-
-				_provider = services.defaultBlockProvider(_rpc);
-				stores.providerStore.set(_provider);
-			}
+			const _provider = helpers.ensureProvider();
 
 			tx = await _provider.getTx(hash);
 			txReceipt = await _provider.getTxReceipt(hash);

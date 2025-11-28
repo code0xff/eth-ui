@@ -1,11 +1,9 @@
 <script lang="ts">
-	import { get } from 'svelte/store';
 	import { toast } from 'svelte-sonner';
 	import { Input } from '@/components/ui/input';
 	import * as Card from '@/components/ui/card';
 	import * as Table from '@/components/ui/table';
 	import * as helpers from '@/helpers';
-	import * as services from '@/services';
 	import * as stores from '@/stores';
 	import Call from './Call.svelte';
 	import Storage from './Storage.svelte';
@@ -29,13 +27,7 @@
 				throw new Error(`invalid account address: ${address}`);
 			}
 
-			let _provider = get(stores.providerStore);
-			if (!_provider) {
-				const _rpc = get(stores.rpcStore);
-
-				_provider = services.defaultBlockProvider(_rpc);
-				stores.providerStore.set(_provider);
-			}
+			const _provider = helpers.ensureProvider();
 
 			balance = await _provider.getBalance(address);
 			nonce = await _provider.getTransactionCount(address);

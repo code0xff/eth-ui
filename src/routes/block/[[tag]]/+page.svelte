@@ -3,11 +3,9 @@
 	import * as Card from '@/components/ui/card/index.js';
 	import * as Table from '@/components/ui/table/index.js';
 	import * as helpers from '@/helpers';
-	import * as services from '@/services';
 	import * as stores from '@/stores';
 	import * as types from '@/types';
 	import { toast } from 'svelte-sonner';
-	import { get } from 'svelte/store';
 
 	export let data: { tag: string };
 
@@ -29,13 +27,7 @@
 				throw new Error(`invalid block tag: ${blockTag}`);
 			}
 
-			let _provider = get(stores.providerStore);
-			if (!_provider) {
-				const _rpc = get(stores.rpcStore);
-
-				_provider = services.defaultBlockProvider(_rpc);
-				stores.providerStore.set(_provider);
-			}
+			const _provider = helpers.ensureProvider();
 
 			let _blockTag: string | number = blockTag;
 			if (!_blockTag?.startsWith('0x')) {

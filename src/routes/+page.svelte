@@ -66,7 +66,7 @@
 
 			stores.syncStatusStore.set('processing');
 
-			_provider = services.defaultBlockProvider(rpc);
+			_provider = helpers.ensureProvider();
 			await _provider.connect();
 
 			const _interval = get(stores.intervalStore);

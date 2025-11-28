@@ -1,4 +1,7 @@
+import { get } from 'svelte/store';
 import * as constants from './constants';
+import * as services from './services';
+import * as stores from './stores';
 
 export function timestampToDate(timestamp: number): string {
 	const datetime = new Date(timestamp * 1000).toISOString();
@@ -67,4 +70,19 @@ export function compactHash(hash: string | undefined | null, size: number = 8): 
 	} else {
 		return '';
 	}
+}
+
+// Must be called after the application initialization step.
+// The providerStore and rpcStore are populated only after initialization,
+// when values restored from localStorage are fully loaded.
+// Calling this function earlier may result in empty or uninitialized stores.
+export function ensureProvider(): services.BlockProvider {
+	let _provider = get(stores.providerStore);
+	if (!_provider) {
+		const _rpc = get(stores.rpcStore);
+
+		_provider = services.defaultBlockProvider(_rpc);
+		stores.providerStore.set(_provider);
+	}
+	return _provider;
 }
