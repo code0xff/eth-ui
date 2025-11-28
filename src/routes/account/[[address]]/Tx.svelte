@@ -63,7 +63,7 @@
 		<Card.Content>
 			<div>
 				<div class="flex flex-row gap-4">
-					<div class="w-full">
+					<div class="min-w-0 flex-1">
 						<Select.Root type="single" bind:value={selectedAbi}>
 							<Select.Trigger class="w-full cursor-pointer">{selectedAbi}</Select.Trigger>
 							<Select.Content>

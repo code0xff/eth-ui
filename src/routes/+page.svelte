@@ -167,7 +167,7 @@
 		<Card.Root>
 			<Card.Content>
 				<div class="flex flex-row gap-4">
-					<div class="w-full">
+					<div class="min-w-0 flex-1">
 						<Select.Root type="single" disabled={syncStatus === 'processing'} bind:value={rpc}>
 							<Select.Trigger class="w-full cursor-pointer">{rpc}</Select.Trigger>
 							<Select.Content>
