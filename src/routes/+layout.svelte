@@ -6,6 +6,7 @@
 	import { SunMoon } from '@lucide/svelte';
 	import { Toaster } from '@/components/ui/sonner';
 	import { Button } from '@/components/ui/button';
+	import * as constants from '@/constants';
 	import * as services from '@/services';
 	import * as stores from '@/stores';
 	import Config from './Config.svelte';
@@ -37,7 +38,7 @@
 				stores.intervalStore.set(parseInt(_interval));
 			}
 
-			const _rpc = localStorage.getItem('rpc');
+			const _rpc = localStorage.getItem('rpc') ?? constants.DEFAULT_RPCS[0];
 			if (_rpc) {
 				stores.rpcStore.set(_rpc);
 				

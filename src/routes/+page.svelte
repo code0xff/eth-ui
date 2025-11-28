@@ -10,7 +10,6 @@
 	import * as stores from '@/stores';
 	import * as helpers from '@/helpers';
 	import * as constants from '@/constants';
-	import * as services from '@/services';
 	import * as types from '@/types';
 	import Editor from './Editor.svelte';
 
