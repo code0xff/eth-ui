@@ -152,7 +152,7 @@
 	<div class="m-4">
 		<Card.Root>
 			<Card.Content>
-				<div class="flex flex-row gap-4">
+				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="min-w-0 flex-1">
 						<Select.Root type="single" disabled={syncStatus === 'processing'} bind:value={rpc}>
 							<Select.Trigger class="w-full cursor-pointer">{rpc}</Select.Trigger>
@@ -166,16 +166,19 @@
 							</Select.Content>
 						</Select.Root>
 					</div>
-					<div>
-						<Editor name="RPC" storage="rpcs" store={stores.rpcsStore} />
-					</div>
-					<div>
-						<Button
-							onclick={async () =>
-								syncStatus === 'processing' ? await stopSync() : await startSync()}
-							class="w-[80px] cursor-pointer"
-							>{syncStatus === 'processing' ? 'Stop' : 'Start'}</Button
-						>
+					<div class="flex flex-row gap-4 max-md:w-full">
+						<div>
+							<Editor name="RPC" storage="rpcs" store={stores.rpcsStore} />
+						</div>
+						<div class="max-md:w-full">
+							<Button
+								onclick={async () =>
+									syncStatus === 'processing' ? await stopSync() : await startSync()}
+								class="w-full cursor-pointer md:w-[80px]"
+							>
+								{syncStatus === 'processing' ? 'Stop' : 'Start'}
+							</Button>
+						</div>
 					</div>
 				</div>
 			</Card.Content>
