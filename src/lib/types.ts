@@ -52,3 +52,10 @@ export type Network = {
 	chainId: bigint;
 	name: string;
 };
+
+export type Account = {
+	address: string;
+	balance: bigint;
+	nonce: number;
+	code: string;
+};

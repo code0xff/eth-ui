@@ -22,7 +22,7 @@
 	}
 
 	async function fetchBlock(blockTag: string) {
-		try {
+		await helpers.tryExecuteAsync(async () => {
 			if (!blockTag) {
 				throw new Error(`invalid block tag: ${blockTag}`);
 			}
@@ -35,12 +35,7 @@
 			}
 
 			block = await _provider.getBlock(_blockTag, true);
-		} catch (e: unknown) {
-			if (e instanceof Error) {
-				console.error(e.message);
-				toast(e.message);
-			}
-		}
+		});
 	}
 </script>
 

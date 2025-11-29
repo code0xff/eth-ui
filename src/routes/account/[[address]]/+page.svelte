@@ -1,19 +1,17 @@
 <script lang="ts">
-	import { toast } from 'svelte-sonner';
 	import { Input } from '@/components/ui/input';
 	import * as Card from '@/components/ui/card';
 	import * as Table from '@/components/ui/table';
 	import * as helpers from '@/helpers';
 	import * as stores from '@/stores';
+	import * as types from '@/types';
 	import Call from './Call.svelte';
 	import Storage from './Storage.svelte';
 	import Tx from './Tx.svelte';
 
 	export let data: { address: string };
 
-	let balance: bigint;
-	let nonce: number;
-	let code: string;
+	let account: types.Account;
 
 	stores.initializedStore.subscribe(async (initialized) => {
 		if (initialized) {
@@ -22,22 +20,15 @@
 	});
 
 	async function fetchAccount(address: string) {
-		try {
+		await helpers.tryExecuteAsync(async () => {
 			if (!address) {
 				throw new Error(`invalid account address: ${address}`);
 			}
 
 			const _provider = helpers.ensureProvider();
 
-			balance = await _provider.getBalance(address);
-			nonce = await _provider.getTransactionCount(address);
-			code = await _provider.getCode(address);
-		} catch (e: unknown) {
-			if (e instanceof Error) {
-				console.error(e.message);
-				toast(e.message);
-			}
-		}
+			account = await _provider.getAccount(address);
+		});
 	}
 </script>
 
@@ -52,18 +43,21 @@
 					<Table.Body>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Balance</Table.Cell>
-							<Table.Cell class="w-5/6">{balance ? helpers.printWei(balance, true) : ''}</Table.Cell
+							<Table.Cell class="w-5/6"
+								>{account?.balance ? helpers.printWei(account.balance, true) : ''}</Table.Cell
 							>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Nonce</Table.Cell>
-							<Table.Cell class="w-5/6">{nonce ? helpers.printNumber(nonce) : ''}</Table.Cell>
+							<Table.Cell class="w-5/6"
+								>{account?.nonce ? helpers.printNumber(account.nonce) : ''}</Table.Cell
+							>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell>Code</Table.Cell>
 							<Table.Cell>
-								{#if code && code.startsWith('0xef0100')}
-									<Input readonly bind:value={code} />
+								{#if account?.code && account.code.startsWith('0xef0100')}
+									<Input readonly bind:value={account.code} />
 								{/if}
 							</Table.Cell>
 						</Table.Row>

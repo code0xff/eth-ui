@@ -30,30 +30,19 @@
 		inputs = '';
 		outputs = '';
 
-		try {
+		helpers.tryExecute(() => {
 			func = services.AbiParser.parse(selectedAbi);
 
 			inputsPlaceholder = func.inputs.map((input) => input.type).join(',');
 			outputsPlaceholder = func.outputs.map((output) => output.type).join(',');
-		} catch (e: unknown) {
-			if (e instanceof Error) {
-				console.warn(e.message);
-				toast(e.message);
-			}
-		}
+		});
 	}
 
 	async function call() {
-		try {
+		await helpers.tryExecuteAsync(async () => {
 			const _provider = helpers.ensureProvider();
-
 			outputs = await _provider.call(address, selectedAbi, inputs);
-		} catch (e: unknown) {
-			if (e instanceof Error) {
-				console.error(e.message);
-				toast(e.message);
-			}
-		}
+		});
 	}
 </script>
 

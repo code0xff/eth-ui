@@ -48,7 +48,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 			}
 		} catch (e: unknown) {
 			if (e instanceof Error) {
-				console.warn((e as Error).toString());
+				console.warn(e.message);
 			}
 
 			if (count > 0) {
@@ -163,6 +163,25 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 			await this.reconnect();
 		}
 		return await this.provider!.getCode(address);
+	}
+
+	async getAccount(address: string): Promise<types.Account> {
+		if (!this.provider) {
+			await this.reconnect();
+		}
+
+		const [balance, nonce, code] = await Promise.all([
+			this.provider!.getBalance(address),
+			this.provider!.getTransactionCount(address),
+			this.provider!.getCode(address)
+		]);
+
+		return {
+			address,
+			balance,
+			nonce,
+			code
+		};
 	}
 
 	async getStorage(address: string, slot: string): Promise<string> {

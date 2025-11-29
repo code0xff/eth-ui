@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { toast } from 'svelte-sonner';
 	import { Minus, Plus } from '@lucide/svelte';
 	import type { Writable } from 'svelte/store';
 	import Button from '@/components/ui/button/button.svelte';
 	import * as Dialog from '@/components/ui/dialog/index.js';
 	import Input from '@/components/ui/input/input.svelte';
 	import * as Table from '@/components/ui/table/index.js';
+	import * as helpers from '@/helpers';
 
 	export let name = '';
 	export let storage = '';
@@ -22,33 +22,23 @@
 	}
 
 	function addItem() {
-		try {
+		helpers.tryExecute(() => {
 			items = [...items, input];
 			localStorage.setItem(storage, JSON.stringify(items));
 			store.set(items);
 
 			input = '';
-		} catch (e: unknown) {
-			if (e instanceof Error) {
-				console.error(e.message);
-				toast(e.message);
-			}
-		}
+		});
 	}
 
 	function removeItem(_index: number) {
-		try {
+		helpers.tryExecute(() => {
 			items.splice(_index, 1);
 			items = [...items];
 
 			localStorage.setItem(storage, JSON.stringify(items));
 			store.set(items);
-		} catch (e: unknown) {
-			if (e instanceof Error) {
-				console.error(e.message);
-				toast(e.message);
-			}
-		}
+		});
 	}
 </script>
 

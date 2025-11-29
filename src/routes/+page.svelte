@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { get } from 'svelte/store';
-	import { toast } from 'svelte-sonner';
 	import Button from '@/components/ui/button/button.svelte';
 	import * as Card from '@/components/ui/card/index.js';
 	import Input from '@/components/ui/input/input.svelte';
@@ -53,47 +52,39 @@
 			return;
 		}
 
-		try {
-			stores.blockStore.set(new Map());
-			stores.txStore.set(new Map());
+		await helpers.tryExecuteAsync(
+			async () => {
+				stores.blockStore.set(new Map());
+				stores.txStore.set(new Map());
 
-			let _provider = get(stores.providerStore);
-			if (_provider) {
-				await _provider.disconnect();
-				stores.providerStore.set(undefined);
-			}
+				let _provider = get(stores.providerStore);
+				if (_provider) {
+					await _provider.disconnect();
+					stores.providerStore.set(undefined);
+				}
 
-			stores.syncStatusStore.set('processing');
+				stores.syncStatusStore.set('processing');
 
-			_provider = helpers.ensureProvider();
-			await _provider.connect();
+				_provider = helpers.ensureProvider();
+				await _provider.connect();
 
-			const _interval = get(stores.intervalStore);
-			_provider.onNewBlock(updateNewBlock, _interval);
+				const _interval = get(stores.intervalStore);
+				_provider.onNewBlock(updateNewBlock, _interval);
 
-			stores.providerStore.set(_provider);
-		} catch (e: unknown) {
-			if (e instanceof Error) {
-				console.error(e.message);
-				toast(e.message);
-			}
-
-			await stopSync();
-		}
+				stores.providerStore.set(_provider);
+			},
+			false,
+			stopSync
+		);
 	}
 
 	async function stopSync() {
-		try {
+		helpers.tryExecute(() => {
 			get(stores.providerStore)?.offNewBlock();
 
 			stores.providerStore.set(undefined);
 			stores.syncStatusStore.set('stopped');
-		} catch (e: unknown) {
-			if (e instanceof Error) {
-				console.error(e.message);
-				toast(e.message);
-			}
-		}
+		});
 	}
 
 	function updateNewBlock(newBlock: types.Block) {
@@ -132,7 +123,7 @@
 	}
 
 	function search() {
-		try {
+		helpers.tryExecute(() => {
 			searchParam = searchParam.trim();
 			if (searchParam.length === 0) {
 				return;
@@ -153,12 +144,7 @@
 				}
 				goto(`/block/${_blockNumber}`);
 			}
-		} catch (e: unknown) {
-			if (e instanceof Error) {
-				console.error(e.message);
-				toast(e.message);
-			}
-		}
+		});
 	}
 </script>
 

@@ -29,29 +29,17 @@
 		inputs = '';
 		outputs = '';
 
-		try {
+		helpers.tryExecute(() => {
 			func = services.AbiParser.parse(selectedAbi);
-
 			inputsPlaceholder = func.inputs.map((input) => input.type).join(',');
-		} catch (e: unknown) {
-			if (e instanceof Error) {
-				console.warn(e.message);
-				toast(e.message);
-			}
-		}
+		});
 	}
 
 	async function sendTx() {
-		try {
+		await helpers.tryExecuteAsync(async () => {
 			const _provider = helpers.ensureProvider();
-
 			outputs = await _provider.sendTx(address, selectedAbi, inputs);
-		} catch (e: unknown) {
-			if (e instanceof Error) {
-				console.error(e.message);
-				toast(e.message);
-			}
-		}
+		});
 	}
 </script>
 

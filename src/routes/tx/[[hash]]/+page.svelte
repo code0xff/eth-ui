@@ -20,7 +20,7 @@
 	});
 
 	async function fetchTx(hash: string) {
-		try {
+		await helpers.tryExecuteAsync(async () => {
 			if (!data.hash) {
 				throw new Error(`invalid tx hash: ${hash}`);
 			}
@@ -29,12 +29,7 @@
 
 			tx = await _provider.getTx(hash);
 			txReceipt = await _provider.getTxReceipt(hash);
-		} catch (e: unknown) {
-			if (e instanceof Error) {
-				console.error(e.message);
-				toast(e.message);
-			}
-		}
+		});
 	}
 </script>
 

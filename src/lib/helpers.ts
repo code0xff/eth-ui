@@ -1,4 +1,5 @@
 import { get } from 'svelte/store';
+import { toast } from 'svelte-sonner';
 import * as constants from './constants';
 import * as services from './services';
 import * as stores from './stores';
@@ -47,7 +48,7 @@ export function splitToChunks(data: string): string {
 		return data;
 	} else {
 		data = data.startsWith('0x') ? data.slice(2) : data;
-		let chunks: string[] = [];
+		const chunks: string[] = [];
 		if (data.length % constants.CHUNK_SIZE === constants.SELECTOR_SIZE) {
 			chunks.push(`0x${data.slice(0, constants.SELECTOR_SIZE)}`);
 			data = data.slice(constants.SELECTOR_SIZE);
@@ -85,4 +86,52 @@ export function ensureProvider(): services.BlockProvider {
 		stores.providerStore.set(_provider);
 	}
 	return _provider;
+}
+
+export function handleError(e: unknown): void {
+	let message = 'Unknown error';
+	if (e instanceof Error) {
+		message = e.message;
+	} else if (typeof e === 'string') {
+		message = e;
+	} else {
+		message = JSON.stringify(e);
+	}
+
+	console.error(message);
+	toast.error(message);
+}
+
+// If fallback is async, you must call tryExecuteAsync,
+// tryExecute cannot handle async fallback.
+export async function tryExecuteAsync<R = void>(
+	task: () => Promise<R>,
+	rethrow: boolean = false,
+	fallback?: () => void | Promise<void>
+): Promise<R | undefined> {
+	try {
+		return await task();
+	} catch (e: unknown) {
+		handleError(e);
+		await fallback?.();
+		if (rethrow) {
+			throw e;
+		}
+	}
+}
+
+export function tryExecute<R = void>(
+	task: () => R,
+	rethrow: boolean = false,
+	fallback?: () => void
+): R | undefined {
+	try {
+		return task();
+	} catch (e: unknown) {
+		handleError(e);
+		fallback?.();
+		if (rethrow) {
+			throw e;
+		}
+	}
 }

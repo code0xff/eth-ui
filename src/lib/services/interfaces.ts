@@ -12,6 +12,7 @@ export interface BlockProvider {
 	getBalance(address: string): Promise<bigint>;
 	getTransactionCount(address: string): Promise<number>;
 	getCode(address: string): Promise<string>;
+	getAccount(address: string): Promise<types.Account>;
 	getStorage(address: string, slot: string): Promise<string>;
 
 	call(address: string, abi: string, inputs: string): Promise<string>;

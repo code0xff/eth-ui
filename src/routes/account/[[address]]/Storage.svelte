@@ -12,16 +12,10 @@
 	let result: string;
 
 	async function getStorageAt() {
-		try {
+		await helpers.tryExecuteAsync(async () => {
 			const _provider = helpers.ensureProvider();
-
 			result = await _provider.getStorage(address, slot);
-		} catch (e: unknown) {
-			if (e instanceof Error) {
-				console.error(e.message);
-				toast(e.message);
-			}
-		}
+		});
 	}
 </script>
 
