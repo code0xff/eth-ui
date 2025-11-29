@@ -9,6 +9,7 @@ export interface BlockProvider {
 	getBlock(blockTag: string | number, prefetchTxs?: boolean): Promise<types.Block | null>;
 	getTx(hash: string): Promise<types.TxResponse | null>;
 	getTxReceipt(hash: string): Promise<types.TxReceipt | null>;
+	getTxWithReceipt(hash: string): Promise<types.TxWithReceipt | null>;
 	getBalance(address: string): Promise<bigint>;
 	getTransactionCount(address: string): Promise<number>;
 	getCode(address: string): Promise<string>;

@@ -35,6 +35,10 @@ export type TxReceipt = {
 	logs: string[];
 };
 
+export type TxWithReceipt = TxResponse & {
+	receipt: TxReceipt | null;
+};
+
 export type SyncStatus = 'idle' | 'processing' | 'stopped';
 
 export type Argument = {

@@ -144,6 +144,20 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 		};
 	}
 
+	async getTxWithReceipt(hash: string): Promise<types.TxWithReceipt | null> {
+		if (!this.provider) {
+			await this.reconnect();
+		}
+
+		const [tx, receipt] = await Promise.all([this.getTx(hash), this.getTxReceipt(hash)]);
+		if (!tx) return null;
+
+		return {
+			...tx,
+			receipt
+		};
+	}
+
 	async getBalance(address: string): Promise<bigint> {
 		if (!this.provider) {
 			await this.reconnect();

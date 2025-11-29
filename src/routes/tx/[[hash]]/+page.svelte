@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { toast } from 'svelte-sonner';
 	import * as Card from '@/components/ui/card';
 	import * as Table from '@/components/ui/table';
 	import Textarea from '@/components/ui/textarea/textarea.svelte';
@@ -10,8 +9,7 @@
 
 	export let data: { hash: string };
 
-	let tx: types.TxResponse | null;
-	let txReceipt: types.TxReceipt | null;
+	let tx: types.TxWithReceipt | null;
 
 	stores.initializedStore.subscribe(async (initialized) => {
 		if (initialized) {
@@ -26,9 +24,7 @@
 			}
 
 			const _provider = helpers.ensureProvider();
-
-			tx = await _provider.getTx(hash);
-			txReceipt = await _provider.getTxReceipt(hash);
+			tx = await _provider.getTxWithReceipt(hash);
 		});
 	}
 </script>
@@ -119,23 +115,25 @@
 					<Table.Body>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Status</Table.Cell>
-							<Table.Cell class="w-5/6">{txReceipt ? txReceipt.status : ''}</Table.Cell>
+							<Table.Cell class="w-5/6">{tx?.receipt ? tx?.receipt.status : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Gas Used</Table.Cell>
-							<Table.Cell class="w-5/6"
-								>{txReceipt ? helpers.printNumber(txReceipt.gasUsed) : ''}</Table.Cell
-							>
+							<Table.Cell class="w-5/6">
+								{tx?.receipt ? helpers.printNumber(tx?.receipt.gasUsed) : ''}
+							</Table.Cell>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Actual Gas Price</Table.Cell>
-							<Table.Cell class="w-5/6"
-								>{txReceipt ? helpers.printWei(txReceipt.gasPrice, true) : ''}</Table.Cell
-							>
+							<Table.Cell class="w-5/6">
+								{tx?.receipt ? helpers.printWei(tx?.receipt.gasPrice, true) : ''}
+							</Table.Cell>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Contract</Table.Cell>
-							<Table.Cell class="w-5/6">{txReceipt ? txReceipt.contractAddress : ''}</Table.Cell>
+							<Table.Cell class="w-5/6">
+								{tx?.receipt ? tx?.receipt.contractAddress : ''}
+							</Table.Cell>
 						</Table.Row>
 						<!-- <Table.Row>
 							<Table.Cell class="w-1/6">Log Bloom</Table.Cell>
@@ -156,8 +154,8 @@
 			<Card.Content>
 				<Table.Root>
 					<Table.Body>
-						{#if txReceipt}
-							{#each txReceipt.logs as log}
+						{#if tx?.receipt}
+							{#each tx?.receipt.logs as log}
 								<Table.Row>
 									<Table.Cell>
 										<Textarea readonly class="resize-none" value={log} />
