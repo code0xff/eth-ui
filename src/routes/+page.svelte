@@ -155,7 +155,7 @@
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="min-w-0 flex-1">
 						<Select.Root type="single" disabled={syncStatus === 'processing'} bind:value={rpc}>
-							<Select.Trigger class="w-full cursor-pointer">{rpc}</Select.Trigger>
+							<Select.Trigger class="w-full cursor-pointer truncate">{rpc}</Select.Trigger>
 							<Select.Content>
 								{#each constants.DEFAULT_RPCS as rpc}
 									<Select.Item value={rpc}>{rpc}</Select.Item>

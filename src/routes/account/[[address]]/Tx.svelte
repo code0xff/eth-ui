@@ -53,7 +53,7 @@
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="min-w-0 flex-1">
 						<Select.Root type="single" bind:value={selectedAbi}>
-							<Select.Trigger class="w-full cursor-pointer">{selectedAbi}</Select.Trigger>
+							<Select.Trigger class="w-full cursor-pointer truncate">{selectedAbi}</Select.Trigger>
 							<Select.Content>
 								{#each constants.DEFAULT_TX_ABIS as abi}
 									<Select.Item value={abi}>{abi}</Select.Item>
