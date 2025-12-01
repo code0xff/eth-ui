@@ -15,7 +15,9 @@
 
 	function initialize() {
 		const _rpc = stores.rpcStore.get();
-		if (!_rpc || _rpc.trim().length === 0) {
+		const _rpcs = stores.rpcsStore.get();
+
+		if (!_rpc || _rpc.trim().length === 0 || !_rpcs.includes(_rpc)) {
 			stores.rpcStore.set(constants.DEFAULT_RPCS[0]);
 		}
 
