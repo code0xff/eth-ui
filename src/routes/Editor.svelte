@@ -5,10 +5,10 @@
 	import Input from '@/components/ui/input/input.svelte';
 	import * as Table from '@/components/ui/table/index.js';
 	import * as helpers from '@/helpers';
-	import * as interfaces from '@/stores/interfaces';
+	import { type Store } from '@/stores/interfaces';
 
 	export let name = '';
-	export let store: interfaces.Store<string[]>;
+	export let store: Store<string[]>;
 
 	let open = false;
 	let input = '';
