@@ -6,6 +6,7 @@
 	import { SunMoon } from '@lucide/svelte';
 	import { Toaster } from '@/components/ui/sonner';
 	import { Button } from '@/components/ui/button';
+	import * as constants from '@/constants';
 	import * as helpers from '@/helpers';
 	import * as stores from '@/stores';
 	import Config from './Config.svelte';
@@ -13,6 +14,11 @@
 	let { children } = $props();
 
 	function initialize() {
+		const _rpc = stores.rpcStore.get();
+		if (!_rpc || _rpc.trim().length === 0) {
+			stores.rpcStore.set(constants.DEFAULT_RPCS[0]);
+		}
+
 		helpers.ensureProvider();
 		stores.initializedStore.set(true);
 	}
