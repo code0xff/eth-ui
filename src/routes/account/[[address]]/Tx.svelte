@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { toast } from 'svelte-sonner';
 	import { Button } from '@/components/ui/button';
 	import * as Card from '@/components/ui/card';
 	import { Input } from '@/components/ui/input';
@@ -66,7 +65,7 @@
 					</div>
 					<div class="flex flex-row gap-4 max-md:w-full">
 						<div>
-							<Editor name="ABI" storage="tx_abis" store={stores.txAbisStore} />
+							<Editor name="ABI" store={stores.txAbisStore} />
 						</div>
 						<div class="max-md:w-full">
 							<Button class="cursor-pointer  max-md:w-full" onclick={sendTx}>Send</Button>

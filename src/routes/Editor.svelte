@@ -1,30 +1,26 @@
 <script lang="ts">
 	import { Minus, Plus } from '@lucide/svelte';
-	import type { Writable } from 'svelte/store';
 	import Button from '@/components/ui/button/button.svelte';
 	import * as Dialog from '@/components/ui/dialog/index.js';
 	import Input from '@/components/ui/input/input.svelte';
 	import * as Table from '@/components/ui/table/index.js';
 	import * as helpers from '@/helpers';
+	import * as interfaces from '@/stores/interfaces';
 
 	export let name = '';
-	export let storage = '';
-
-	export let store: Writable<string[]>;
+	export let store: interfaces.Store<string[]>;
 
 	let open = false;
 	let input = '';
 	let items: string[] = [];
 
 	$: if (open) {
-		const _items = localStorage.getItem(storage);
-		items = _items ? JSON.parse(_items) : [];
+		items = store.get();
 	}
 
 	function addItem() {
 		helpers.tryExecute(() => {
 			items = [...items, input];
-			localStorage.setItem(storage, JSON.stringify(items));
 			store.set(items);
 
 			input = '';
@@ -36,7 +32,6 @@
 			items.splice(_index, 1);
 			items = [...items];
 
-			localStorage.setItem(storage, JSON.stringify(items));
 			store.set(items);
 		});
 	}

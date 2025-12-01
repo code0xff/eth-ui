@@ -1,4 +1,3 @@
-import { get } from 'svelte/store';
 import { toast } from 'svelte-sonner';
 import * as constants from './constants';
 import * as services from './services';
@@ -13,7 +12,7 @@ export function timestampToDate(timestamp: number): string {
 }
 
 export function printNumber(num: number | bigint | null): string {
-	if (num !== undefined && num !== null) {
+	if (num !== null) {
 		return num.toLocaleString();
 	} else {
 		return '';
@@ -73,14 +72,10 @@ export function compactHash(hash: string | undefined | null, size: number = 8): 
 	}
 }
 
-// Must be called after the application initialization step.
-// The providerStore and rpcStore are populated only after initialization,
-// when values restored from localStorage are fully loaded.
-// Calling this function earlier may result in empty or uninitialized stores.
 export function ensureProvider(): services.BlockProvider {
-	let _provider = get(stores.providerStore);
+	let _provider = stores.providerStore.get();
 	if (!_provider) {
-		const _rpc = get(stores.rpcStore);
+		const _rpc = stores.rpcStore.get();
 
 		_provider = services.defaultBlockProvider(_rpc);
 		stores.providerStore.set(_provider);

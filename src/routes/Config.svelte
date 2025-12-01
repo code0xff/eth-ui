@@ -14,8 +14,8 @@
 	let interval = constants.MIN_INTERVAL;
 
 	$: if (open) {
-		blocklistLimit = get(stores.blocklistLimitStore);
-		interval = get(stores.intervalStore);
+		blocklistLimit = stores.blocklistLimitStore.get();
+		interval = stores.intervalStore.get();
 	}
 
 	function saveSetting() {
@@ -29,10 +29,7 @@
 			toast(`invalid interval: interval must be at least ${constants.MIN_INTERVAL}`);
 			return;
 		}
-		localStorage.setItem('blocklist_limit', blocklistLimit.toString());
 		stores.blocklistLimitStore.set(blocklistLimit);
-
-		localStorage.setItem('interval', interval.toString());
 		stores.intervalStore.set(interval);
 
 		open = false;

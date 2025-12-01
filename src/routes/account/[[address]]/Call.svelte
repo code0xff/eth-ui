@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { toast } from 'svelte-sonner';
 	import { Button } from '@/components/ui/button';
 	import * as Card from '@/components/ui/card';
 	import { Input } from '@/components/ui/input';
@@ -69,7 +68,7 @@
 					</div>
 					<div class="flex flex-row gap-4 max-md:w-full">
 						<div>
-							<Editor name="ABI" storage="call_abis" store={stores.callAbisStore} />
+							<Editor name="ABI" store={stores.callAbisStore} />
 						</div>
 						<div class="max-md:w-full">
 							<Button class="cursor-pointer max-md:w-full" onclick={call}>Call</Button>

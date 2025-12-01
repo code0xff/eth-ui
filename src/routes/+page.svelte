@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { get } from 'svelte/store';
 	import Button from '@/components/ui/button/button.svelte';
 	import * as Card from '@/components/ui/card/index.js';
 	import Input from '@/components/ui/input/input.svelte';
@@ -15,7 +14,6 @@
 	let rpc = '';
 	$: if (rpc) {
 		stores.rpcStore.set(rpc);
-		localStorage.setItem('rpc', rpc);
 	}
 	let rpcs: string[] = [];
 
@@ -54,13 +52,13 @@
 
 		await helpers.tryExecuteAsync(
 			async () => {
-				stores.blockStore.set(new Map());
-				stores.txStore.set(new Map());
+				stores.blockStore.reset();
+				stores.txStore.reset();
 
-				let _provider = get(stores.providerStore);
+				let _provider = stores.providerStore.get();
 				if (_provider) {
 					await _provider.disconnect();
-					stores.providerStore.set(undefined);
+					stores.providerStore.reset();
 				}
 
 				stores.syncStatusStore.set('processing');
@@ -68,7 +66,7 @@
 				_provider = helpers.ensureProvider();
 				await _provider.connect();
 
-				const _interval = get(stores.intervalStore);
+				const _interval = stores.intervalStore.get();
 				_provider.onNewBlock(updateNewBlock, _interval);
 
 				stores.providerStore.set(_provider);
@@ -80,20 +78,20 @@
 
 	async function stopSync() {
 		helpers.tryExecute(() => {
-			get(stores.providerStore)?.offNewBlock();
+			stores.providerStore.get()?.offNewBlock();
 
-			stores.providerStore.set(undefined);
+			stores.providerStore.reset();
 			stores.syncStatusStore.set('stopped');
 		});
 	}
 
 	function updateNewBlock(newBlock: types.Block) {
-		const _blockStore = get(stores.blockStore);
+		const _blockStore = stores.blockStore.get();
 		if (_blockStore.has(newBlock.number)) {
 			return;
 		}
 
-		const _blocklistLimit = get(stores.blocklistLimitStore);
+		const _blocklistLimit = stores.blocklistLimitStore.get();
 		if (_blocklistLimit && _blockStore.size >= _blocklistLimit) {
 			const _blockList = [..._blockStore.values()];
 			const _pruneBlockList = _blockList.slice(_blocklistLimit - 1);
@@ -168,7 +166,7 @@
 					</div>
 					<div class="flex flex-row gap-4 max-md:w-full">
 						<div>
-							<Editor name="RPC" storage="rpcs" store={stores.rpcsStore} />
+							<Editor name="RPC" store={stores.rpcsStore} />
 						</div>
 						<div class="max-md:w-full">
 							<Button
