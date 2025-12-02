@@ -33,6 +33,7 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+	<title>ETH UI</title>
 </svelte:head>
 
 <Toaster position="top-right" />
