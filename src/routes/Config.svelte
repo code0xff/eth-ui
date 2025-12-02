@@ -7,7 +7,6 @@
 	import * as Table from '@/components/ui/table';
 	import * as constants from '@/constants';
 	import * as stores from '@/stores';
-	import { get } from 'svelte/store';
 
 	let open = false;
 	let blocklistLimit = constants.DEFAULT_BLOCK_LIST_LIMIT;
@@ -20,13 +19,13 @@
 
 	function saveSetting() {
 		if (!blocklistLimit || blocklistLimit < constants.MIN_BLOCK_LIST_LIMIT) {
-			toast(
+			toast.warning(
 				`invalid blocklist limit: blocklist limit must be at least ${constants.MIN_BLOCK_LIST_LIMIT}`
 			);
 			return;
 		}
 		if (!interval || interval < constants.MIN_INTERVAL) {
-			toast(`invalid interval: interval must be at least ${constants.MIN_INTERVAL}`);
+			toast.warning(`invalid interval: interval must be at least ${constants.MIN_INTERVAL}`);
 			return;
 		}
 		stores.blocklistLimitStore.set(blocklistLimit);

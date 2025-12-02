@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Minus, Plus } from '@lucide/svelte';
 	import Button from '@/components/ui/button/button.svelte';
-	import * as Dialog from '@/components/ui/dialog/index.js';
+	import * as Dialog from '@/components/ui/dialog';
 	import Input from '@/components/ui/input/input.svelte';
-	import * as Table from '@/components/ui/table/index.js';
+	import * as Table from '@/components/ui/table';
 	import * as helpers from '@/helpers';
 	import { type Store } from '@/stores/interfaces';
 

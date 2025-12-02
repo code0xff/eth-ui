@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import * as Card from '@/components/ui/card/index.js';
-	import * as Table from '@/components/ui/table/index.js';
+	import * as Card from '@/components/ui/card';
+	import * as Table from '@/components/ui/table';
 	import * as helpers from '@/helpers';
 	import * as stores from '@/stores';
 	import * as types from '@/types';
-	import { toast } from 'svelte-sonner';
 
 	export let data: { tag: string };
 

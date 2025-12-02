@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Button from '@/components/ui/button/button.svelte';
-	import * as Card from '@/components/ui/card/index.js';
-	import Input from '@/components/ui/input/input.svelte';
+	import * as Card from '@/components/ui/card';
 	import * as Select from '@/components/ui/select';
-	import * as Table from '@/components/ui/table/index.js';
+	import * as Table from '@/components/ui/table';
 	import * as stores from '@/stores';
 	import * as helpers from '@/helpers';
 	import * as constants from '@/constants';
 	import * as types from '@/types';
 	import Editor from './Editor.svelte';
+	import Search from './Search.svelte';
 
 	let rpc = '';
 	$: if (rpc) {
@@ -21,8 +21,6 @@
 
 	let blockList: types.Block[] = [];
 	let txList: types.TxResponse[] = [];
-
-	let searchParam: string = '';
 
 	stores.syncStatusStore.subscribe((updatedSyncStatus) => {
 		syncStatus = updatedSyncStatus;
@@ -119,31 +117,6 @@
 			return new Map([..._newTxs, ...txs]);
 		});
 	}
-
-	function search() {
-		helpers.tryExecute(() => {
-			searchParam = searchParam.trim();
-			if (searchParam.length === 0) {
-				return;
-			}
-
-			if (searchParam.startsWith('0x')) {
-				if (searchParam.length === constants.ADDRESS_SIZE) {
-					goto(`/account/${searchParam}`);
-				} else if (searchParam.length === constants.HASH_SIZE) {
-					goto(`/tx/${searchParam}`);
-				} else {
-					throw new Error('unsupported search condition');
-				}
-			} else {
-				const _blockNumber = parseInt(searchParam.trim());
-				if (isNaN(_blockNumber)) {
-					throw new Error('invalid block number');
-				}
-				goto(`/block/${_blockNumber}`);
-			}
-		});
-	}
 </script>
 
 <div>
@@ -183,21 +156,7 @@
 		</Card.Root>
 	</div>
 	<div class="m-4">
-		<Card.Root>
-			<Card.Content>
-				<div class="flex flex-row gap-4">
-					<div class="w-full">
-						<Input
-							placeholder="Search by Address / Tx Hash / Block Number"
-							bind:value={searchParam}
-						/>
-					</div>
-					<div>
-						<Button class="cursor-pointer" onclick={search}>Search</Button>
-					</div>
-				</div>
-			</Card.Content>
-		</Card.Root>
+		<Search />
 	</div>
 	<div class="m-4">
 		<div class="lg:flex lg:flex-row lg:gap-4">

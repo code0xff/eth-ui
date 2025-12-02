@@ -1,0 +1,53 @@
+<script lang="ts">
+	import { goto } from '$app/navigation';
+	import Button from '@/components/ui/button/button.svelte';
+	import * as Card from '@/components/ui/card';
+	import Input from '@/components/ui/input/input.svelte';
+	import * as constants from '@/constants';
+	import * as helpers from '@/helpers';
+
+	let searchParam: string = '';
+
+	function search() {
+		helpers.tryExecute(() => {
+			searchParam = searchParam.trim();
+			if (searchParam.length === 0) {
+				return;
+			}
+
+			if (searchParam.startsWith('0x')) {
+				if (searchParam.length === constants.ADDRESS_SIZE) {
+					goto(`/account/${searchParam}`);
+				} else if (searchParam.length === constants.HASH_SIZE) {
+					goto(`/tx/${searchParam}`);
+				} else {
+					throw new Error('unsupported search condition');
+				}
+			} else {
+				const _blockNumber = parseInt(searchParam.trim());
+				if (isNaN(_blockNumber)) {
+					throw new Error('unsupported search condition');
+				}
+				goto(`/block/${_blockNumber}`);
+			}
+		});
+	}
+</script>
+
+<div>
+	<Card.Root>
+		<Card.Content>
+			<div class="flex flex-row gap-4">
+				<div class="w-full">
+					<Input
+						placeholder="Search by Address / Tx Hash / Block Number"
+						bind:value={searchParam}
+					/>
+				</div>
+				<div>
+					<Button class="cursor-pointer" onclick={search}>Search</Button>
+				</div>
+			</div>
+		</Card.Content>
+	</Card.Root>
+</div>
