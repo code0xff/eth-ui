@@ -96,7 +96,7 @@
 								<Textarea
 									readonly
 									class="resize-none"
-									value={tx ? helpers.splitToChunks(tx.data) : ''}
+									value={tx ? helpers.splitToChunks(tx.data, true) : ''}
 								/>
 							</Table.Cell>
 						</Table.Row>

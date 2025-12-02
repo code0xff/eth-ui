@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { Input } from '@/components/ui/input';
+	import * as Accordion from '@/components/ui/accordion';
 	import * as Card from '@/components/ui/card';
 	import * as Table from '@/components/ui/table';
+	import Textarea from '@/components/ui/textarea/textarea.svelte';
 	import * as helpers from '@/helpers';
 	import * as stores from '@/stores';
 	import * as types from '@/types';
@@ -56,9 +57,18 @@
 						<Table.Row>
 							<Table.Cell>Code</Table.Cell>
 							<Table.Cell>
-								{#if account?.code && account.code.startsWith('0xef0100')}
-									<Input readonly bind:value={account.code} />
-								{/if}
+								<Accordion.Root type="single">
+									<Accordion.Item value="code">
+										<Accordion.Trigger>Open code</Accordion.Trigger>
+										<Accordion.Content>
+											<Textarea
+												readonly
+												class="resize-none"
+												value={account?.code ? helpers.splitToChunks(account.code) : '0x'}
+											/>
+										</Accordion.Content>
+									</Accordion.Item>
+								</Accordion.Root>
 							</Table.Cell>
 						</Table.Row>
 					</Table.Body>

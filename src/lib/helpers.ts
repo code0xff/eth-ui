@@ -40,7 +40,7 @@ export function printWei(wei: bigint | null, withOrigin: boolean = false): strin
 	return `${value.toLocaleString()} ${unit} ${withOrigin ? `(${wei.toLocaleString()})` : ''}`;
 }
 
-export function splitToChunks(data: string): string {
+export function splitToChunks(data: string, selectorExist?: boolean): string {
 	if (data.startsWith('0x') && data.length <= 2) {
 		return '0x';
 	} else if (data.length <= constants.CHUNK_SIZE) {
@@ -48,7 +48,7 @@ export function splitToChunks(data: string): string {
 	} else {
 		data = data.startsWith('0x') ? data.slice(2) : data;
 		const chunks: string[] = [];
-		if (data.length % constants.CHUNK_SIZE === constants.SELECTOR_SIZE) {
+		if (selectorExist && data.length % constants.CHUNK_SIZE === constants.SELECTOR_SIZE) {
 			chunks.push(`0x${data.slice(0, constants.SELECTOR_SIZE)}`);
 			data = data.slice(constants.SELECTOR_SIZE);
 			for (let i = 0; i < data.length; i += constants.CHUNK_SIZE) {
