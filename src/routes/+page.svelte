@@ -90,7 +90,7 @@
 		}
 
 		const _blocklistLimit = stores.blocklistLimitStore.get();
-		if (_blocklistLimit && _blockStore.size >= _blocklistLimit) {
+		if (_blockStore.size >= _blocklistLimit) {
 			const _blockList = [..._blockStore.values()];
 			const _pruneBlockList = _blockList.slice(_blocklistLimit - 1);
 			stores.txStore.update((_txs) => {
