@@ -61,6 +61,15 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 		}
 	}
 
+	connected(): boolean {
+		if (this.provider instanceof ethers.WebSocketProvider) {
+			const _provider = this.provider as ethers.WebSocketProvider;
+			return _provider.websocket && _provider.websocket.readyState === WebSocket.OPEN;
+		} else {
+			return true;
+		}
+	}
+
 	getSyncedBlockNumber(): number | undefined {
 		return this.syncedBlockNumber;
 	}

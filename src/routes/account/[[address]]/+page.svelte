@@ -26,8 +26,7 @@
 				throw new Error(`invalid account address: ${address}`);
 			}
 
-			const _provider = helpers.ensureProvider();
-
+			const _provider = await helpers.ensureProvider();
 			account = await _provider.getAccount(address);
 		});
 	}

@@ -4,6 +4,7 @@ export interface BlockProvider {
 	connect(): Promise<void>;
 	disconnect(): Promise<void>;
 	reconnect(count: number): Promise<void>;
+	connected(): boolean;
 
 	getSyncedBlockNumber(): number | undefined;
 	getBlock(blockTag: string | number, prefetchTxs?: boolean): Promise<types.Block | null>;

@@ -39,7 +39,7 @@
 
 	async function call() {
 		await helpers.tryExecuteAsync(async () => {
-			const _provider = helpers.ensureProvider();
+			const _provider = await helpers.ensureProvider();
 			outputs = await _provider.call(address, selectedAbi, inputs);
 		});
 	}

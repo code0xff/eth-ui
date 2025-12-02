@@ -14,7 +14,7 @@
 
 	let { children } = $props();
 
-	function initialize() {
+	async function initialize() {
 		const _rpc = stores.rpcStore.get();
 		const _rpcs = stores.rpcsStore.get();
 
@@ -22,12 +22,12 @@
 			stores.rpcStore.set(constants.DEFAULT_RPCS[0]);
 		}
 
-		helpers.ensureProvider();
+		await helpers.ensureProvider();
 		stores.initializedStore.set(true);
 	}
 
-	onMount(() => {
-		helpers.tryExecute(initialize);
+	onMount(async () => {
+		await helpers.tryExecuteAsync(initialize);
 	});
 </script>
 

@@ -12,7 +12,7 @@
 
 	async function getStorageAt() {
 		await helpers.tryExecuteAsync(async () => {
-			const _provider = helpers.ensureProvider();
+			const _provider = await helpers.ensureProvider();
 			result = await _provider.getStorage(address, slot);
 		});
 	}

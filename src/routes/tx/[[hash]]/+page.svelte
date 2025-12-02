@@ -24,7 +24,7 @@
 				throw new Error(`invalid tx hash: ${hash}`);
 			}
 
-			const _provider = helpers.ensureProvider();
+			const _provider = await helpers.ensureProvider();
 			tx = await _provider.getTxWithReceipt(hash);
 		});
 	}

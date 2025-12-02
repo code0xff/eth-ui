@@ -27,7 +27,7 @@
 				throw new Error(`invalid block tag: ${blockTag}`);
 			}
 
-			const _provider = helpers.ensureProvider();
+			const _provider = await helpers.ensureProvider();
 
 			let _blockTag: string | number = blockTag;
 			if (!_blockTag?.startsWith('0x')) {
