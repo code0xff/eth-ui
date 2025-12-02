@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import Button from '@/components/ui/button/button.svelte';
 	import * as Card from '@/components/ui/card';
 	import Input from '@/components/ui/input/input.svelte';
@@ -17,9 +18,9 @@
 
 			if (searchParam.startsWith('0x')) {
 				if (searchParam.length === constants.ADDRESS_SIZE) {
-					goto(`/account/${searchParam}`);
+					goto(resolve(`/account/${searchParam}`));
 				} else if (searchParam.length === constants.HASH_SIZE) {
-					goto(`/tx/${searchParam}`);
+					goto(resolve(`/tx/${searchParam}`));
 				} else {
 					throw new Error('unsupported search condition');
 				}
@@ -28,7 +29,7 @@
 				if (isNaN(_blockNumber)) {
 					throw new Error('unsupported search condition');
 				}
-				goto(`/block/${_blockNumber}`);
+				goto(resolve(`/block/${_blockNumber}`));
 			}
 		});
 	}

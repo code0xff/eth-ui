@@ -3,6 +3,7 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import { ModeWatcher, toggleMode } from 'mode-watcher';
 	import { onMount } from 'svelte';
+	import { resolve } from '$app/paths';
 	import { SunMoon } from '@lucide/svelte';
 	import { Toaster } from '@/components/ui/sonner';
 	import { Button } from '@/components/ui/button';
@@ -41,7 +42,7 @@
 <div class="my-4 flex w-full flex-row">
 	<div class="ml-4 flex-1">
 		<a
-			href="/"
+			href={resolve('/')}
 			class="scroll-m-20 text-3xl font-semibold tracking-tight transition-colors first:mt-0"
 		>
 			ETH UI

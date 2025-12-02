@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import * as Card from '@/components/ui/card';
 	import * as Table from '@/components/ui/table';
 	import * as helpers from '@/helpers';
@@ -60,7 +61,9 @@
 							<Table.Cell class="w-1/6">Parent</Table.Cell>
 							<Table.Cell
 								class="w-5/6 cursor-pointer"
-								onclick={block?.parentHash ? async () => goto(`/block/${block?.parentHash}`) : null}
+								onclick={block?.parentHash
+									? async () => goto(resolve(`/block/${block?.parentHash}`))
+									: null}
 								>{block ? block.parentHash : ''}
 							</Table.Cell>
 						</Table.Row>
@@ -78,7 +81,7 @@
 							<Table.Cell class="w-1/6">Etherbase</Table.Cell>
 							<Table.Cell
 								class="w-5/6 cursor-pointer"
-								onclick={block?.miner ? () => goto(`/account/${block!.miner}`) : null}
+								onclick={block?.miner ? () => goto(resolve(`/account/${block!.miner}`)) : null}
 								>{block ? block.miner : ''}</Table.Cell
 							>
 						</Table.Row>
@@ -124,7 +127,7 @@
 					<Table.Body>
 						{#if block}
 							{#each block.prefetchedTransactions as tx}
-								<Table.Row onclick={() => goto(`/tx/${tx.hash}`)} class="cursor-pointer">
+								<Table.Row onclick={() => goto(resolve(`/tx/${tx.hash}`))} class="cursor-pointer">
 									<Table.Cell>{tx.index}</Table.Cell>
 									<Table.Cell>{helpers.compactHash(tx.hash)}</Table.Cell>
 									<Table.Cell>{helpers.compactHash(tx.from, 8)}</Table.Cell>

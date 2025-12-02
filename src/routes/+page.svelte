@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import Button from '@/components/ui/button/button.svelte';
 	import * as Card from '@/components/ui/card';
 	import * as Select from '@/components/ui/select';
@@ -177,7 +178,10 @@
 							</Table.Header>
 							<Table.Body>
 								{#each blockList as block}
-									<Table.Row onclick={() => goto(`/block/${block.number}`)} class="cursor-pointer">
+									<Table.Row
+										onclick={() => goto(resolve(`/block/${block.number}`))}
+										class="cursor-pointer"
+									>
 										<Table.Cell>{helpers.printNumber(block.number)}</Table.Cell>
 										<Table.Cell>{helpers.compactHash(block.hash)}</Table.Cell>
 										<Table.Cell>{helpers.printNumber(block.transactions.length)}</Table.Cell>
@@ -205,7 +209,7 @@
 							</Table.Header>
 							<Table.Body>
 								{#each txList as tx}
-									<Table.Row onclick={() => goto(`/tx/${tx.hash}`)} class="cursor-pointer">
+									<Table.Row onclick={() => goto(resolve(`/tx/${tx.hash}`))} class="cursor-pointer">
 										<Table.Cell>{helpers.compactHash(tx.hash)}</Table.Cell>
 										<Table.Cell>
 											<div>
