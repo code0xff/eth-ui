@@ -80,6 +80,8 @@ export async function ensureProvider(): Promise<services.BlockProvider> {
 		const _rpc = stores.rpcStore.get();
 
 		_provider = services.defaultBlockProvider(_rpc);
+		await _provider.connect();
+		
 		stores.providerStore.set(_provider);
 	}
 	return _provider;

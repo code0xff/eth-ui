@@ -3,9 +3,7 @@
 	import favicon from '$lib/assets/favicon.ico';
 	import { ModeWatcher } from 'mode-watcher';
 	import { onMount } from 'svelte';
-	import { Github } from '@lucide/svelte';
 	import { Toaster } from '@/components/ui/sonner';
-	import { Button } from '@/components/ui/button';
 	import * as constants from '@/constants';
 	import * as helpers from '@/helpers';
 	import * as stores from '@/stores';

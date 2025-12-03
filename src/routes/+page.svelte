@@ -63,7 +63,6 @@
 				stores.syncStatusStore.set('processing');
 
 				_provider = await helpers.ensureProvider();
-				await _provider.connect();
 
 				const _interval = stores.intervalStore.get();
 				_provider.onNewBlock(updateNewBlock, _interval);

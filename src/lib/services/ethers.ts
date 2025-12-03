@@ -40,8 +40,11 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async reconnect(count: number = constants.DEFAULT_RETRY_COUNT): Promise<void> {
-		if (!this.url || count <= 0) return;
 		try {
+			if (!this.url) {
+				throw new Error(`invalid url: ${this.url}`);
+			}
+
 			await this.connect();
 			if (this.provider && this.network) {
 				return;
@@ -62,6 +65,10 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	connected(): boolean {
+		if (!this.provider) {
+			return false;
+		}
+
 		if (this.provider instanceof ethers.WebSocketProvider) {
 			const _provider = this.provider as ethers.WebSocketProvider;
 			return _provider.websocket && _provider.websocket.readyState === WebSocket.OPEN;
@@ -75,7 +82,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getBlock(blockTag: string | number, prefetchTxs?: boolean): Promise<types.Block | null> {
-		if (!this.provider) {
+		if (!this.connected()) {
 			await this.reconnect();
 		}
 
@@ -112,7 +119,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getTx(hash: string): Promise<types.TxResponse | null> {
-		if (!this.provider) {
+		if (!this.connected()) {
 			await this.reconnect();
 		}
 
@@ -136,7 +143,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getTxReceipt(hash: string): Promise<types.TxReceipt | null> {
-		if (!this.provider) {
+		if (!this.connected()) {
 			await this.reconnect();
 		}
 
@@ -154,7 +161,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getTxWithReceipt(hash: string): Promise<types.TxWithReceipt | null> {
-		if (!this.provider) {
+		if (!this.connected()) {
 			await this.reconnect();
 		}
 
@@ -168,28 +175,28 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getBalance(address: string): Promise<bigint> {
-		if (!this.provider) {
+		if (!this.connected()) {
 			await this.reconnect();
 		}
 		return await this.provider!.getBalance(address);
 	}
 
 	async getTransactionCount(address: string): Promise<number> {
-		if (!this.provider) {
+		if (!this.connected()) {
 			await this.reconnect();
 		}
 		return await this.provider!.getTransactionCount(address);
 	}
 
 	async getCode(address: string): Promise<string> {
-		if (!this.provider) {
+		if (!this.connected()) {
 			await this.reconnect();
 		}
 		return await this.provider!.getCode(address);
 	}
 
 	async getAccount(address: string): Promise<types.Account> {
-		if (!this.provider) {
+		if (!this.connected()) {
 			await this.reconnect();
 		}
 
@@ -208,7 +215,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getStorage(address: string, slot: string): Promise<string> {
-		if (!this.provider) {
+		if (!this.connected()) {
 			await this.reconnect();
 		}
 		return await this.provider!.getStorage(address, slot);
@@ -260,7 +267,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 		callback: (block: types.Block) => void,
 		interval: number = constants.MIN_INTERVAL
 	): Promise<void> {
-		if (!this.provider) {
+		if (!this.connected()) {
 			await this.reconnect();
 		}
 
