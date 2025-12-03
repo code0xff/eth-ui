@@ -1,5 +1,6 @@
 <script lang="ts">
 	import '../app.css';
+	import { page } from '$app/state';
 	import favicon from '$lib/assets/favicon.ico';
 	import { ModeWatcher } from 'mode-watcher';
 	import { onMount } from 'svelte';
@@ -13,9 +14,19 @@
 	let { children } = $props();
 
 	async function initialize() {
-		const _rpc = stores.rpcStore.get();
-		const _rpcs = stores.rpcsStore.get();
+		let _rpc = page.url.searchParams.get('rpc');
+		let _rpcs = stores.rpcsStore.get();
 
+		if (_rpc) {
+			stores.rpcStore.set(_rpc);
+			if (!_rpcs.includes(_rpc)) {
+				stores.rpcsStore.set([..._rpcs, _rpc]);
+			}
+		} else {
+			_rpc = stores.rpcStore.get();
+		}
+
+		_rpcs = stores.rpcsStore.get();
 		if (!_rpc || _rpc.trim().length === 0 || !_rpcs.includes(_rpc)) {
 			stores.rpcStore.set(constants.DEFAULT_RPCS[0]);
 		}
