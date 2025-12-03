@@ -7,6 +7,7 @@
 	import * as helpers from '@/helpers';
 	import * as stores from '@/stores';
 	import * as types from '@/types';
+	import Data from '../../Data.svelte';
 
 	export let data: { hash: string };
 
@@ -94,11 +95,7 @@
 						<Table.Row>
 							<Table.Cell class="w-1/6">Data</Table.Cell>
 							<Table.Cell class="w-5/6">
-								<Textarea
-									readonly
-									class="resize-none"
-									value={tx ? helpers.splitToChunks(tx.data, true) : ''}
-								/>
+								<Data name="data" data={tx ? helpers.splitToChunks(tx.data, true) : '0x'} />
 							</Table.Cell>
 						</Table.Row>
 					</Table.Body>

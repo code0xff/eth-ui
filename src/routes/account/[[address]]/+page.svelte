@@ -9,6 +9,7 @@
 	import Call from './Call.svelte';
 	import Storage from './Storage.svelte';
 	import Tx from './Tx.svelte';
+	import Data from '../../Data.svelte';
 
 	export let data: { address: string };
 
@@ -56,18 +57,10 @@
 						<Table.Row>
 							<Table.Cell>Code</Table.Cell>
 							<Table.Cell>
-								<Accordion.Root type="single">
-									<Accordion.Item value="code">
-										<Accordion.Trigger>Open code</Accordion.Trigger>
-										<Accordion.Content>
-											<Textarea
-												readonly
-												class="resize-none"
-												value={account?.code ? helpers.splitToChunks(account.code) : '0x'}
-											/>
-										</Accordion.Content>
-									</Accordion.Item>
-								</Accordion.Root>
+								<Data
+									name="code"
+									data={account?.code ? helpers.splitToChunks(account.code) : '0x'}
+								/>
 							</Table.Cell>
 						</Table.Row>
 					</Table.Body>
