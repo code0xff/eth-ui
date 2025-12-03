@@ -3,7 +3,7 @@
 	import { resolve } from '$app/paths';
 	import * as Card from '@/components/ui/card';
 	import * as Table from '@/components/ui/table';
-	import Textarea from '@/components/ui/textarea/textarea.svelte';
+	import { Textarea } from '@/components/ui/textarea';
 	import * as helpers from '@/helpers';
 	import * as stores from '@/stores';
 	import * as types from '@/types';

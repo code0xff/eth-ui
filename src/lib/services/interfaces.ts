@@ -6,7 +6,6 @@ export interface BlockProvider {
 	reconnect(count: number): Promise<void>;
 	connected(): boolean;
 
-	getSyncedBlockNumber(): number | undefined;
 	getBlock(blockTag: string | number, prefetchTxs?: boolean): Promise<types.Block | null>;
 	getTx(hash: string): Promise<types.TxResponse | null>;
 	getTxReceipt(hash: string): Promise<types.TxReceipt | null>;

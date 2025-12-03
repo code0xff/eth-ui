@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Accordion from '@/components/ui/accordion';
-	import Textarea from '@/components/ui/textarea/textarea.svelte';
+	import { Textarea } from '@/components/ui/textarea';
 
 	export let name = '';
 	export let data = '0x';

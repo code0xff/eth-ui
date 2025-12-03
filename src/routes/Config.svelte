@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import { CogIcon } from '@lucide/svelte';
-	import Button from '@/components/ui/button/button.svelte';
+	import { Button } from '@/components/ui/button';
 	import * as Dialog from '@/components/ui/dialog';
-	import Input from '@/components/ui/input/input.svelte';
+	import { Input } from '@/components/ui/input';
 	import * as Table from '@/components/ui/table';
 	import * as constants from '@/constants';
 	import * as stores from '@/stores';

@@ -16,6 +16,8 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async connect(): Promise<void> {
+		console.log(`${this.connect.name}()`);
+
 		if (!this.url) {
 			throw new Error(`invalid url: ${this.url}`);
 		}
@@ -32,6 +34,8 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async disconnect(): Promise<void> {
+		console.log(`${this.disconnect.name}()`);
+
 		this.url = undefined;
 		this.provider?.destroy();
 		this.provider = undefined;
@@ -40,6 +44,8 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async reconnect(count: number = constants.DEFAULT_RETRY_COUNT): Promise<void> {
+		console.log(`${this.reconnect.name}(${count})`);
+
 		try {
 			if (!this.url) {
 				throw new Error(`invalid url: ${this.url}`);
@@ -65,6 +71,8 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	connected(): boolean {
+		console.log(`${this.connected.name}()`);
+
 		if (!this.provider) {
 			return false;
 		}
@@ -77,11 +85,9 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 		}
 	}
 
-	getSyncedBlockNumber(): number | undefined {
-		return this.syncedBlockNumber;
-	}
-
 	async getBlock(blockTag: string | number, prefetchTxs?: boolean): Promise<types.Block | null> {
+		console.log(`${this.getBlock.name}(${blockTag},${prefetchTxs})`);
+
 		if (!this.connected()) {
 			await this.reconnect();
 		}
@@ -119,6 +125,8 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getTx(hash: string): Promise<types.TxResponse | null> {
+		console.log(`${this.getTx.name}(${hash})`);
+
 		if (!this.connected()) {
 			await this.reconnect();
 		}
@@ -143,6 +151,8 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getTxReceipt(hash: string): Promise<types.TxReceipt | null> {
+		console.log(`${this.getTxReceipt.name}(${hash})`);
+
 		if (!this.connected()) {
 			await this.reconnect();
 		}
@@ -161,6 +171,8 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getTxWithReceipt(hash: string): Promise<types.TxWithReceipt | null> {
+		console.log(`${this.getTxWithReceipt.name}(${hash})`);
+
 		if (!this.connected()) {
 			await this.reconnect();
 		}
@@ -175,6 +187,8 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getBalance(address: string): Promise<bigint> {
+		console.log(`${this.getBalance.name}(${address})`);
+
 		if (!this.connected()) {
 			await this.reconnect();
 		}
@@ -182,6 +196,8 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getTransactionCount(address: string): Promise<number> {
+		console.log(`${this.getTransactionCount.name}(${address})`);
+
 		if (!this.connected()) {
 			await this.reconnect();
 		}
@@ -189,6 +205,8 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getCode(address: string): Promise<string> {
+		console.log(`${this.getCode.name}(${address})`);
+
 		if (!this.connected()) {
 			await this.reconnect();
 		}
@@ -196,6 +214,8 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getAccount(address: string): Promise<types.Account> {
+		console.log(`${this.getAccount.name}(${address})`);
+
 		if (!this.connected()) {
 			await this.reconnect();
 		}
@@ -215,6 +235,8 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getStorage(address: string, slot: string): Promise<string> {
+		console.log(`${this.getStorage.name}(${address},${slot})`);
+
 		if (!this.connected()) {
 			await this.reconnect();
 		}
@@ -222,6 +244,8 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async call(address: string, abi: string, inputs: string): Promise<string> {
+		console.log(`${this.call.name}(${address},${abi},${inputs})`);
+
 		const _func = AbiParser.parse(abi);
 
 		const _contract = new ethers.Contract(address, new ethers.Interface([abi]), this.provider);
@@ -240,6 +264,8 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async sendTx(address: string, abi: string, inputs: string): Promise<string> {
+		console.log(`${this.sendTx.name}(${address},${abi},${inputs})`);
+
 		if (!(globalThis as any).ethereum) {
 			globalThis.open('https://metamask.io/download');
 			throw new Error('wallet not exist');
@@ -267,6 +293,8 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 		callback: (block: types.Block) => void,
 		interval: number = constants.MIN_INTERVAL
 	): Promise<void> {
+		console.log(`${this.onNewBlock.name}(${interval})`);
+
 		if (!this.connected()) {
 			await this.reconnect();
 		}
@@ -295,6 +323,8 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async offNewBlock(callback?: () => void): Promise<void> {
+		console.log(`${this.offNewBlock.name}()`);
+
 		if (this.provider instanceof ethers.WebSocketProvider) {
 			this.provider.off('block');
 		} else if (this.intervalId) {
