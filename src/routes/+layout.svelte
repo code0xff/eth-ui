@@ -4,7 +4,7 @@
 	import { ModeWatcher, toggleMode } from 'mode-watcher';
 	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
-	import { SunMoon } from '@lucide/svelte';
+	import { Github, SunMoon } from '@lucide/svelte';
 	import { Toaster } from '@/components/ui/sonner';
 	import { Button } from '@/components/ui/button';
 	import * as constants from '@/constants';
@@ -61,3 +61,18 @@
 	</div>
 </div>
 {@render children?.()}
+<div class="my-4 flex w-full flex-row">
+	<div class="flex flex-1 justify-center">
+		<p>© 2025 code0xff. All rights reserved.</p>
+	</div>
+	<div class="mr-4 flex justify-end gap-4">
+		<Button
+			class="cursor-pointer"
+			onclick={() => {
+				window.open('https://github.com/code0xff/eth-ui');
+			}}
+		>
+			<Github />
+		</Button>
+	</div>
+</div>
