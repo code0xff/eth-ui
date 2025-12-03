@@ -62,10 +62,10 @@
 </div>
 {@render children?.()}
 <div class="my-4 flex w-full flex-row">
-	<div class="flex flex-1 justify-center">
+	<div class="flex flex-1 items-center justify-center">
 		<p>© 2025 code0xff. All rights reserved.</p>
 	</div>
-	<div class="mr-4 flex justify-end gap-4">
+	<div class="mr-4 flex justify-end">
 		<Button
 			class="cursor-pointer"
 			variant="ghost"
