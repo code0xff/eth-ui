@@ -60,7 +60,7 @@
 						<Table.Row>
 							<Table.Cell class="w-1/6">Parent</Table.Cell>
 							<Table.Cell
-								class="w-5/6 cursor-pointer"
+								class="w-5/6 cursor-pointer hover:underline"
 								onclick={block?.parentHash
 									? async () => goto(resolve(`/block/${block?.parentHash}`))
 									: null}
@@ -80,7 +80,7 @@
 						<Table.Row>
 							<Table.Cell class="w-1/6">Etherbase</Table.Cell>
 							<Table.Cell
-								class="w-5/6 cursor-pointer"
+								class="w-5/6 cursor-pointer hover:underline"
 								onclick={block?.miner ? () => goto(resolve(`/account/${block!.miner}`)) : null}
 								>{block ? block.miner : ''}</Table.Cell
 							>
