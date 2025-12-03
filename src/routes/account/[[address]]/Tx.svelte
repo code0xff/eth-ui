@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { Button } from '@/components/ui/button';
 	import * as Card from '@/components/ui/card';
 	import { Input } from '@/components/ui/input';
@@ -87,8 +89,11 @@
 							</Table.Row>
 							<Table.Row>
 								<Table.Cell class="w-1/6">Outputs</Table.Cell>
-								<Table.Cell class="w-5/6">
-									<Input readonly bind:value={outputs} placeholder="hash" />
+								<Table.Cell
+									class="w-5/6 cursor-pointer hover:underline"
+									onclick={outputs ? () => goto(resolve(`/tx/${outputs}`)) : null}
+								>
+									{outputs}
 								</Table.Cell>
 							</Table.Row>
 						</Table.Body>

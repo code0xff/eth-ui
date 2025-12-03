@@ -43,7 +43,7 @@
 						<Table.Row>
 							<Table.Cell class="w-1/6">Number</Table.Cell>
 							<Table.Cell
-								class="w-4/5 cursor-pointer hover:underline"
+								class="w-5/6 cursor-pointer hover:underline"
 								onclick={tx?.blockNumber ? () => goto(resolve(`/block/${tx!.blockNumber}`)) : null}
 								>{tx ? helpers.printNumber(tx.blockNumber) : ''}</Table.Cell
 							>
@@ -55,7 +55,7 @@
 						<Table.Row>
 							<Table.Cell class="w-1/6">From</Table.Cell>
 							<Table.Cell
-								class="w-4/5 cursor-pointer hover:underline"
+								class="w-5/6 cursor-pointer hover:underline"
 								onclick={tx?.from ? () => goto(resolve(`/account/${tx!.from}`)) : null}
 								>{tx ? tx.from : ''}</Table.Cell
 							>
@@ -63,7 +63,7 @@
 						<Table.Row>
 							<Table.Cell class="w-1/6">To</Table.Cell>
 							<Table.Cell
-								class="w-4/5 cursor-pointer hover:underline"
+								class="w-5/6 cursor-pointer hover:underline"
 								onclick={tx?.to ? () => goto(resolve(`/account/${tx!.to}`)) : null}
 								>{tx ? tx.to : ''}</Table.Cell
 							>
