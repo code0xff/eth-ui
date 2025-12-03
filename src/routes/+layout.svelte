@@ -68,6 +68,7 @@
 	<div class="mr-4 flex justify-end gap-4">
 		<Button
 			class="cursor-pointer"
+			variant="ghost"
 			onclick={() => {
 				window.open('https://github.com/code0xff/eth-ui');
 			}}
