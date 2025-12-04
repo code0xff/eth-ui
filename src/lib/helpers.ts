@@ -75,7 +75,7 @@ export function compactHash(hash: string | undefined | null, size: number = 8): 
 export async function ensureProvider(): Promise<services.BlockProvider> {
 	let _provider = stores.providerStore.get();
 	if (!_provider || !_provider.connected()) {
-		await _provider?.disconnect();
+		_provider?.disconnect();
 
 		const _rpc = stores.rpcStore.get();
 

@@ -11,10 +11,14 @@
 	import * as types from '@/types';
 	import Editor from './Editor.svelte';
 	import Search from './Search.svelte';
+	import { onMount } from 'svelte';
 
 	let rpc = '';
 	$: if (rpc) {
-		stores.rpcStore.set(rpc);
+		helpers.tryExecute(() => {
+			stores.rpcStore.set(rpc);
+			resetSynced();
+		});
 	}
 	let rpcs: string[] = [];
 
@@ -46,40 +50,38 @@
 		}
 	});
 
+	function resetSynced() {
+		stores.blockStore.reset();
+		stores.txStore.reset();
+
+		let _provider = stores.providerStore.get();
+		if (_provider) {
+			_provider.disconnect();
+			stores.providerStore.reset();
+		}
+	}
+
+	async function runSync() {
+		stores.syncStatusStore.set('processing');
+
+		const _provider = await helpers.ensureProvider();
+
+		const _interval = stores.intervalStore.get();
+		await _provider.onNewBlock(async (newBlock) => {
+			if (stores.syncStatusStore.get() !== 'processing') {
+				await _provider.offNewBlock();
+				return;
+			}
+			updateNewBlock(newBlock);
+		}, _interval);
+	}
+
 	async function startSync() {
 		if (syncStatus === 'processing') {
 			return;
 		}
 
-		await helpers.tryExecuteAsync(
-			async () => {
-				stores.blockStore.reset();
-				stores.txStore.reset();
-
-				let _provider = stores.providerStore.get();
-				if (_provider) {
-					await _provider.disconnect();
-					stores.providerStore.reset();
-				}
-
-				stores.syncStatusStore.set('processing');
-
-				_provider = await helpers.ensureProvider();
-
-				const _interval = stores.intervalStore.get();
-				await _provider.onNewBlock(async (newBlock) => {
-					if (stores.syncStatusStore.get() !== 'processing') {
-						await _provider.offNewBlock();
-						return;
-					}
-					updateNewBlock(newBlock);
-				}, _interval);
-
-				stores.providerStore.set(_provider);
-			},
-			false,
-			stopSync
-		);
+		await helpers.tryExecuteAsync(runSync, false, stopSync);
 	}
 
 	async function stopSync() {
@@ -125,6 +127,17 @@
 			return new Map([..._newTxs, ...txs]);
 		});
 	}
+
+	onMount(() => {
+		document.addEventListener('visibilitychange', async () => {
+			if (syncStatus === 'processing') {
+				const _provider = stores.providerStore.get();
+				if (_provider && !_provider.connected()) {
+					await runSync();
+				}
+			}
+		});
+	});
 </script>
 
 <div>

@@ -33,14 +33,13 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 		this.network = { chainId, name };
 	}
 
-	async disconnect(): Promise<void> {
+	disconnect(): void {
 		console.debug(`${this.disconnect.name}()`);
 
 		this.url = undefined;
 		this.provider?.destroy();
 		this.provider = undefined;
 		this.network = undefined;
-		this.syncedBlockNumber = undefined;
 	}
 
 	async reconnect(count: number = constants.DEFAULT_RETRY_COUNT): Promise<void> {
