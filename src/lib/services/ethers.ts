@@ -5,7 +5,7 @@ import * as interfaces from './interfaces';
 import { AbiParser } from '.';
 
 export class EthersBlockProvider implements interfaces.BlockProvider {
-	private url: string | undefined;
+	private url: string;
 	private provider: ethers.Provider | undefined;
 	private network: types.Network | undefined;
 	private intervalId: NodeJS.Timeout | undefined;
@@ -13,6 +13,10 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 
 	constructor(url: string) {
 		this.url = url;
+	}
+
+	getUrl(): string {
+		return this.url;
 	}
 
 	async connect(): Promise<void> {
@@ -36,7 +40,6 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	disconnect(): void {
 		console.debug(`${this.disconnect.name}()`);
 
-		this.url = undefined;
 		this.provider?.destroy();
 		this.provider = undefined;
 		this.network = undefined;

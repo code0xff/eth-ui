@@ -15,10 +15,7 @@
 
 	let rpc = '';
 	$: if (rpc) {
-		helpers.tryExecute(() => {
-			stores.rpcStore.set(rpc);
-			resetSynced();
-		});
+		stores.rpcStore.set(rpc);
 	}
 	let rpcs: string[] = [];
 
@@ -44,8 +41,10 @@
 		rpcs = updatedRpcs;
 	});
 	stores.initializedStore.subscribe(async (updatedInitialized) => {
-		if (updatedInitialized) {
-			initialized = updatedInitialized;
+		initialized = updatedInitialized;
+
+		const _syncStatus = stores.syncStatusStore.get();
+		if (_syncStatus === 'idle' && updatedInitialized) {
 			await startSync();
 		}
 	});
@@ -81,14 +80,25 @@
 			return;
 		}
 
-		await helpers.tryExecuteAsync(runSync, false, stopSync);
+		await helpers.tryExecuteAsync(
+			async () => {
+				const _provider = stores.providerStore.get();
+				const _rpc = stores.rpcStore.get();
+
+				if (_provider?.getUrl() !== _rpc) {
+					resetSynced();
+				}
+				await runSync();
+			},
+			false,
+			stopSync
+		);
 	}
 
 	async function stopSync() {
 		await helpers.tryExecuteAsync(async () => {
 			await stores.providerStore.get()?.offNewBlock();
 
-			stores.providerStore.reset();
 			stores.syncStatusStore.set('stopped');
 		});
 	}
@@ -130,7 +140,8 @@
 
 	onMount(() => {
 		document.addEventListener('visibilitychange', async () => {
-			if (syncStatus === 'processing') {
+			const _syncStatus = stores.syncStatusStore.get();
+			if (_syncStatus === 'processing') {
 				const _provider = stores.providerStore.get();
 				if (_provider && !_provider.connected()) {
 					await runSync();
