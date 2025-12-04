@@ -36,7 +36,9 @@
 	}
 
 	onMount(async () => {
-		await helpers.tryExecuteAsync(initialize);
+		await helpers.tryExecuteAsync(initialize, false, async () => {
+			stores.initializedStore.set(true);
+		});
 	});
 </script>
 
