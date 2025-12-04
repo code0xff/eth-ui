@@ -50,7 +50,7 @@
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Type</Table.Cell>
-							<Table.Cell class="w-5/6">{tx ? tx.type : ''}</Table.Cell>
+							<Table.Cell class="w-5/6">{tx ? helpers.printTxType(tx.type, true) : ''}</Table.Cell>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">From</Table.Cell>
@@ -113,7 +113,9 @@
 					<Table.Body>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Status</Table.Cell>
-							<Table.Cell class="w-5/6">{tx?.receipt ? tx?.receipt.status : ''}</Table.Cell>
+							<Table.Cell class="w-5/6">
+								{tx?.receipt ? helpers.printStatus(tx?.receipt.status, true) : ''}
+							</Table.Cell>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Gas Used</Table.Cell>

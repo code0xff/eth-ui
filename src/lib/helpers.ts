@@ -37,7 +37,7 @@ export function printWei(wei: bigint | null, withOrigin: boolean = false): strin
 		unit = 'wei';
 	}
 
-	return `${value.toLocaleString()} ${unit} ${withOrigin ? `(${wei.toLocaleString()})` : ''}`;
+	return `${value.toLocaleString()} ${unit}${withOrigin ? ` (${wei.toLocaleString()})` : ''}`;
 }
 
 export function splitToChunks(data: string, selectorExist?: boolean): string {
@@ -81,7 +81,7 @@ export async function ensureProvider(): Promise<services.BlockProvider> {
 
 		_provider = services.defaultBlockProvider(_rpc);
 		await _provider.connect();
-		
+
 		stores.providerStore.set(_provider);
 	}
 	return _provider;
@@ -133,4 +133,29 @@ export function tryExecute<R = void>(
 			throw e;
 		}
 	}
+}
+
+export function printStatus(status: number | null, withOrigin: boolean = false): string {
+	if (status == null) return '';
+
+	const statusMap: Record<number, string> = {
+		1: 'success',
+		0: 'fail'
+	};
+
+	return statusMap[status] ? `${statusMap[status]}${withOrigin ? ` (${status})` : ''}` : `${status}`;
+}
+
+export function printTxType(type: number | null, withOrigin: boolean = false): string {
+	if (type == null) return '';
+
+	const txTypeMap: Record<number, string> = {
+		0: 'legacy',
+		1: 'eip2930',
+		2: 'eip1559',
+		3: 'eip4844',
+		4: 'eip7702'
+	};
+
+	return txTypeMap[type] ? `${txTypeMap[type]}${withOrigin ? ` (${type})` : ''}` : `${type}`;
 }

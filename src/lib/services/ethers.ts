@@ -16,7 +16,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async connect(): Promise<void> {
-		console.log(`${this.connect.name}()`);
+		console.debug(`${this.connect.name}()`);
 
 		if (!this.url) {
 			throw new Error(`invalid url: ${this.url}`);
@@ -34,7 +34,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async disconnect(): Promise<void> {
-		console.log(`${this.disconnect.name}()`);
+		console.debug(`${this.disconnect.name}()`);
 
 		this.url = undefined;
 		this.provider?.destroy();
@@ -44,7 +44,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async reconnect(count: number = constants.DEFAULT_RETRY_COUNT): Promise<void> {
-		console.log(`${this.reconnect.name}(${count})`);
+		console.debug(`${this.reconnect.name}(${count})`);
 
 		try {
 			if (!this.url) {
@@ -71,7 +71,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	connected(): boolean {
-		console.log(`${this.connected.name}()`);
+		console.debug(`${this.connected.name}()`);
 
 		if (!this.provider) {
 			return false;
@@ -86,7 +86,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getBlock(blockTag: string | number, prefetchTxs?: boolean): Promise<types.Block | null> {
-		console.log(`${this.getBlock.name}(${blockTag},${prefetchTxs})`);
+		console.debug(`${this.getBlock.name}(${blockTag},${prefetchTxs})`);
 
 		if (!this.connected()) {
 			await this.reconnect();
@@ -125,7 +125,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getTx(hash: string): Promise<types.TxResponse | null> {
-		console.log(`${this.getTx.name}(${hash})`);
+		console.debug(`${this.getTx.name}(${hash})`);
 
 		if (!this.connected()) {
 			await this.reconnect();
@@ -151,7 +151,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getTxReceipt(hash: string): Promise<types.TxReceipt | null> {
-		console.log(`${this.getTxReceipt.name}(${hash})`);
+		console.debug(`${this.getTxReceipt.name}(${hash})`);
 
 		if (!this.connected()) {
 			await this.reconnect();
@@ -171,7 +171,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getTxWithReceipt(hash: string): Promise<types.TxWithReceipt | null> {
-		console.log(`${this.getTxWithReceipt.name}(${hash})`);
+		console.debug(`${this.getTxWithReceipt.name}(${hash})`);
 
 		if (!this.connected()) {
 			await this.reconnect();
@@ -187,7 +187,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getBalance(address: string): Promise<bigint> {
-		console.log(`${this.getBalance.name}(${address})`);
+		console.debug(`${this.getBalance.name}(${address})`);
 
 		if (!this.connected()) {
 			await this.reconnect();
@@ -196,7 +196,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getTransactionCount(address: string): Promise<number> {
-		console.log(`${this.getTransactionCount.name}(${address})`);
+		console.debug(`${this.getTransactionCount.name}(${address})`);
 
 		if (!this.connected()) {
 			await this.reconnect();
@@ -205,7 +205,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getCode(address: string): Promise<string> {
-		console.log(`${this.getCode.name}(${address})`);
+		console.debug(`${this.getCode.name}(${address})`);
 
 		if (!this.connected()) {
 			await this.reconnect();
@@ -214,7 +214,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getAccount(address: string): Promise<types.Account> {
-		console.log(`${this.getAccount.name}(${address})`);
+		console.debug(`${this.getAccount.name}(${address})`);
 
 		if (!this.connected()) {
 			await this.reconnect();
@@ -235,7 +235,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async getStorage(address: string, slot: string): Promise<string> {
-		console.log(`${this.getStorage.name}(${address},${slot})`);
+		console.debug(`${this.getStorage.name}(${address},${slot})`);
 
 		if (!this.connected()) {
 			await this.reconnect();
@@ -244,7 +244,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async call(address: string, abi: string, inputs: string): Promise<string> {
-		console.log(`${this.call.name}(${address},${abi},${inputs})`);
+		console.debug(`${this.call.name}(${address},${abi},${inputs})`);
 
 		const _func = AbiParser.parse(abi);
 
@@ -268,7 +268,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async sendTx(testKey: string, address: string, abi: string, inputs: string): Promise<string> {
-		console.log(`${this.sendTx.name}(${testKey},${address},${abi},${inputs})`);
+		console.debug(`${this.sendTx.name}(${testKey},${address},${abi},${inputs})`);
 
 		let _signer: ethers.Signer;
 		if (testKey.startsWith('0x') && testKey.length === constants.HASH_SIZE) {
@@ -305,7 +305,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 		callback: (block: types.Block) => void,
 		interval: number = constants.MIN_INTERVAL
 	): Promise<void> {
-		console.log(`${this.onNewBlock.name}(${interval})`);
+		console.debug(`${this.onNewBlock.name}(${interval})`);
 
 		if (!this.connected()) {
 			await this.reconnect();
@@ -335,7 +335,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async offNewBlock(callback?: () => void): Promise<void> {
-		console.log(`${this.offNewBlock.name}()`);
+		console.debug(`${this.offNewBlock.name}()`);
 
 		if (this.provider instanceof ethers.WebSocketProvider) {
 			this.provider.off('block');
