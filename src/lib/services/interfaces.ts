@@ -19,7 +19,10 @@ export interface BlockProvider {
 	call(address: string, abi: string, inputs: string): Promise<string>;
 	sendTx(testKey: string, address: string, abi: string, inputs: string): Promise<string>;
 
-	onNewBlock(callback: (block: types.Block) => void, interval: number): Promise<void>;
+	onNewBlock(
+		callback: (block: types.Block) => Promise<void> | void,
+		interval: number
+	): Promise<void>;
 	offNewBlock(callback?: () => void): Promise<void>;
 }
 

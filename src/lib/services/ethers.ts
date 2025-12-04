@@ -302,7 +302,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	}
 
 	async onNewBlock(
-		callback: (block: types.Block) => void,
+		callback: (block: types.Block) => Promise<void> | void,
 		interval: number = constants.MIN_INTERVAL
 	): Promise<void> {
 		console.debug(`${this.onNewBlock.name}(${interval})`);
@@ -319,7 +319,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 					const _block = await this.getBlock(this.syncedBlockNumber + 1, true);
 					if (_block) {
 						this.syncedBlockNumber = _block.number;
-						callback(_block);
+						await callback(_block);
 					}
 				}
 			}, interval);
@@ -328,7 +328,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 				const _block = await this.getBlock(_blockNumber, true);
 				if (_block) {
 					this.syncedBlockNumber = _block.number;
-					callback(_block);
+					await callback(_block);
 				}
 			});
 		}
@@ -336,6 +336,10 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 
 	async offNewBlock(callback?: () => void): Promise<void> {
 		console.debug(`${this.offNewBlock.name}()`);
+
+		if (!this.connected()) {
+			return;
+		}
 
 		if (this.provider instanceof ethers.WebSocketProvider) {
 			this.provider.off('block');

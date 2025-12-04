@@ -19,6 +19,7 @@
 	let rpcs: string[] = [];
 
 	let syncStatus: types.SyncStatus = 'idle';
+	let initialized = false;
 
 	let blockList: types.Block[] = [];
 	let txList: types.TxResponse[] = [];
@@ -38,8 +39,9 @@
 	stores.rpcsStore.subscribe((updatedRpcs) => {
 		rpcs = updatedRpcs;
 	});
-	stores.initializedStore.subscribe(async (initialized) => {
-		if (initialized) {
+	stores.initializedStore.subscribe(async (updatedInitialized) => {
+		if (updatedInitialized) {
+			initialized = updatedInitialized;
 			await startSync();
 		}
 	});
@@ -65,7 +67,13 @@
 				_provider = await helpers.ensureProvider();
 
 				const _interval = stores.intervalStore.get();
-				_provider.onNewBlock(updateNewBlock, _interval);
+				await _provider.onNewBlock(async (newBlock) => {
+					if (stores.syncStatusStore.get() !== 'processing') {
+						await _provider.offNewBlock();
+						return;
+					}
+					updateNewBlock(newBlock);
+				}, _interval);
 
 				stores.providerStore.set(_provider);
 			},
@@ -75,8 +83,8 @@
 	}
 
 	async function stopSync() {
-		helpers.tryExecute(() => {
-			stores.providerStore.get()?.offNewBlock();
+		await helpers.tryExecuteAsync(async () => {
+			await stores.providerStore.get()?.offNewBlock();
 
 			stores.providerStore.reset();
 			stores.syncStatusStore.set('stopped');
@@ -125,7 +133,11 @@
 			<Card.Content>
 				<div class="flex flex-col gap-4 md:flex-row">
 					<div class="min-w-0 flex-1">
-						<Select.Root type="single" disabled={syncStatus === 'processing'} bind:value={rpc}>
+						<Select.Root
+							type="single"
+							disabled={!initialized || syncStatus === 'processing'}
+							bind:value={rpc}
+						>
 							<Select.Trigger class="w-full cursor-pointer truncate">{rpc}</Select.Trigger>
 							<Select.Content>
 								{#each constants.DEFAULT_RPCS as rpc}
@@ -143,6 +155,7 @@
 						</div>
 						<div class="max-md:w-full">
 							<Button
+								disabled={!initialized}
 								onclick={async () =>
 									syncStatus === 'processing' ? await stopSync() : await startSync()}
 								class="w-full cursor-pointer md:w-[80px]"
