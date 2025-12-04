@@ -5,7 +5,7 @@
 
 <div class="flex w-full flex-row">
 	<div class="flex flex-1 items-center justify-center">
-		<p>© 2025 code0xff. All rights reserved.</p>
+		<p>© 2025 code0xff</p>
 	</div>
 	<div class="mr-4 flex justify-end">
 		<Button
