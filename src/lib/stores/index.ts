@@ -32,5 +32,6 @@ export const intervalStore = new Store<number>(constants.MIN_INTERVAL, true, 'in
 export const rpcsStore = new Store<string[]>([], true, 'rpcs');
 export const callAbisStore = new Store<string[]>([], true, 'call_abis');
 export const txAbisStore = new Store<string[]>([], true, 'tx_abis');
+export const testKeysStore = new Store<string[]>([], true, 'test_keys');
 
 export const initializedStore = new Store<boolean>(false);

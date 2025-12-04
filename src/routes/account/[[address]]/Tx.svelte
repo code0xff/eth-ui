@@ -15,6 +15,7 @@
 
 	export let address = '';
 	export let abis: string[] = [];
+	export let testKeys: string[] = [];
 
 	let selectedAbi = constants.DEFAULT_TX_ABIS[0];
 	let inputs: string = '';
@@ -22,8 +23,13 @@
 	let func: types.Function;
 	let inputsPlaceholder: string = '';
 
+	let selectedTestKey = 'use wallet';
+
 	stores.txAbisStore.subscribe((updatedAbis) => {
 		abis = updatedAbis;
+	});
+	stores.testKeysStore.subscribe((updatedTestKeys) => {
+		testKeys = updatedTestKeys;
 	});
 
 	$: if (selectedAbi) {
@@ -39,7 +45,7 @@
 	async function sendTx() {
 		await helpers.tryExecuteAsync(async () => {
 			const _provider = await helpers.ensureProvider();
-			outputs = await _provider.sendTx(address, selectedAbi, inputs);
+			outputs = await _provider.sendTx(selectedTestKey, address, selectedAbi, inputs);
 		});
 	}
 </script>
@@ -52,6 +58,26 @@
 		<Card.Content>
 			<div>
 				<div class="flex flex-col gap-4 md:flex-row">
+					<div class="min-w-0 flex-1">
+						<Select.Root type="single" bind:value={selectedTestKey}>
+							<Select.Trigger class="w-full cursor-pointer truncate"
+								>{selectedTestKey}</Select.Trigger
+							>
+							<Select.Content>
+								{#each testKeys as testKey}
+									<Select.Item value={testKey}>{testKey}</Select.Item>
+								{/each}
+							</Select.Content>
+						</Select.Root>
+					</div>
+					<div class="max-md:w-full">
+						<Editor name="Key" store={stores.testKeysStore} />
+					</div>
+					<div class="max-md:w-full">
+						<Button class="cursor-pointer  max-md:w-full" onclick={sendTx}>Send</Button>
+					</div>
+				</div>
+				<div class="mt-4 flex flex-col gap-4 md:flex-row">
 					<div class="min-w-0 flex-1">
 						<Select.Root type="single" bind:value={selectedAbi}>
 							<Select.Trigger class="w-full cursor-pointer truncate">{selectedAbi}</Select.Trigger>
@@ -68,9 +94,6 @@
 					<div class="flex flex-row gap-4 max-md:w-full">
 						<div>
 							<Editor name="ABI" store={stores.txAbisStore} />
-						</div>
-						<div class="max-md:w-full">
-							<Button class="cursor-pointer  max-md:w-full" onclick={sendTx}>Send</Button>
 						</div>
 					</div>
 				</div>

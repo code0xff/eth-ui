@@ -248,6 +248,10 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 
 		const _func = AbiParser.parse(abi);
 
+		if (!this.connected()) {
+			await this.reconnect();
+		}
+
 		const _contract = new ethers.Contract(address, new ethers.Interface([abi]), this.provider);
 		let _outputs: any;
 		if (_func.inputs.length > 0) {
@@ -263,18 +267,26 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 		}
 	}
 
-	async sendTx(address: string, abi: string, inputs: string): Promise<string> {
-		console.log(`${this.sendTx.name}(${address},${abi},${inputs})`);
+	async sendTx(testKey: string, address: string, abi: string, inputs: string): Promise<string> {
+		console.log(`${this.sendTx.name}(${testKey},${address},${abi},${inputs})`);
 
-		if (!(globalThis as any).ethereum) {
-			globalThis.open('https://metamask.io/download');
-			throw new Error('wallet not exist');
+		let _signer: ethers.Signer;
+		if (testKey.startsWith('0x') && testKey.length === constants.HASH_SIZE) {
+			if (!this.connected()) {
+				await this.reconnect();
+			}
+
+			_signer = new ethers.Wallet(testKey, this.provider);
+		} else {
+			if (!(globalThis as any).ethereum) {
+				globalThis.open('https://metamask.io/download');
+				throw new Error('wallet not exist');
+			}
+			const _provider = new ethers.BrowserProvider((globalThis as any).ethereum);
+			await _provider.send('eth_requestAccounts', []);
+
+			_signer = await _provider.getSigner();
 		}
-
-		const _provider = new ethers.BrowserProvider((globalThis as any).ethereum);
-		await _provider.send('eth_requestAccounts', []);
-
-		const _signer = await _provider.getSigner();
 		const _contract = new ethers.Contract(address, new ethers.Interface([abi]), _signer);
 
 		const _func = AbiParser.parse(abi);
