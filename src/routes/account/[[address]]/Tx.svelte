@@ -19,6 +19,7 @@
 
 	let selectedAbi = constants.DEFAULT_TX_ABIS[0];
 	let inputs: string = '';
+	let value: string = '';
 	let outputs: string = '';
 	let func: types.Function;
 	let inputsPlaceholder: string = '';
@@ -45,7 +46,7 @@
 	async function sendTx() {
 		await helpers.tryExecuteAsync(async () => {
 			const _provider = await helpers.ensureProvider();
-			outputs = await _provider.sendTx(selectedTestKey, address, selectedAbi, inputs);
+			outputs = await _provider.sendTx(selectedTestKey, address, selectedAbi, inputs, value);
 		});
 	}
 </script>
@@ -100,6 +101,12 @@
 				<div class="mt-4">
 					<Table.Root>
 						<Table.Body>
+							<Table.Row>
+								<Table.Cell class="w-1/6">Value</Table.Cell>
+								<Table.Cell class="w-5/6">
+									<Input bind:value />
+								</Table.Cell>
+							</Table.Row>
 							<Table.Row>
 								<Table.Cell class="w-1/6">Inputs</Table.Cell>
 								<Table.Cell class="w-5/6">

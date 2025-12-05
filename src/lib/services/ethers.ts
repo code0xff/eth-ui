@@ -269,8 +269,14 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 		}
 	}
 
-	async sendTx(testKey: string, address: string, abi: string, inputs: string): Promise<string> {
-		console.debug(`${this.sendTx.name}(${testKey},${address},${abi},${inputs})`);
+	async sendTx(
+		testKey: string,
+		address: string,
+		abi: string,
+		inputs: string,
+		value: string
+	): Promise<string> {
+		console.debug(`${this.sendTx.name}(${testKey},${address},${abi},${inputs},${value})`);
 
 		let _signer: ethers.Signer;
 		if (testKey.startsWith('0x') && testKey.length === constants.HASH_SIZE) {
@@ -289,18 +295,29 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 
 			_signer = await _provider.getSigner();
 		}
-		const _contract = new ethers.Contract(address, new ethers.Interface([abi]), _signer);
 
-		const _func = AbiParser.parse(abi);
+		const _value = value.trim().length === 0 ? 0n : BigInt(value);
 
-		let _response: ethers.TransactionResponse;
-		if (_func.inputs.length > 0) {
-			const _inputs = inputs.split(',');
-			_response = await _contract[_func.name](..._inputs);
+		if (abi.trim().length === 0) {
+			const _response = await _signer.sendTransaction({
+				to: address,
+				value: _value
+			});
+
+			return _response.hash;
 		} else {
-			_response = await _contract[_func.name]();
+			const _func = AbiParser.parse(abi);
+			const _contract = new ethers.Contract(address, new ethers.Interface([abi]), _signer);
+
+			let _response: ethers.TransactionResponse;
+			if (_func.inputs.length > 0) {
+				const _inputs = inputs.split(',');
+				_response = await _contract[_func.name](..._inputs, { value: _value });
+			} else {
+				_response = await _contract[_func.name]({ value: _value });
+			}
+			return _response.hash;
 		}
-		return _response.hash;
 	}
 
 	async onNewBlock(
