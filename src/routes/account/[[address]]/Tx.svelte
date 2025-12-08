@@ -20,7 +20,7 @@
 	let selectedAbi = constants.DEFAULT_TX_ABIS[0];
 	let inputs: string = '';
 	let value: string = '';
-	let outputs: string = '';
+	let hash: string = '';
 	let func: types.Function;
 	let inputsPlaceholder: string = '';
 
@@ -35,7 +35,7 @@
 
 	$: if (selectedAbi) {
 		inputs = '';
-		outputs = '';
+		hash = '';
 
 		helpers.tryExecute(() => {
 			func = services.AbiParser.parse(selectedAbi);
@@ -46,7 +46,7 @@
 	async function sendTx() {
 		await helpers.tryExecuteAsync(async () => {
 			const _provider = await helpers.ensureProvider();
-			outputs = await _provider.sendTx(selectedTestKey, address, selectedAbi, inputs, value);
+			hash = await _provider.sendTx(selectedTestKey, address, selectedAbi, inputs, value);
 		});
 	}
 </script>
@@ -118,12 +118,12 @@
 								</Table.Cell>
 							</Table.Row>
 							<Table.Row>
-								<Table.Cell class="w-1/6">Outputs</Table.Cell>
+								<Table.Cell class="w-1/6">Hash</Table.Cell>
 								<Table.Cell
 									class="w-5/6 cursor-pointer hover:underline"
-									onclick={outputs ? () => goto(resolve(`/tx/${outputs}`)) : null}
+									onclick={hash ? () => goto(resolve(`/tx/${hash}`)) : null}
 								>
-									{outputs}
+									{hash}
 								</Table.Cell>
 							</Table.Row>
 						</Table.Body>
