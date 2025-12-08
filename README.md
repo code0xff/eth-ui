@@ -1,83 +1,98 @@
 # eth-ui
 
-A lightweight, modular UI layer for building Ethereum and EVM-based interfaces.  
-This project provides reusable UI components, utilities, and helpers that make it easy to display blockchain data, interact with contracts, and build clean on-chain dashboards or tooling.
+A lightweight Ethereum scanner focused on clarity, simplicity, and essential on-chain data.  
+This project provides a minimal, fast, and developer-friendly interface for exploring blocks, transactions, and addresses without the overhead of a full blockchain explorer.
 
-- Live Demo: https://code0xff.github.io/eth-ui
-- Repository: https://github.com/code0xff/eth-ui
+- Live Demo: <https://code0xff.github.io/eth-ui>
+- Repository: <https://github.com/code0xff/eth-ui>
 
 ---
 
 ## Features
 
-### Reusable UI Components
+### Lightweight Block, Transaction, and Address Views
 
-Pre-built components for:
+Clean, readable UI for essential Ethereum data:
 
-- Addresses
-- Blocks
-- Transactions
-- Receipts
-- Logs and events
+- Block information (gas used, miner, timestamp, transactions)  
+- Transaction metadata (from, to, value, gas, status)  
+- Address balance and basic account details  
 
-### Clear and Consistent Layout
+### Raw Contract Interaction Details
 
-Structured UI designed for readability of Ethereum data.
+eth-ui intentionally avoids heavy ABI-based decoding.  
+Instead, it presents low-level contract data clearly:
 
-### Contract Interaction Helpers
+- Raw calldata (hex)  
+- Contract bytecode and size  
+- Basic contract metadata  
 
-Utilities for:
+### Real-Time Updates & Connectivity Recovery
 
-- ABI parsing
-- Provider initialization
-- Executing contract calls
+- Automatically reconnects when WebSocket connections drop  
+- Resumes updates when the browser returns from idle or sleep  
+- Refreshes block and transaction data on new block arrival  
 
-### Transaction & Block Visualization
+### Developer-Oriented, Minimal UI
 
-Includes elements for:
+Designed to be:
 
-- Decoded calldata
-- Function parameters
-- Event logs
-- Execution results
+- Easy to understand  
+- Simple to extend  
+- Useful for local or forked Ethereum chains  
+- Ideal for debugging and low-level contract inspection  
 
 ### Modular and Extendable
 
-Use it as a standalone UI layer or embed components into existing applications.
+Can be integrated into larger dashboards or tooling, including:
+
+- Provider initialization utilities  
+- Small helper functions  
+- Reusable layout patterns  
 
 ---
 
 ## Getting Started
 
 ### 1. Clone the repository
+
 ```shell
 git clone https://github.com/code0xff/eth-ui
 cd eth-ui
 ```
+
 ### 2. Install dependencies
+
 ```shell
 npm install
 ```
-### 3. Run in development mode
+
+### 3. Run development server
+
 ```shell
 npm run dev
 ```
+
 ### 4. Build for production
+
 ```shell
 npm run build
 ```
+
 ### 5. Deploy to GitHub Pages
+
 ```shell
 npm run deploy
 ```
+
 ---
 
 ## Project Goals
 
-- Provide a clean and intuitive UI layer for on-chain data
-- Reduce boilerplate for blockchain dashboards and explorers
-- Deliver structured building blocks for Ethereum-focused tooling
-- Stay lightweight and easy to integrate
+- Provide a clean and intuitive UI for essential on-chain data  
+- Offer a lightweight alternative to heavy explorers like Etherscan or Blockscout  
+- Keep the code simple, modular, and easy to integrate  
+- Serve as a minimal debugging tool for private Ethereum chains and development environments  
 
 ---
 
@@ -85,9 +100,9 @@ npm run deploy
 
 Contributions and feedback are welcome.
 
-1. Open an issue or discussion
-2. Submit a pull request
-3. Follow the existing code style and directory structure
+1. Open an issue or discussion  
+2. Submit a pull request  
+3. Follow the existing project structure and style  
 
 ---
 
