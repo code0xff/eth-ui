@@ -143,7 +143,9 @@ export function printStatus(status: number | null, withOrigin: boolean = false):
 		0: 'fail'
 	};
 
-	return statusMap[status] ? `${statusMap[status]}${withOrigin ? ` (${status})` : ''}` : `${status}`;
+	return statusMap[status]
+		? `${statusMap[status]}${withOrigin ? ` (${status})` : ''}`
+		: `${status}`;
 }
 
 export function printTxType(type: number | null, withOrigin: boolean = false): string {
@@ -158,4 +160,8 @@ export function printTxType(type: number | null, withOrigin: boolean = false): s
 	};
 
 	return txTypeMap[type] ? `${txTypeMap[type]}${withOrigin ? ` (${type})` : ''}` : `${type}`;
+}
+
+export function isValidTestKey(key: string): boolean {
+	return key.startsWith('0x') && key.length === constants.HASH_SIZE;
 }

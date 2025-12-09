@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { Button } from '@/components/ui/button';
 	import * as Card from '@/components/ui/card';
 	import { Input } from '@/components/ui/input';
 	import * as Select from '@/components/ui/select';
@@ -12,6 +11,7 @@
 	import * as stores from '@/stores';
 	import * as types from '@/types';
 	import Editor from '../../Editor.svelte';
+	import SubmitTx from './SubmitTx.svelte';
 
 	export let address = '';
 	export let abis: string[] = [];
@@ -42,13 +42,6 @@
 			inputsPlaceholder = func.inputs.map((input) => input.type).join(',');
 		});
 	}
-
-	async function sendTx() {
-		await helpers.tryExecuteAsync(async () => {
-			const _provider = await helpers.ensureProvider();
-			hash = await _provider.sendTx(selectedTestKey, address, selectedAbi, inputs, value);
-		});
-	}
 </script>
 
 <div>
@@ -75,7 +68,14 @@
 						<Editor name="Key" store={stores.testKeysStore} />
 					</div>
 					<div class="max-md:w-full">
-						<Button class="cursor-pointer  max-md:w-full" onclick={sendTx}>Send</Button>
+						<SubmitTx
+							testKey={selectedTestKey}
+							to={address}
+							abi={selectedAbi}
+							{value}
+							{inputs}
+							bind:hash
+						/>
 					</div>
 				</div>
 				<div class="mt-4 flex flex-col gap-4 md:flex-row">

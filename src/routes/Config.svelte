@@ -32,7 +32,7 @@
 		stores.intervalStore.set(interval);
 
 		open = false;
-		toast('successfully saved');
+		toast.info('successfully saved');
 	}
 </script>
 

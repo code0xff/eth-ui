@@ -1,5 +1,6 @@
 import * as ethers from 'ethers';
 import * as constants from '@/constants';
+import * as helpers from '@/helpers';
 import * as types from '@/types';
 import * as interfaces from './interfaces';
 import { AbiParser } from '.';
@@ -279,7 +280,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 		console.debug(`${this.sendTx.name}(${testKey},${address},${abi},${inputs},${value})`);
 
 		let _signer: ethers.Signer;
-		if (testKey.startsWith('0x') && testKey.length === constants.HASH_SIZE) {
+		if (helpers.isValidTestKey(testKey)) {
 			if (!this.connected()) {
 				await this.reconnect();
 			}
