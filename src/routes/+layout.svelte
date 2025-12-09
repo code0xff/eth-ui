@@ -19,7 +19,7 @@
 
 		if (_rpc) {
 			stores.rpcStore.set(_rpc);
-			if (!_rpcs.includes(_rpc)) {
+			if (![..._rpcs, ...constants.DEFAULT_RPCS].includes(_rpc)) {
 				stores.rpcsStore.set([..._rpcs, _rpc]);
 			}
 		} else {
@@ -27,7 +27,11 @@
 		}
 
 		_rpcs = stores.rpcsStore.get();
-		if (!_rpc || _rpc.trim().length === 0 || !_rpcs.includes(_rpc)) {
+		if (
+			!_rpc ||
+			_rpc.trim().length === 0 ||
+			![..._rpcs, ...constants.DEFAULT_RPCS].includes(_rpc)
+		) {
 			stores.rpcStore.set(constants.DEFAULT_RPCS[0]);
 		}
 
