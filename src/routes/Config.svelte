@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
-	import { CogIcon } from '@lucide/svelte';
+	import { CogIcon, Info } from '@lucide/svelte';
 	import { Button } from '@/components/ui/button';
 	import * as Dialog from '@/components/ui/dialog';
 	import { Input } from '@/components/ui/input';
@@ -64,7 +64,24 @@
 								</Table.Cell>
 							</Table.Row>
 							<Table.Row>
-								<Table.Cell>Interval</Table.Cell>
+								<Table.Cell>
+									Interval
+									<Button
+										class="cursor-pointer"
+										size="sm"
+										variant="ghost"
+										onclick={() => {
+											toast.info(
+												`effective only for http/https rpc endpoints\nif changed during syncing, stop and restart the sync`,
+												{
+													class: 'whitespace-pre-line'
+												}
+											);
+										}}
+									>
+										<Info />
+									</Button>
+								</Table.Cell>
 								<Table.Cell>
 									<Input
 										type="number"
