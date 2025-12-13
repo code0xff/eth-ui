@@ -32,7 +32,7 @@
 </script>
 
 <div>
-	<div class="m-4">
+	<div class="mx-4">
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Account #{data.address}</Card.Title>
@@ -66,13 +66,13 @@
 			</Card.Content>
 		</Card.Root>
 	</div>
-	<div class="m-4">
+	<div class="mx-4 mt-4">
 		<Call address={data.address} />
 	</div>
-	<div class="m-4">
+	<div class="mx-4 mt-4">
 		<Tx address={data.address} />
 	</div>
-	<div class="m-4">
+	<div class="mx-4 mt-4">
 		<Storage address={data.address} />
 	</div>
 </div>

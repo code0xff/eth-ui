@@ -32,7 +32,7 @@
 </script>
 
 <div>
-	<div class="m-4">
+	<div class="mx-4">
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Transaction #{tx ? tx.hash : ''}</Card.Title>
@@ -103,7 +103,7 @@
 			</Card.Content>
 		</Card.Root>
 	</div>
-	<div class="m-4">
+	<div class="mx-4 mt-4">
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Receipt</Card.Title>
@@ -146,7 +146,7 @@
 			</Card.Content>
 		</Card.Root>
 	</div>
-	<div class="m-4">
+	<div class="mx-4 mt-4">
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Logs</Card.Title>

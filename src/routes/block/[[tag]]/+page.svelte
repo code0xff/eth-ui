@@ -40,7 +40,7 @@
 </script>
 
 <div>
-	<div class="m-4">
+	<div class="mx-4">
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Block #{block ? helpers.printNumber(block.number) : ''}</Card.Title>
@@ -108,7 +108,7 @@
 			</Card.Content>
 		</Card.Root>
 	</div>
-	<div class="m-4">
+	<div class="mx-4 mt-4">
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Transactions</Card.Title>

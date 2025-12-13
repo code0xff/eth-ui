@@ -152,7 +152,7 @@
 </script>
 
 <div>
-	<div class="m-4">
+	<div class="mx-4">
 		<Card.Root>
 			<Card.Content>
 				<div class="flex flex-col gap-4 xl:flex-row">
@@ -192,10 +192,10 @@
 			</Card.Content>
 		</Card.Root>
 	</div>
-	<div class="m-4">
+	<div class="mx-4 mt-4">
 		<Search />
 	</div>
-	<div class="m-4">
+	<div class="mx-4 mt-4">
 		<div class="xl:flex xl:flex-row xl:gap-4">
 			<div class="xl:flex-1">
 				<Card.Root>

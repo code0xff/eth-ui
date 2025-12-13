@@ -55,10 +55,14 @@
 
 <ModeWatcher />
 
-<div class="my-4">
-	<Header />
-</div>
-{@render children?.()}
-<div class="my-4">
-	<Footer />
+<div class="flex flex-col h-full">
+	<div class="my-4">
+		<Header />
+	</div>
+	<div class="flex-1">
+		{@render children?.()}
+	</div>
+	<div class="my-4">
+		<Footer />
+	</div>
 </div>
