@@ -55,7 +55,7 @@
 
 <ModeWatcher />
 
-<div class="flex flex-col h-full">
+<div class="flex flex-col min-h-screen">
 	<div class="my-4">
 		<Header />
 	</div>
