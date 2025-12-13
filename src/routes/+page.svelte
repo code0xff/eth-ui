@@ -155,7 +155,7 @@
 	<div class="m-4">
 		<Card.Root>
 			<Card.Content>
-				<div class="flex flex-col gap-4 md:flex-row">
+				<div class="flex flex-col gap-4 xl:flex-row">
 					<div class="min-w-0 flex-1">
 						<Select.Root
 							type="single"
@@ -173,16 +173,16 @@
 							</Select.Content>
 						</Select.Root>
 					</div>
-					<div class="flex flex-row gap-4 max-md:w-full">
+					<div class="flex flex-row gap-4 max-xl:w-full">
 						<div>
 							<Editor name="RPC" store={stores.rpcsStore} />
 						</div>
-						<div class="max-md:w-full">
+						<div class="max-xl:w-full">
 							<Button
 								disabled={!initialized}
 								onclick={async () =>
 									syncStatus === 'processing' ? await stopSync() : await startSync()}
-								class="w-full cursor-pointer md:w-[80px]"
+								class="w-full cursor-pointer xl:w-[80px]"
 							>
 								{syncStatus === 'processing' ? 'Stop' : 'Start'}
 							</Button>
@@ -196,8 +196,8 @@
 		<Search />
 	</div>
 	<div class="m-4">
-		<div class="lg:flex lg:flex-row lg:gap-4">
-			<div class="lg:flex-1">
+		<div class="xl:flex xl:flex-row xl:gap-4">
+			<div class="xl:flex-1">
 				<Card.Root>
 					<Card.Header>
 						<Card.Title>Blocks</Card.Title>
@@ -229,7 +229,7 @@
 					</Card.Content>
 				</Card.Root>
 			</div>
-			<div class="max-lg:mt-4 lg:flex-1">
+			<div class="max-xl:mt-4 xl:flex-1">
 				<Card.Root>
 					<Card.Header>
 						<Card.Title>Transactions</Card.Title>
