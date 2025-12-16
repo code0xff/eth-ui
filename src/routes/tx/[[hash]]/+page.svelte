@@ -8,16 +8,21 @@
 	import * as stores from '@/stores';
 	import * as types from '@/types';
 	import Data from '../../Data.svelte';
+	import Button from '@/components/ui/button/button.svelte';
+	import { RefreshCw } from '@lucide/svelte';
 
 	export let data: { hash: string };
 
+	let initialized = false;
 	let tx: types.TxWithReceipt | null;
 
-	stores.initializedStore.subscribe(async (initialized) => {
-		if (initialized) {
-			await fetchTx(data.hash);
-		}
+	stores.initializedStore.subscribe(async (updatedInitialized) => {
+		initialized = updatedInitialized;
 	});
+
+	$: if (initialized && data) {
+		fetchTx(data.hash);
+	}
 
 	async function fetchTx(hash: string) {
 		await helpers.tryExecuteAsync(async () => {
@@ -35,7 +40,18 @@
 	<div class="mx-4">
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Transaction #{tx ? tx.hash : ''}</Card.Title>
+				<Card.Title>
+					<div class="flex flex-row">
+						<div class="flex flex-1 items-center">
+							Transaction #{tx ? tx.hash : ''}
+						</div>
+						<div>
+							<Button class="cursor-pointer" onclick={() => fetchTx(data.hash)}>
+								<RefreshCw />
+							</Button>
+						</div>
+					</div>
+				</Card.Title>
 			</Card.Header>
 			<Card.Content>
 				<Table.Root>

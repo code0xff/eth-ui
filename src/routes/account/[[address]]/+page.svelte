@@ -1,23 +1,28 @@
 <script lang="ts">
+	import { RefreshCw } from '@lucide/svelte';
+	import { Button } from '@/components/ui/button';
 	import * as Card from '@/components/ui/card';
 	import * as Table from '@/components/ui/table';
-	import * as helpers from '@/helpers';
-	import * as stores from '@/stores';
-	import * as types from '@/types';
 	import Call from './Call.svelte';
 	import Storage from './Storage.svelte';
 	import Tx from './Tx.svelte';
 	import Data from '../../Data.svelte';
+	import * as helpers from '@/helpers';
+	import * as stores from '@/stores';
+	import * as types from '@/types';
 
 	export let data: { address: string };
 
+	let initialized = false;
 	let account: types.Account;
 
-	stores.initializedStore.subscribe(async (initialized) => {
-		if (initialized) {
-			await fetchAccount(data.address);
-		}
+	stores.initializedStore.subscribe(async (updatedInitialized) => {
+		initialized = updatedInitialized;
 	});
+
+	$: if (initialized && data) {
+		fetchAccount(data.address);
+	}
 
 	async function fetchAccount(address: string) {
 		await helpers.tryExecuteAsync(async () => {
@@ -35,7 +40,18 @@
 	<div class="mx-4">
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Account #{data.address}</Card.Title>
+				<Card.Title>
+					<div class="flex flex-row">
+						<div class="flex flex-1 items-center">
+							Account #{data.address}
+						</div>
+						<div>
+							<Button class="cursor-pointer" onclick={() => fetchAccount(data.address)}>
+								<RefreshCw />
+							</Button>
+						</div>
+					</div>
+				</Card.Title>
 			</Card.Header>
 			<Card.Content>
 				<Table.Root>

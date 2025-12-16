@@ -1,23 +1,24 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import { Button } from '@/components/ui/button';
 	import * as Card from '@/components/ui/card';
 	import * as Table from '@/components/ui/table';
 	import * as helpers from '@/helpers';
 	import * as stores from '@/stores';
 	import * as types from '@/types';
+	import { RefreshCw } from '@lucide/svelte';
 
 	export let data: { tag: string };
 
+	let initialized = false;
 	let block: types.Block | null;
 
-	stores.initializedStore.subscribe(async (initialized) => {
-		if (initialized) {
-			await fetchBlock(data.tag);
-		}
+	stores.initializedStore.subscribe(async (updatedInitialized) => {
+		initialized = updatedInitialized;
 	});
 
-	$: if (data) {
+	$: if (initialized && data) {
 		fetchBlock(data.tag);
 	}
 
@@ -43,7 +44,18 @@
 	<div class="mx-4">
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Block #{block ? helpers.printNumber(block.number) : ''}</Card.Title>
+				<Card.Title>
+					<div class="flex flex-row">
+						<div class="flex flex-1 items-center">
+							Block #{block ? helpers.printNumber(block.number) : ''}
+						</div>
+						<div>
+							<Button class="cursor-pointer" onclick={() => fetchBlock(data.tag)}>
+								<RefreshCw />
+							</Button>
+						</div>
+					</div>
+				</Card.Title>
 			</Card.Header>
 			<Card.Content>
 				<Table.Root>
