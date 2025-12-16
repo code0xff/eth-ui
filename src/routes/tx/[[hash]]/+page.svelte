@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import { RefreshCw } from '@lucide/svelte';
+	import { Button } from '@/components/ui/button';
 	import * as Card from '@/components/ui/card';
 	import * as Table from '@/components/ui/table';
 	import { Textarea } from '@/components/ui/textarea';
@@ -8,13 +10,12 @@
 	import * as stores from '@/stores';
 	import * as types from '@/types';
 	import Data from '../../Data.svelte';
-	import Button from '@/components/ui/button/button.svelte';
-	import { RefreshCw } from '@lucide/svelte';
 
 	export let data: { hash: string };
 
 	let initialized = false;
 	let tx: types.TxWithReceipt | null;
+	let fetching = false;
 
 	stores.initializedStore.subscribe(async (updatedInitialized) => {
 		initialized = updatedInitialized;
@@ -25,6 +26,7 @@
 	}
 
 	async function fetchTx(hash: string) {
+		fetching = true;
 		await helpers.tryExecuteAsync(async () => {
 			if (!data.hash) {
 				throw new Error(`invalid tx hash: ${hash}`);
@@ -33,6 +35,7 @@
 			const _provider = await helpers.ensureProvider();
 			tx = await _provider.getTxWithReceipt(hash);
 		});
+		fetching = false;
 	}
 </script>
 
@@ -46,8 +49,13 @@
 							Transaction #{tx ? tx.hash : ''}
 						</div>
 						<div>
-							<Button class="cursor-pointer" onclick={() => fetchTx(data.hash)}>
-								<RefreshCw />
+							<Button
+								class="cursor-pointer"
+								variant="ghost"
+								size="icon"
+								onclick={() => fetchTx(data.hash)}
+							>
+								<RefreshCw class={fetching ? 'animate-spin' : ''} />
 							</Button>
 						</div>
 					</div>

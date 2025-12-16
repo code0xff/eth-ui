@@ -1,18 +1,19 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import { RefreshCw } from '@lucide/svelte';
 	import { Button } from '@/components/ui/button';
 	import * as Card from '@/components/ui/card';
 	import * as Table from '@/components/ui/table';
 	import * as helpers from '@/helpers';
 	import * as stores from '@/stores';
 	import * as types from '@/types';
-	import { RefreshCw } from '@lucide/svelte';
 
 	export let data: { tag: string };
 
 	let initialized = false;
 	let block: types.Block | null;
+	let fetching = false;
 
 	stores.initializedStore.subscribe(async (updatedInitialized) => {
 		initialized = updatedInitialized;
@@ -23,6 +24,7 @@
 	}
 
 	async function fetchBlock(blockTag: string) {
+		fetching = true;
 		await helpers.tryExecuteAsync(async () => {
 			if (!blockTag) {
 				throw new Error(`invalid block tag: ${blockTag}`);
@@ -37,6 +39,7 @@
 
 			block = await _provider.getBlock(_blockTag, true);
 		});
+		fetching = false;
 	}
 </script>
 
@@ -50,8 +53,13 @@
 							Block #{block ? helpers.printNumber(block.number) : ''}
 						</div>
 						<div>
-							<Button class="cursor-pointer" onclick={() => fetchBlock(data.tag)}>
-								<RefreshCw />
+							<Button
+								class="cursor-pointer"
+								variant="ghost"
+								size="icon"
+								onclick={() => fetchBlock(data.tag)}
+							>
+								<RefreshCw class={fetching ? 'animate-spin' : ''} />
 							</Button>
 						</div>
 					</div>

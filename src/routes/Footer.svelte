@@ -11,6 +11,7 @@
 		<Button
 			class="cursor-pointer"
 			variant="ghost"
+			size="icon"
 			onclick={() => {
 				window.open('https://github.com/code0xff/eth-ui');
 			}}

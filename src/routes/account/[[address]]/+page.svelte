@@ -15,6 +15,7 @@
 
 	let initialized = false;
 	let account: types.Account;
+	let fetching = false;
 
 	stores.initializedStore.subscribe(async (updatedInitialized) => {
 		initialized = updatedInitialized;
@@ -25,6 +26,7 @@
 	}
 
 	async function fetchAccount(address: string) {
+		fetching = true;
 		await helpers.tryExecuteAsync(async () => {
 			if (!address) {
 				throw new Error(`invalid account address: ${address}`);
@@ -33,6 +35,7 @@
 			const _provider = await helpers.ensureProvider();
 			account = await _provider.getAccount(address);
 		});
+		fetching = false;
 	}
 </script>
 
@@ -46,8 +49,13 @@
 							Account #{data.address}
 						</div>
 						<div>
-							<Button class="cursor-pointer" onclick={() => fetchAccount(data.address)}>
-								<RefreshCw />
+							<Button
+								class="cursor-pointer"
+								variant="ghost"
+								size="icon"
+								onclick={() => fetchAccount(data.address)}
+							>
+								<RefreshCw class={fetching ? 'animate-spin' : ''} />
 							</Button>
 						</div>
 					</div>

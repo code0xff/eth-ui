@@ -40,6 +40,8 @@
 <div>
 	<Button
 		class="cursor-pointer"
+		size="icon"
+		variant="ghost"
 		onclick={() => {
 			open = true;
 		}}
@@ -74,8 +76,13 @@
 											<Table.Cell class="w-full">
 												<Input {value} />
 											</Table.Cell>
-											<Table.Cell>
-												<Button class="cursor-pointer" onclick={() => removeItem(index)}>
+											<Table.Cell class="text-center">
+												<Button
+													class="cursor-pointer"
+													size="icon"
+													variant="ghost"
+													onclick={() => removeItem(index)}
+												>
 													<Minus />
 												</Button>
 											</Table.Cell>

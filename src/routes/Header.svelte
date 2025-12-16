@@ -2,8 +2,15 @@
 	import { resolve } from '$app/paths';
 	import { toggleMode } from 'mode-watcher';
 	import { Button } from '@/components/ui/button';
-	import { SunMoon } from '@lucide/svelte';
+	import { RefreshCw, SunMoon } from '@lucide/svelte';
 	import Config from './Config.svelte';
+	import * as types from '@/types';
+	import * as stores from '@/stores';
+
+	let syncStatus: types.SyncStatus = 'idle';
+	stores.syncStatusStore.subscribe((updatedSyncStatus) => {
+		syncStatus = updatedSyncStatus;
+	});
 </script>
 
 <div class="flex w-full flex-row">
@@ -17,10 +24,15 @@
 	</div>
 	<div class="mr-4 flex flex-1 justify-end gap-4">
 		<div>
+			<Button variant="ghost" size="icon">
+				<RefreshCw class={syncStatus === 'processing' ? 'animate-spin' : ''} />
+			</Button>
+		</div>
+		<div>
 			<Config />
 		</div>
 		<div>
-			<Button class="cursor-pointer" onclick={toggleMode}>
+			<Button class="cursor-pointer" size="icon" variant="ghost" onclick={toggleMode}>
 				<SunMoon />
 			</Button>
 		</div>

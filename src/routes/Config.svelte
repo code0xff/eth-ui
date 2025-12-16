@@ -39,6 +39,8 @@
 <div>
 	<Button
 		class="cursor-pointer"
+		size="icon"
+		variant="ghost"
 		onclick={() => {
 			open = true;
 		}}
@@ -68,7 +70,7 @@
 									Interval
 									<Button
 										class="cursor-pointer"
-										size="sm"
+										size="icon"
 										variant="ghost"
 										onclick={() => {
 											toast.info(

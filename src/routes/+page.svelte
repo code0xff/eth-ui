@@ -17,6 +17,12 @@
 	$: if (rpc) {
 		stores.rpcStore.set(rpc);
 	}
+	$: if (initialized) {
+		const _syncStatus = stores.syncStatusStore.get();
+		if (_syncStatus === 'idle') {
+			startSync();
+		}
+	}
 	let rpcs: string[] = [];
 
 	let syncStatus: types.SyncStatus = 'idle';
@@ -42,11 +48,6 @@
 	});
 	stores.initializedStore.subscribe(async (updatedInitialized) => {
 		initialized = updatedInitialized;
-
-		const _syncStatus = stores.syncStatusStore.get();
-		if (_syncStatus === 'idle' && updatedInitialized) {
-			await startSync();
-		}
 	});
 
 	function resetSynced() {
