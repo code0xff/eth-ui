@@ -55,7 +55,7 @@
 						<div>
 							<Button
 								class="cursor-pointer"
-								variant="ghost"
+								variant="outline"
 								size="icon"
 								onclick={() => fetchBlock(data.tag)}
 							>

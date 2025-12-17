@@ -46,7 +46,7 @@
 					/>
 				</div>
 				<div>
-					<Button class="cursor-pointer" onclick={search}>Search</Button>
+					<Button class="cursor-pointer" variant="outline" onclick={search}>Search</Button>
 				</div>
 			</div>
 		</Card.Content>

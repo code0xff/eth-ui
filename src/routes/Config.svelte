@@ -40,7 +40,7 @@
 	<Button
 		class="cursor-pointer"
 		size="icon"
-		variant="ghost"
+		variant="outline"
 		onclick={() => {
 			open = true;
 		}}
@@ -71,7 +71,7 @@
 									<Button
 										class="cursor-pointer"
 										size="icon"
-										variant="ghost"
+										variant="outline"
 										onclick={() => {
 											toast.info(
 												`effective only for http/https rpc endpoints\nif changed during syncing, stop and restart the sync`,
@@ -98,7 +98,7 @@
 				</Dialog.Description>
 			</Dialog.Header>
 			<Dialog.Footer>
-				<Button class="cursor-pointer" onclick={saveSetting}>Save</Button>
+				<Button class="cursor-pointer" variant="outline" onclick={saveSetting}>Save</Button>
 			</Dialog.Footer>
 		</Dialog.Content>
 	</Dialog.Root>

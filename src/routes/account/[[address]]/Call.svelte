@@ -71,7 +71,9 @@
 							<Editor name="ABI" store={stores.callAbisStore} />
 						</div>
 						<div class="max-md:w-full">
-							<Button class="cursor-pointer max-md:w-full" onclick={call}>Call</Button>
+							<Button class="cursor-pointer max-md:w-full" variant="outline" onclick={call}>
+								Call
+							</Button>
 						</div>
 					</div>
 				</div>

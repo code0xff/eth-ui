@@ -181,6 +181,7 @@
 						<div class="max-xl:w-full">
 							<Button
 								disabled={!initialized}
+								variant="outline"
 								onclick={async () =>
 									syncStatus === 'processing' ? await stopSync() : await startSync()}
 								class="w-full cursor-pointer xl:w-[80px]"

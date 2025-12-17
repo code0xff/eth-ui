@@ -36,6 +36,7 @@
 <div>
 	<Button
 		class="cursor-pointer max-md:w-full"
+		variant="outline"
 		onclick={() => {
 			open = true;
 		}}
@@ -77,7 +78,7 @@
 							<Table.Row>
 								<Table.Cell></Table.Cell>
 								<Table.Cell class="flex justify-end">
-									<Button class="cursor-pointer" onclick={sendTx}>Submit</Button>
+									<Button class="cursor-pointer" variant="outline" onclick={sendTx}>Submit</Button>
 								</Table.Cell>
 							</Table.Row>
 						</Table.Body>

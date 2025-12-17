@@ -10,7 +10,7 @@
 	<div class="mr-4 flex justify-end">
 		<Button
 			class="cursor-pointer"
-			variant="ghost"
+			variant="outline"
 			size="icon"
 			onclick={() => {
 				window.open('https://github.com/code0xff/eth-ui');

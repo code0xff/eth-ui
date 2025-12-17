@@ -34,7 +34,9 @@
 									<Input bind:value={slot} />
 								</div>
 								<div>
-									<Button class="cursor-pointer" onclick={getStorageAt}>Get</Button>
+									<Button class="cursor-pointer" variant="outline" onclick={getStorageAt}>
+										Get
+									</Button>
 								</div>
 							</div>
 						</Table.Cell>

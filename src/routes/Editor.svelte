@@ -41,7 +41,7 @@
 	<Button
 		class="cursor-pointer"
 		size="icon"
-		variant="ghost"
+		variant="outline"
 		onclick={() => {
 			open = true;
 		}}
@@ -59,7 +59,7 @@
 								<Input bind:value={input} />
 							</div>
 							<div>
-								<Button class="cursor-pointer" onclick={addItem}>Add</Button>
+								<Button class="cursor-pointer" variant="outline" onclick={addItem}>Add</Button>
 							</div>
 						</div>
 						<div class="mt-4 max-h-55 overflow-y-auto">
@@ -80,7 +80,7 @@
 												<Button
 													class="cursor-pointer"
 													size="icon"
-													variant="ghost"
+													variant="outline"
 													onclick={() => removeItem(index)}
 												>
 													<Minus />

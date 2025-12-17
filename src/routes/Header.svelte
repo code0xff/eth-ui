@@ -32,7 +32,7 @@
 			<Config />
 		</div>
 		<div>
-			<Button class="cursor-pointer" size="icon" variant="ghost" onclick={toggleMode}>
+			<Button class="cursor-pointer" size="icon" variant="outline" onclick={toggleMode}>
 				<SunMoon />
 			</Button>
 		</div>
