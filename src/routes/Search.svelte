@@ -2,7 +2,6 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { Button } from '@/components/ui/button';
-	import * as Card from '@/components/ui/card';
 	import { Input } from '@/components/ui/input';
 	import * as constants from '@/constants';
 	import * as helpers from '@/helpers';
@@ -35,20 +34,11 @@
 	}
 </script>
 
-<div>
-	<Card.Root>
-		<Card.Content>
-			<div class="flex flex-row gap-4">
-				<div class="w-full">
-					<Input
-						placeholder="Search by Address / Tx Hash / Block Number"
-						bind:value={searchParam}
-					/>
-				</div>
-				<div>
-					<Button class="cursor-pointer" variant="outline" onclick={search}>Search</Button>
-				</div>
-			</div>
-		</Card.Content>
-	</Card.Root>
+<div class="flex flex-row gap-4">
+	<div class="w-full">
+		<Input placeholder="Search by Address / Tx Hash / Block Number" bind:value={searchParam} />
+	</div>
+	<div>
+		<Button class="cursor-pointer" variant="outline" onclick={search}>Search</Button>
+	</div>
 </div>
