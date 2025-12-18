@@ -4,6 +4,7 @@
 	import { RefreshCw } from '@lucide/svelte';
 	import { Button } from '@/components/ui/button';
 	import * as Card from '@/components/ui/card';
+	import { Input } from '@/components/ui/input';
 	import * as Table from '@/components/ui/table';
 	import { Textarea } from '@/components/ui/textarea';
 	import * as helpers from '@/helpers';
@@ -44,20 +45,17 @@
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>
-					<div class="flex flex-row">
-						<div class="flex flex-1 items-center">
-							Transaction #{tx ? tx.hash : ''}
-						</div>
-						<div>
-							<Button
-								class="cursor-pointer"
-								variant="outline"
-								size="icon"
-								onclick={() => fetchTx(data.hash)}
-							>
-								<RefreshCw class={fetching ? 'animate-spin' : ''} />
-							</Button>
-						</div>
+					<div class="flex flex-1 flex-row items-center gap-4">
+						Transaction
+						<Input readonly value={tx ? tx.hash : ''} />
+						<Button
+							class="cursor-pointer"
+							variant="outline"
+							size="icon"
+							onclick={() => fetchTx(data.hash)}
+						>
+							<RefreshCw class={fetching ? 'animate-spin' : ''} />
+						</Button>
 					</div>
 				</Card.Title>
 			</Card.Header>
