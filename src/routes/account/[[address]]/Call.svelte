@@ -53,7 +53,7 @@
 		<Card.Content>
 			<div>
 				<div class="flex flex-col gap-4 md:flex-row">
-					<div class="min-w-0 flex-1">
+					<div class="flex min-w-0 flex-1 flex-row gap-4">
 						<Select.Root type="single" bind:value={selectedAbi}>
 							<Select.Trigger class="w-full cursor-pointer truncate">{selectedAbi}</Select.Trigger>
 							<Select.Content>
@@ -65,17 +65,11 @@
 								{/each}
 							</Select.Content>
 						</Select.Root>
+						<Editor name="ABI" store={stores.callAbisStore} />
 					</div>
-					<div class="flex flex-row gap-4 max-md:w-full">
-						<div>
-							<Editor name="ABI" store={stores.callAbisStore} />
-						</div>
-						<div class="max-md:w-full">
-							<Button class="cursor-pointer max-md:w-full" variant="outline" onclick={call}>
-								Call
-							</Button>
-						</div>
-					</div>
+					<Button class="cursor-pointer max-md:w-full" variant="outline" onclick={call}>
+						Call
+					</Button>
 				</div>
 				<div class="mt-4">
 					<Table.Root>

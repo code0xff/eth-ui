@@ -43,7 +43,7 @@
 	}
 </script>
 
-<div>
+<div class="flex min-h-0 flex-1 flex-col overflow-y-auto">
 	<div class="mx-4">
 		<Card.Root>
 			<Card.Header>

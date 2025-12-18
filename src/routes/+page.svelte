@@ -152,114 +152,115 @@
 	});
 </script>
 
-<div class="mx-4">
-	<div class="flex flex-col gap-4 xl:flex-row">
-		<div class="min-w-0 flex-1">
-			<Select.Root
-				type="single"
-				disabled={!initialized || syncStatus === 'processing'}
-				bind:value={rpc}
-			>
-				<Select.Trigger class="w-full cursor-pointer truncate">{rpc}</Select.Trigger>
-				<Select.Content>
-					{#each constants.DEFAULT_RPCS as rpc}
-						<Select.Item value={rpc}>{rpc}</Select.Item>
-					{/each}
-					{#each rpcs as rpc}
-						<Select.Item value={rpc}>{rpc}</Select.Item>
-					{/each}
-				</Select.Content>
-			</Select.Root>
+<div class="flex min-h-0 flex-1 flex-col">
+	<div class="shrink-0">
+		<div class="mx-4">
+			<div class="flex flex-col gap-4 xl:flex-row">
+				<div class="min-w-0 flex-1 flex flex-row gap-4">
+					<Select.Root
+						type="single"
+						disabled={!initialized || syncStatus === 'processing'}
+						bind:value={rpc}
+					>
+						<Select.Trigger class="w-full cursor-pointer truncate">{rpc}</Select.Trigger>
+						<Select.Content>
+							{#each constants.DEFAULT_RPCS as rpc}
+								<Select.Item value={rpc}>{rpc}</Select.Item>
+							{/each}
+							{#each rpcs as rpc}
+								<Select.Item value={rpc}>{rpc}</Select.Item>
+							{/each}
+						</Select.Content>
+					</Select.Root>
+					<Editor name="RPC" store={stores.rpcsStore} />
+				</div>
+				<div class="max-xl:w-full">
+					<Button
+						disabled={!initialized}
+						variant="outline"
+						onclick={async () =>
+							syncStatus === 'processing' ? await stopSync() : await startSync()}
+						class="w-full cursor-pointer xl:w-[80px]"
+					>
+						{syncStatus === 'processing' ? 'Stop' : 'Start'}
+					</Button>
+				</div>
+			</div>
 		</div>
-		<div class="flex flex-row gap-4 max-xl:w-full">
-			<div>
-				<Editor name="RPC" store={stores.rpcsStore} />
-			</div>
-			<div class="max-xl:w-full">
-				<Button
-					disabled={!initialized}
-					variant="outline"
-					onclick={async () => (syncStatus === 'processing' ? await stopSync() : await startSync())}
-					class="w-full cursor-pointer xl:w-[80px]"
-				>
-					{syncStatus === 'processing' ? 'Stop' : 'Start'}
-				</Button>
-			</div>
+		<div class="mx-4 mt-4">
+			<Search />
 		</div>
 	</div>
-</div>
-<div class="mx-4 mt-4">
-	<Search />
-</div>
-<div class="mx-4 mt-4">
-	<div class="xl:flex xl:flex-row xl:gap-4">
-		<div class="xl:flex-1">
-			<Card.Root>
-				<Card.Header>
-					<Card.Title>Blocks</Card.Title>
-				</Card.Header>
-				<Card.Content class="h-110 overflow-y-auto">
-					<Table.Root>
-						<Table.Header>
-							<Table.Row>
-								<Table.Head>Number</Table.Head>
-								<Table.Head>Hash</Table.Head>
-								<Table.Head>Txn</Table.Head>
-								<Table.Head>Time</Table.Head>
-							</Table.Row>
-						</Table.Header>
-						<Table.Body>
-							{#each blockList as block}
-								<Table.Row
-									onclick={() => goto(resolve(`/block/${block.number}`))}
-									class="cursor-pointer"
-								>
-									<Table.Cell>{helpers.printNumber(block.number)}</Table.Cell>
-									<Table.Cell>{helpers.compactHash(block.hash)}</Table.Cell>
-									<Table.Cell>{helpers.printNumber(block.transactions.length)}</Table.Cell>
-									<Table.Cell>{helpers.timestampToDate(block.timestamp)}</Table.Cell>
+	<div class="mx-4 mt-4 flex min-h-0 min-w-0 flex-1">
+		<div class="flex min-h-0 min-w-0 flex-1 flex-col gap-4 xl:flex-row xl:gap-4">
+			<div class="flex min-h-0 min-w-0 flex-1">
+				<Card.Root class="flex min-h-0 min-w-0 flex-1 flex-col">
+					<Card.Header class="shrink-0">
+						<Card.Title>Blocks</Card.Title>
+					</Card.Header>
+					<Card.Content class="min-h-0 flex-1 overflow-y-auto">
+						<Table.Root>
+							<Table.Header>
+								<Table.Row>
+									<Table.Head>Number</Table.Head>
+									<Table.Head>Hash</Table.Head>
+									<Table.Head>Txn</Table.Head>
+									<Table.Head>Time</Table.Head>
 								</Table.Row>
-							{/each}
-						</Table.Body>
-					</Table.Root>
-				</Card.Content>
-			</Card.Root>
-		</div>
-		<div class="max-xl:mt-4 xl:flex-1">
-			<Card.Root>
-				<Card.Header>
-					<Card.Title>Transactions</Card.Title>
-				</Card.Header>
-				<Card.Content class="h-110 overflow-y-auto">
-					<Table.Root>
-						<Table.Header>
-							<Table.Row>
-								<Table.Head>Hash</Table.Head>
-								<Table.Head>Addresses</Table.Head>
-								<Table.Head>Number</Table.Head>
-							</Table.Row>
-						</Table.Header>
-						<Table.Body>
-							{#each txList as tx}
-								<Table.Row onclick={() => goto(resolve(`/tx/${tx.hash}`))} class="cursor-pointer">
-									<Table.Cell>{helpers.compactHash(tx.hash)}</Table.Cell>
-									<Table.Cell>
-										<div>
-											<div>
-												from&nbsp{helpers.compactHash(tx.from)}
-											</div>
-											<div>
-												to&nbsp;&nbsp;&nbsp;{helpers.compactHash(tx.to)}
-											</div>
-										</div>
-									</Table.Cell>
-									<Table.Cell>{helpers.printNumber(tx.blockNumber)}</Table.Cell>
+							</Table.Header>
+							<Table.Body>
+								{#each blockList as block}
+									<Table.Row
+										onclick={() => goto(resolve(`/block/${block.number}`))}
+										class="cursor-pointer"
+									>
+										<Table.Cell>{helpers.printNumber(block.number)}</Table.Cell>
+										<Table.Cell>{helpers.compactHash(block.hash)}</Table.Cell>
+										<Table.Cell>{helpers.printNumber(block.transactions.length)}</Table.Cell>
+										<Table.Cell>{helpers.timestampToDate(block.timestamp)}</Table.Cell>
+									</Table.Row>
+								{/each}
+							</Table.Body>
+						</Table.Root>
+					</Card.Content>
+				</Card.Root>
+			</div>
+			<div class="flex min-h-0 min-w-0 flex-1">
+				<Card.Root class="flex min-h-0 min-w-0 flex-1 flex-col">
+					<Card.Header class="shrink-0">
+						<Card.Title>Transactions</Card.Title>
+					</Card.Header>
+					<Card.Content class="min-h-0 flex-1 overflow-y-auto">
+						<Table.Root>
+							<Table.Header>
+								<Table.Row>
+									<Table.Head>Hash</Table.Head>
+									<Table.Head>Addresses</Table.Head>
+									<Table.Head>Number</Table.Head>
 								</Table.Row>
-							{/each}
-						</Table.Body>
-					</Table.Root>
-				</Card.Content>
-			</Card.Root>
+							</Table.Header>
+							<Table.Body>
+								{#each txList as tx}
+									<Table.Row onclick={() => goto(resolve(`/tx/${tx.hash}`))} class="cursor-pointer">
+										<Table.Cell>{helpers.compactHash(tx.hash)}</Table.Cell>
+										<Table.Cell>
+											<div>
+												<div>
+													from&nbsp{helpers.compactHash(tx.from)}
+												</div>
+												<div>
+													to&nbsp;&nbsp;&nbsp;{helpers.compactHash(tx.to)}
+												</div>
+											</div>
+										</Table.Cell>
+										<Table.Cell>{helpers.printNumber(tx.blockNumber)}</Table.Cell>
+									</Table.Row>
+								{/each}
+							</Table.Body>
+						</Table.Root>
+					</Card.Content>
+				</Card.Root>
+			</div>
 		</div>
 	</div>
 </div>

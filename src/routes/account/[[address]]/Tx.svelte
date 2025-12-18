@@ -51,35 +51,23 @@
 		</Card.Header>
 		<Card.Content>
 			<div>
-				<div class="flex flex-col gap-4 md:flex-row">
-					<div class="min-w-0 flex-1">
+				<div class="flex flex-col md:flex-row">
+					<div class="flex min-w-0 flex-1 flex-row gap-4">
 						<Select.Root type="single" bind:value={selectedTestKey}>
-							<Select.Trigger class="w-full cursor-pointer truncate"
-								>{selectedTestKey}</Select.Trigger
-							>
+							<Select.Trigger class="w-full cursor-pointer truncate">
+								{selectedTestKey}
+							</Select.Trigger>
 							<Select.Content>
 								{#each testKeys as testKey}
 									<Select.Item value={testKey}>{testKey}</Select.Item>
 								{/each}
 							</Select.Content>
 						</Select.Root>
-					</div>
-					<div class="max-md:w-full">
 						<Editor name="Key" store={stores.testKeysStore} />
-					</div>
-					<div class="max-md:w-full">
-						<SubmitTx
-							testKey={selectedTestKey}
-							to={address}
-							abi={selectedAbi}
-							{value}
-							{inputs}
-							bind:hash
-						/>
 					</div>
 				</div>
 				<div class="mt-4 flex flex-col gap-4 md:flex-row">
-					<div class="min-w-0 flex-1">
+					<div class="flex min-w-0 flex-1 flex-row gap-4">
 						<Select.Root type="single" bind:value={selectedAbi}>
 							<Select.Trigger class="w-full cursor-pointer truncate">{selectedAbi}</Select.Trigger>
 							<Select.Content>
@@ -91,12 +79,16 @@
 								{/each}
 							</Select.Content>
 						</Select.Root>
+						<Editor name="ABI" store={stores.txAbisStore} />
 					</div>
-					<div class="flex flex-row gap-4 max-md:w-full">
-						<div>
-							<Editor name="ABI" store={stores.txAbisStore} />
-						</div>
-					</div>
+					<SubmitTx
+						testKey={selectedTestKey}
+						to={address}
+						abi={selectedAbi}
+						{value}
+						{inputs}
+						bind:hash
+					/>
 				</div>
 				<div class="mt-4">
 					<Table.Root>
