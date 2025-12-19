@@ -46,7 +46,7 @@
 			<Card.Header>
 				<Card.Title>
 					<div class="flex flex-1 flex-row items-center gap-4">
-						Transaction
+						Tx
 						<Input readonly value={tx ? tx.hash : ''} />
 						<Button
 							class="cursor-pointer"

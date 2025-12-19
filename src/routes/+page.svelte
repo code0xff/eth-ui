@@ -228,7 +228,7 @@
 			<div class="flex min-h-0 min-w-0 flex-1">
 				<Card.Root class="flex min-h-0 min-w-0 flex-1 flex-col">
 					<Card.Header class="shrink-0">
-						<Card.Title>Transactions</Card.Title>
+						<Card.Title>Txs</Card.Title>
 					</Card.Header>
 					<Card.Content class="min-h-0 flex-1 overflow-y-auto">
 						<Table.Root>
