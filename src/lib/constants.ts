@@ -30,5 +30,5 @@ export const DEFAULT_TX_ABIS = [
 	'function approve(address spender, uint256 amount) external returns (bool)'
 ];
 
-export const USE_WALLET = 'use wallet';
+export const WALLET = 'wallet';
 export const NONE = 'none';

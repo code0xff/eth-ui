@@ -24,7 +24,7 @@
 	let func: types.Function | undefined;
 	let inputsPlaceholder = '';
 
-	let selectedTestKey = constants.USE_WALLET;
+	let selectedTestKey = constants.WALLET;
 
 	stores.txAbisStore.subscribe((updatedAbis) => {
 		abis = updatedAbis;
@@ -62,8 +62,8 @@
 								{selectedTestKey}
 							</Select.Trigger>
 							<Select.Content>
-								<Select.Item value={constants.USE_WALLET}>
-									{constants.USE_WALLET}
+								<Select.Item value={constants.WALLET}>
+									{constants.WALLET}
 								</Select.Item>
 								{#each testKeys as testKey}
 									<Select.Item value={testKey}>{testKey}</Select.Item>
