@@ -1,10 +1,11 @@
 <script lang="ts">
+	import { toast } from 'svelte-sonner';
 	import { Button } from '@/components/ui/button';
 	import { Input } from '@/components/ui/input';
 	import * as Dialog from '@/components/ui/dialog';
 	import * as Table from '@/components/ui/table';
+	import * as constants from '@/constants';
 	import * as helpers from '@/helpers';
-	import { toast } from 'svelte-sonner';
 
 	export let testKey: string = '';
 	export let to: string = '';
@@ -19,6 +20,10 @@
 		await helpers.tryExecuteAsync(
 			async () => {
 				open = false;
+
+				if (abi === constants.NONE) {
+					abi = '';
+				}
 
 				const _provider = await helpers.ensureProvider();
 				hash = await _provider.sendTx(testKey, to, abi, inputs, value);

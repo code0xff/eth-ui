@@ -17,14 +17,14 @@
 	export let abis: string[] = [];
 	export let testKeys: string[] = [];
 
-	let selectedAbi = constants.DEFAULT_TX_ABIS[0];
-	let inputs: string = '';
-	let value: string = '';
-	let hash: string = '';
-	let func: types.Function;
-	let inputsPlaceholder: string = '';
+	let selectedAbi = constants.NONE;
+	let inputs = '';
+	let value = '';
+	let hash = '';
+	let func: types.Function | undefined;
+	let inputsPlaceholder = '';
 
-	let selectedTestKey = 'use wallet';
+	let selectedTestKey = constants.USE_WALLET;
 
 	stores.txAbisStore.subscribe((updatedAbis) => {
 		abis = updatedAbis;
@@ -36,11 +36,15 @@
 	$: if (selectedAbi) {
 		inputs = '';
 		hash = '';
+		func = undefined;
+		inputsPlaceholder = '';
 
-		helpers.tryExecute(() => {
-			func = services.AbiParser.parse(selectedAbi);
-			inputsPlaceholder = func.inputs.map((input) => input.type).join(',');
-		});
+		if (selectedAbi !== constants.NONE) {
+			helpers.tryExecute(() => {
+				func = services.AbiParser.parse(selectedAbi);
+				inputsPlaceholder = func.inputs.map((input) => input.type).join(',');
+			});
+		}
 	}
 </script>
 
@@ -58,6 +62,9 @@
 								{selectedTestKey}
 							</Select.Trigger>
 							<Select.Content>
+								<Select.Item value={constants.USE_WALLET}>
+									{constants.USE_WALLET}
+								</Select.Item>
 								{#each testKeys as testKey}
 									<Select.Item value={testKey}>{testKey}</Select.Item>
 								{/each}
@@ -71,6 +78,7 @@
 						<Select.Root type="single" bind:value={selectedAbi}>
 							<Select.Trigger class="w-full cursor-pointer truncate">{selectedAbi}</Select.Trigger>
 							<Select.Content>
+								<Select.Item value={constants.NONE}>{constants.NONE}</Select.Item>
 								{#each constants.DEFAULT_TX_ABIS as abi}
 									<Select.Item value={abi}>{abi}</Select.Item>
 								{/each}

@@ -26,7 +26,9 @@ export const DEFAULT_CALL_ABIS = [
 ];
 
 export const DEFAULT_TX_ABIS = [
-	'',
 	'function transfer(address recipient, uint256 amount) external returns (bool)',
 	'function approve(address spender, uint256 amount) external returns (bool)'
 ];
+
+export const USE_WALLET = 'use wallet';
+export const NONE = 'none';
