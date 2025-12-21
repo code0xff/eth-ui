@@ -1,7 +1,9 @@
+import * as ethers from 'ethers';
 import { toast } from 'svelte-sonner';
 import * as constants from './constants';
 import * as services from './services';
 import * as stores from './stores';
+import * as types from './types';
 
 export function timestampToDate(timestamp: number): string {
 	const datetime = new Date(timestamp * 1000).toISOString();
@@ -164,4 +166,21 @@ export function printTxType(type: number | null, withOrigin: boolean = false): s
 
 export function isValidTestKey(key: string): boolean {
 	return key.startsWith('0x') && key.length === constants.HASH_SIZE;
+}
+
+const abiCoder = ethers.AbiCoder.defaultAbiCoder();
+
+export function deriveStorageKey(
+	baseSlot: bigint,
+	keyType: types.KeyType,
+	key?: string
+): string {
+	if (!key) {
+		return ethers.keccak256(abiCoder.encode(['uint256'], [baseSlot]));
+	}
+	if (keyType === constants.NONE) {
+		throw new Error('keyType is required when key is provided');
+	}
+
+	return ethers.keccak256(abiCoder.encode([keyType, 'uint256'], [key, baseSlot]));
 }

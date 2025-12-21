@@ -1,3 +1,5 @@
+import * as constants from './constants';
+
 export type Block = {
 	number: number;
 	hash: string | null;
@@ -63,3 +65,5 @@ export type Account = {
 	nonce: number;
 	code: string;
 };
+
+export type KeyType = typeof constants.NONE | 'address' | 'uint256' | 'bytes32';
