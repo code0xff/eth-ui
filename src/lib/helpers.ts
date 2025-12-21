@@ -170,16 +170,12 @@ export function isValidTestKey(key: string): boolean {
 
 const abiCoder = ethers.AbiCoder.defaultAbiCoder();
 
-export function deriveStorageKey(
-	baseSlot: bigint,
-	keyType: types.KeyType,
-	key?: string
-): string {
-	if (!key) {
+export function deriveStorageKey(baseSlot: bigint, keyType: types.KeyType, key: string): string {
+	if (keyType === constants.NONE) {
 		return ethers.keccak256(abiCoder.encode(['uint256'], [baseSlot]));
 	}
-	if (keyType === constants.NONE) {
-		throw new Error('keyType is required when key is provided');
+	if (key.trim().length === 0) {
+		throw new Error('invalid key');
 	}
 
 	return ethers.keccak256(abiCoder.encode([keyType, 'uint256'], [key, baseSlot]));

@@ -15,10 +15,10 @@
 	}
 
 	let keyType: types.KeyType = constants.NONE;
-	let key: string;
-	let baseSlot: string;
-	let slot: string;
-	let result: string;
+	let key = '';
+	let baseSlot = '';
+	let slot = '';
+	let result = '';
 
 	const keyTypes: types.KeyType[] = [constants.NONE, 'address', 'uint256', 'bytes32'];
 
@@ -31,10 +31,10 @@
 
 	function deriveStorageKey() {
 		helpers.tryExecute(() => {
-			if (baseSlot === undefined || baseSlot.trim().length === 0) {
+			if (baseSlot.trim().length === 0) {
 				throw new Error('invalid base slot');
 			}
-			if (keyType !== constants.NONE && !key) {
+			if (keyType !== constants.NONE && key.trim().length === 0) {
 				throw new Error('invalid key');
 			}
 
