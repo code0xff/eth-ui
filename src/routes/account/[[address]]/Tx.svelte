@@ -104,7 +104,7 @@
 							<Table.Row>
 								<Table.Cell class="w-1/6">Value</Table.Cell>
 								<Table.Cell class="w-5/6">
-									<Input bind:value />
+									<Input bind:value placeholder="value (wei | e.g. 1 ether)" />
 								</Table.Cell>
 							</Table.Row>
 							<Table.Row>
