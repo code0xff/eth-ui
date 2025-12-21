@@ -10,7 +10,7 @@
 
 	export let address = '';
 
-	$: if (keyType) {
+	$: if (keyType === constants.NONE) {
 		key = '';
 	}
 
