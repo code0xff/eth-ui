@@ -297,7 +297,11 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 			_signer = await _provider.getSigner();
 		}
 
-		const _value = value.trim().length === 0 ? 0n : BigInt(value);
+		const [_amount, _unit] = value.trim().split(/\s+/);
+		if (!_amount) {
+			throw new Error('invalid value');
+		}
+		const _value = _unit ? ethers.parseUnits(_amount, _unit) : BigInt(_amount);
 
 		if (abi.trim().length === 0) {
 			const _response = await _signer.sendTransaction({
