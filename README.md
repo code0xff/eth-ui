@@ -3,7 +3,7 @@
 A lightweight Ethereum scanner focused on clarity, simplicity, and essential on-chain data.  
 This project provides a minimal, fast, and developer-friendly interface for exploring blocks, transactions, and addresses without the overhead of a full blockchain explorer.
 
-- Live Demo: <https://code0xff.github.io/eth-ui>
+- Live Site: <https://code0xff.github.io/eth-ui>
 - Repository: <https://github.com/code0xff/eth-ui>
 
 ---
