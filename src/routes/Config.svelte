@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
-	import { CogIcon, Info } from '@lucide/svelte';
+	import { CogIcon, Download, Info, Upload } from '@lucide/svelte';
 	import { Button } from '@/components/ui/button';
 	import * as Dialog from '@/components/ui/dialog';
 	import { Input } from '@/components/ui/input';
@@ -98,7 +98,15 @@
 				</Dialog.Description>
 			</Dialog.Header>
 			<Dialog.Footer>
-				<Button class="cursor-pointer" variant="outline" onclick={saveSetting}>Save</Button>
+				<div class="flex flex-row gap-4">
+					<Button variant="outline" class="cursor-pointer">
+						<Download />
+					</Button>
+					<Button variant="outline" class="cursor-pointer">
+						<Upload />
+					</Button>
+					<Button class="cursor-pointer" variant="outline" onclick={saveSetting}>Save</Button>
+				</div>
 			</Dialog.Footer>
 		</Dialog.Content>
 	</Dialog.Root>
