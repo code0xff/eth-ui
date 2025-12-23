@@ -26,8 +26,8 @@ export const rpcStore = new Store<string>('', true, 'rpc');
 export const depthStore = new Store<number>(constants.DEFAULT_DEPTH_LIMIT, true, 'depth');
 export const intervalStore = new Store<number>(constants.MIN_INTERVAL, true, 'interval');
 export const rpcsStore = new Store<string[]>([], true, 'rpcs');
-export const callAbisStore = new Store<string[]>([], true, 'call_abis');
-export const txAbisStore = new Store<string[]>([], true, 'tx_abis');
-export const testKeysStore = new Store<string[]>([], true, 'test_keys');
+export const callAbisStore = new Store<string[]>([], true, 'callAbis');
+export const txAbisStore = new Store<string[]>([], true, 'txAbis');
+export const testKeysStore = new Store<string[]>([], true, 'testKeys');
 
 export const initializedStore = new Store<boolean>(false);

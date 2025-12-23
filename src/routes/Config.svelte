@@ -6,11 +6,14 @@
 	import { Input } from '@/components/ui/input';
 	import * as Table from '@/components/ui/table';
 	import * as constants from '@/constants';
+	import * as helpers from '@/helpers';
 	import * as stores from '@/stores';
+	import * as types from '@/types';
 
 	let open = false;
 	let depth = constants.DEFAULT_DEPTH_LIMIT;
 	let interval = constants.MIN_INTERVAL;
+	let environment: File | null = null;
 
 	$: if (open) {
 		depth = stores.depthStore.get();
@@ -31,6 +34,26 @@
 
 		open = false;
 		toast.info('successfully saved');
+	}
+
+	function importEnvironment(e: Event) {
+		const _input = e.target as HTMLInputElement;
+		environment = _input.files?.[0] ?? null;
+
+		if (environment) {
+			const _reader = new FileReader();
+			_reader.onload = (_event: ProgressEvent<FileReader>) => {
+				helpers.tryExecute(() => {
+					const _result = _event.target?.result;
+					if (typeof _result === 'string') {
+						const _environment: types.Environment = JSON.parse(_result);
+					} else {
+						throw new Error('invalid file content');
+					}
+				});
+			};
+			_reader.readAsText(environment);
+		}
 	}
 </script>
 
