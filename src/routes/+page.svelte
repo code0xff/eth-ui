@@ -110,10 +110,10 @@
 			return;
 		}
 
-		const _blocklistLimit = stores.blocklistLimitStore.get();
-		if (_blockStore.size >= _blocklistLimit) {
+		const _depth = stores.depthStore.get();
+		if (_blockStore.size >= _depth) {
 			const _blockList = [..._blockStore.values()];
-			const _pruneBlockList = _blockList.slice(_blocklistLimit - 1);
+			const _pruneBlockList = _blockList.slice(_depth - 1);
 			stores.txStore.update((_txs) => {
 				_pruneBlockList.forEach((_block) => {
 					_block.transactions.forEach((_txHash) => {
@@ -156,7 +156,7 @@
 	<div class="shrink-0">
 		<div class="mx-4">
 			<div class="flex flex-col gap-4 xl:flex-row">
-				<div class="min-w-0 flex-1 flex flex-row gap-4">
+				<div class="flex min-w-0 flex-1 flex-row gap-4">
 					<Select.Root
 						type="single"
 						disabled={!initialized || syncStatus === 'processing'}

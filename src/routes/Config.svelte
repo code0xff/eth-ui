@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
-	import { CogIcon, Download, Info, Upload } from '@lucide/svelte';
+	import { CogIcon, Download, Info } from '@lucide/svelte';
 	import { Button } from '@/components/ui/button';
 	import * as Dialog from '@/components/ui/dialog';
 	import { Input } from '@/components/ui/input';
@@ -9,26 +9,24 @@
 	import * as stores from '@/stores';
 
 	let open = false;
-	let blocklistLimit = constants.DEFAULT_BLOCK_LIST_LIMIT;
+	let depth = constants.DEFAULT_DEPTH_LIMIT;
 	let interval = constants.MIN_INTERVAL;
 
 	$: if (open) {
-		blocklistLimit = stores.blocklistLimitStore.get();
+		depth = stores.depthStore.get();
 		interval = stores.intervalStore.get();
 	}
 
 	function saveSetting() {
-		if (!blocklistLimit || blocklistLimit < constants.MIN_BLOCK_LIST_LIMIT) {
-			toast.warning(
-				`invalid blocklist limit: blocklist limit must be at least ${constants.MIN_BLOCK_LIST_LIMIT}`
-			);
+		if (!depth || depth < constants.MIN_DEPTH_LIMIT) {
+			toast.warning(`invalid depth: depth must be at least ${constants.MIN_DEPTH_LIMIT}`);
 			return;
 		}
 		if (!interval || interval < constants.MIN_INTERVAL) {
 			toast.warning(`invalid interval: interval must be at least ${constants.MIN_INTERVAL}`);
 			return;
 		}
-		stores.blocklistLimitStore.set(blocklistLimit);
+		stores.depthStore.set(depth);
 		stores.intervalStore.set(interval);
 
 		open = false;
@@ -55,13 +53,13 @@
 					<Table.Root>
 						<Table.Body>
 							<Table.Row>
-								<Table.Cell>Blocklist limit</Table.Cell>
+								<Table.Cell>Depth</Table.Cell>
 								<Table.Cell>
 									<Input
 										type="number"
-										min={constants.MIN_BLOCK_LIST_LIMIT}
-										placeholder={constants.DEFAULT_BLOCK_LIST_LIMIT.toString()}
-										bind:value={blocklistLimit}
+										min={constants.MIN_DEPTH_LIMIT}
+										placeholder={constants.DEFAULT_DEPTH_LIMIT.toString()}
+										bind:value={depth}
 									/>
 								</Table.Cell>
 							</Table.Row>
@@ -93,6 +91,12 @@
 									/>
 								</Table.Cell>
 							</Table.Row>
+							<Table.Row>
+								<Table.Cell>Import</Table.Cell>
+								<Table.Cell>
+									<Input type="file" />
+								</Table.Cell>
+							</Table.Row>
 						</Table.Body>
 					</Table.Root>
 				</Dialog.Description>
@@ -101,9 +105,6 @@
 				<div class="flex flex-row gap-4">
 					<Button variant="outline" class="cursor-pointer">
 						<Download />
-					</Button>
-					<Button variant="outline" class="cursor-pointer">
-						<Upload />
 					</Button>
 					<Button class="cursor-pointer" variant="outline" onclick={saveSetting}>Save</Button>
 				</div>
