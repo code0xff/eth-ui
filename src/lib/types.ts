@@ -67,3 +67,10 @@ export type Account = {
 };
 
 export type KeyType = typeof constants.NONE | 'address' | 'uint256' | 'bytes32';
+
+export type Environment = {
+	rpcs?: string[];
+	callAbis?: string[];
+	txAbis?: string[];
+	testKeys?: string[];
+};
