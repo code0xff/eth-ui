@@ -13,11 +13,28 @@
 	let open = false;
 	let depth = constants.DEFAULT_DEPTH_LIMIT;
 	let interval = constants.MIN_INTERVAL;
-	let environment: File | null = null;
+	let env: types.Environment;
+	let importedFile: File | null = null;
 
 	$: if (open) {
 		depth = stores.depthStore.get();
 		interval = stores.intervalStore.get();
+	}
+
+	function applyEnv(env: types.Environment) {
+		const mappings = [
+			['rpcs', stores.rpcsStore],
+			['callAbis', stores.callAbisStore],
+			['txAbis', stores.txAbisStore],
+			['testKeys', stores.testKeysStore]
+		] as const;
+
+		for (const [key, store] of mappings) {
+			const value = env[key];
+			if (value) {
+				store.set(value);
+			}
+		}
 	}
 
 	function saveSetting() {
@@ -32,28 +49,54 @@
 		stores.depthStore.set(depth);
 		stores.intervalStore.set(interval);
 
+		if (env) {
+			applyEnv(env);
+		}
+
 		open = false;
 		toast.info('successfully saved');
 	}
 
 	function importEnvironment(e: Event) {
 		const _input = e.target as HTMLInputElement;
-		environment = _input.files?.[0] ?? null;
+		importedFile = _input.files?.[0] ?? null;
 
-		if (environment) {
+		if (importedFile) {
 			const _reader = new FileReader();
 			_reader.onload = (_event: ProgressEvent<FileReader>) => {
 				helpers.tryExecute(() => {
 					const _result = _event.target?.result;
 					if (typeof _result === 'string') {
-						const _environment: types.Environment = JSON.parse(_result);
+						env = JSON.parse(_result);
 					} else {
 						throw new Error('invalid file content');
 					}
 				});
 			};
-			_reader.readAsText(environment);
+			_reader.readAsText(importedFile);
 		}
+	}
+
+	function exportEnvironment() {
+		const env: types.Environment = {
+			rpcs: stores.rpcsStore.get(),
+			callAbis: stores.callAbisStore.get(),
+			txAbis: stores.txAbisStore.get(),
+			testKeys: stores.testKeysStore.get()
+		};
+
+		helpers.tryExecute(() => {
+			const json = JSON.stringify(env, null, 2);
+			const blob = new Blob([json], { type: 'application/json' });
+			const url = URL.createObjectURL(blob);
+
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = `env_${Date.now()}.json`;
+			a.click();
+
+			URL.revokeObjectURL(url);
+		});
 	}
 </script>
 
@@ -115,9 +158,9 @@
 								</Table.Cell>
 							</Table.Row>
 							<Table.Row>
-								<Table.Cell>Import</Table.Cell>
+								<Table.Cell>Environment</Table.Cell>
 								<Table.Cell>
-									<Input type="file" />
+									<Input type="file" class="cursor-pointer" onchange={importEnvironment} />
 								</Table.Cell>
 							</Table.Row>
 						</Table.Body>
@@ -126,7 +169,7 @@
 			</Dialog.Header>
 			<Dialog.Footer>
 				<div class="flex flex-row gap-4">
-					<Button variant="outline" class="cursor-pointer">
+					<Button variant="outline" class="cursor-pointer" onclick={exportEnvironment}>
 						<Download />
 					</Button>
 					<Button class="cursor-pointer" variant="outline" onclick={saveSetting}>Save</Button>
