@@ -1,9 +1,9 @@
 <script lang="ts">
 	import '../app.css';
+	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import favicon from '$lib/assets/favicon.ico';
 	import { ModeWatcher } from 'mode-watcher';
-	import { onMount } from 'svelte';
 	import { Toaster } from '@/components/ui/sonner';
 	import * as constants from '@/constants';
 	import * as helpers from '@/helpers';
