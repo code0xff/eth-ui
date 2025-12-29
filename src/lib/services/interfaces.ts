@@ -2,7 +2,7 @@ import * as types from '../types';
 
 export interface BlockProvider {
 	connect(): Promise<void>;
-	disconnect(): void;
+	disconnect(): Promise<void>;
 	reconnect(count: number): Promise<void>;
 	connected(): boolean;
 

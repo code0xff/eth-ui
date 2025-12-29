@@ -13,9 +13,9 @@
 	import Search from './Search.svelte';
 	import { onMount } from 'svelte';
 
-	let rpc = '';
-	$: if (rpc) {
-		stores.rpcStore.set(rpc);
+	let selectedRpc = '';
+	$: if (selectedRpc) {
+		stores.rpcStore.set(selectedRpc);
 	}
 	$: if (initialized) {
 		const _syncStatus = stores.syncStatusStore.get();
@@ -41,7 +41,7 @@
 		txList = [...updatedTxs.values()];
 	});
 	stores.rpcStore.subscribe((updatedRpc) => {
-		rpc = updatedRpc;
+		selectedRpc = updatedRpc;
 	});
 	stores.rpcsStore.subscribe((updatedRpcs) => {
 		rpcs = updatedRpcs;
@@ -50,13 +50,13 @@
 		initialized = updatedInitialized;
 	});
 
-	function resetSynced() {
+	async function resetSynced() {
 		stores.blockStore.reset();
 		stores.txStore.reset();
 
 		let _provider = stores.providerStore.get();
 		if (_provider) {
-			_provider.disconnect();
+			await _provider.disconnect();
 			stores.providerStore.reset();
 		}
 	}
@@ -87,7 +87,7 @@
 				const _rpc = stores.rpcStore.get();
 
 				if (_provider?.getUrl() !== _rpc) {
-					resetSynced();
+					await resetSynced();
 				}
 				await runSync();
 			},
@@ -160,9 +160,9 @@
 					<Select.Root
 						type="single"
 						disabled={!initialized || syncStatus === 'processing'}
-						bind:value={rpc}
+						bind:value={selectedRpc}
 					>
-						<Select.Trigger class="w-full cursor-pointer truncate">{rpc}</Select.Trigger>
+						<Select.Trigger class="w-full cursor-pointer truncate">{selectedRpc}</Select.Trigger>
 						<Select.Content>
 							{#each constants.DEFAULT_RPCS as rpc}
 								<Select.Item value={rpc}>{rpc}</Select.Item>

@@ -38,8 +38,10 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 		this.network = { chainId, name };
 	}
 
-	disconnect(): void {
+	async disconnect(): Promise<void> {
 		console.debug(`${this.disconnect.name}()`);
+
+		await this.provider?.removeAllListeners();
 
 		this.provider?.destroy();
 		this.provider = undefined;
@@ -50,6 +52,8 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 		console.debug(`${this.reconnect.name}(${count})`);
 
 		try {
+			await this.disconnect();
+
 			if (!this.url) {
 				throw new Error(`invalid url: ${this.url}`);
 			}
