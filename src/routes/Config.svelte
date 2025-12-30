@@ -137,12 +137,9 @@
 										size="icon"
 										variant="outline"
 										onclick={() => {
-											toast.info(
-												`effective only for http/https rpc endpoints\nif changed during syncing, stop and restart the sync`,
-												{
-													class: 'whitespace-pre-line'
-												}
-											);
+											toast.info(`effective only for http/https rpc endpoints`, {
+												class: 'whitespace-pre-line'
+											});
 										}}
 									>
 										<Info />

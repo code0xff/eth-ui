@@ -66,14 +66,13 @@
 
 		const _provider = await helpers.ensureProvider();
 
-		const _interval = stores.intervalStore.get();
 		await _provider.onNewBlock(async (newBlock) => {
 			if (stores.syncStatusStore.get() !== 'processing') {
 				await _provider.offNewBlock();
 				return;
 			}
 			updateNewBlock(newBlock);
-		}, _interval);
+		});
 	}
 
 	async function startSync() {

@@ -18,12 +18,15 @@ export interface BlockProvider {
 	getStorage(address: string, slot: string): Promise<string>;
 
 	call(address: string, abi: string, inputs: string): Promise<string>;
-	sendTx(testKey: string, address: string, abi: string, inputs: string, value: string): Promise<string>;
+	sendTx(
+		testKey: string,
+		address: string,
+		abi: string,
+		inputs: string,
+		value: string
+	): Promise<string>;
 
-	onNewBlock(
-		callback: (block: types.Block) => Promise<void> | void,
-		interval: number
-	): Promise<void>;
+	onNewBlock(callback: (block: types.Block) => Promise<void> | void): Promise<void>;
 	offNewBlock(callback?: () => void): Promise<void>;
 }
 
