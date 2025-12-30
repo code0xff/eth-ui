@@ -74,3 +74,5 @@ export type Environment = {
 	txAbis?: string[];
 	testKeys?: string[];
 };
+
+export type Validator = (input: string) => boolean;

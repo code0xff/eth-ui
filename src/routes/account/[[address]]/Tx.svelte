@@ -46,6 +46,32 @@
 			});
 		}
 	}
+
+	function validateKey(key: string): boolean {
+		try {
+			// Trim input and allow optional 0x prefix
+			const s = key.trim();
+			const hex = s.startsWith('0x') || s.startsWith('0X') ? s.slice(2) : s;
+
+			// Ethereum private key must be 32 bytes (64 hex chars)
+			if (hex.length !== 64) return false;
+
+			// Parse hex to integer (throws if invalid hex)
+			const k = BigInt('0x' + hex);
+
+			// Reject zero key
+			if (k === 0n) return false;
+
+			// secp256k1 curve order (upper bound)
+			const n = 0xfffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141n;
+
+			// Valid range: 1 <= key < n
+			return k < n;
+		} catch {
+			// Invalid hex or BigInt parsing error
+			return false;
+		}
+	}
 </script>
 
 <div>
@@ -70,7 +96,7 @@
 								{/each}
 							</Select.Content>
 						</Select.Root>
-						<Editor name="Key" store={stores.testKeysStore} />
+						<Editor name="Key" store={stores.testKeysStore} validate={validateKey} />
 					</div>
 				</div>
 				<div class="mt-4 flex flex-col gap-4 md:flex-row">

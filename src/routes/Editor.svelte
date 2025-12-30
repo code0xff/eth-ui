@@ -6,9 +6,11 @@
 	import * as Table from '@/components/ui/table';
 	import * as helpers from '@/helpers';
 	import { type Store } from '@/stores/interfaces';
+	import type * as types from '@/types';
 
 	export let name = '';
 	export let store: Store<string[]>;
+	export let validate: types.Validator | undefined = undefined;
 
 	let open = false;
 	let input = '';
@@ -20,6 +22,9 @@
 
 	function addItem() {
 		helpers.tryExecute(() => {
+			if (validate?.(input) === false) {
+				throw new Error(`invalid input: ${input}`);
+			}
 			items = [...items, input];
 			store.set(items);
 
