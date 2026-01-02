@@ -354,14 +354,14 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 						console.error(e);
 					}
 				} finally {
-					if (!provider.pollingActive) {
+					if (provider.pollingActive) {
 						const _interval = stores.intervalStore.get();
 						setTimeout(async () => pollBlock(provider), _interval);
 					}
 				}
 			}
 
-			this.pollingActive = false;
+			this.pollingActive = true;
 			const _interval = stores.intervalStore.get();
 			setTimeout(async () => pollBlock(this), _interval);
 		} else {
@@ -385,7 +385,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 		if (this.provider instanceof ethers.WebSocketProvider) {
 			this.provider.off('block');
 		} else {
-			this.pollingActive = true;
+			this.pollingActive = false;
 		}
 		callback?.();
 	}
