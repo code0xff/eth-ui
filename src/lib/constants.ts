@@ -8,7 +8,9 @@ export const ADDRESS_SIZE = 42; //prefix: 0x + address size: 20 bytes
 
 export const DEFAULT_RPCS = [
 	'wss://ethereum-rpc.publicnode.com',
-	'wss://ethereum-sepolia-rpc.publicnode.com'
+	'wss://ethereum-sepolia-rpc.publicnode.com',
+	'https://ethereum-rpc.publicnode.com',
+	'https://ethereum-sepolia-rpc.publicnode.com'
 ];
 
 export const GWEI = 1_000_000_000n;
