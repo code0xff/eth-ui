@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import * as Accordion from '@/components/ui/accordion';
 	import { Button } from '@/components/ui/button';
 	import * as Card from '@/components/ui/card';
 	import * as Select from '@/components/ui/select';
@@ -9,9 +11,9 @@
 	import * as helpers from '@/helpers';
 	import * as constants from '@/constants';
 	import * as types from '@/types';
+	import BlockMetrics from './BlockMetrics.svelte';
 	import Editor from './Editor.svelte';
 	import Search from './Search.svelte';
-	import { onMount } from 'svelte';
 
 	let selectedRpc = '';
 	$: if (selectedRpc) {
@@ -189,8 +191,19 @@
 		<div class="mx-4 mt-4">
 			<Search />
 		</div>
+		<div class="mx-4">
+			<Accordion.Root type="single">
+				<Accordion.Item value="metrics">
+					<Accordion.Trigger>Block Metrics</Accordion.Trigger>
+
+					<Accordion.Content>
+						<BlockMetrics blocks={blockList} />
+					</Accordion.Content>
+				</Accordion.Item>
+			</Accordion.Root>
+		</div>
 	</div>
-	<div class="mx-4 mt-4 flex min-h-0 min-w-0 flex-1">
+	<div class="mx-4 flex min-h-0 min-w-0 flex-1">
 		<div class="flex min-h-0 min-w-0 flex-1 flex-col gap-4 xl:flex-row xl:gap-4">
 			<div class="flex min-h-0 min-w-0 flex-1">
 				<Card.Root class="flex min-h-0 min-w-0 flex-1 flex-col">
