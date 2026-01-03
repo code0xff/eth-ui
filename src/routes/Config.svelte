@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
-	import { CogIcon, Download, Info } from '@lucide/svelte';
+	import { toggleMode } from 'mode-watcher';
+	import { CogIcon, Download, Info, SunMoon } from '@lucide/svelte';
 	import { Button } from '@/components/ui/button';
 	import * as Dialog from '@/components/ui/dialog';
 	import { Input } from '@/components/ui/input';
@@ -168,6 +169,9 @@
 				<div class="flex flex-row gap-4">
 					<Button variant="outline" class="cursor-pointer" onclick={exportEnvironment}>
 						<Download />
+					</Button>
+					<Button class="cursor-pointer" size="icon" variant="outline" onclick={toggleMode}>
+						<SunMoon />
 					</Button>
 					<Button class="cursor-pointer" variant="outline" onclick={saveSetting}>Save</Button>
 				</div>

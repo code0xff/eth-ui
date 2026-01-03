@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { toggleMode } from 'mode-watcher';
 	import { Button } from '@/components/ui/button';
-	import { RefreshCw, SunMoon } from '@lucide/svelte';
+	import { RefreshCw } from '@lucide/svelte';
 	import Config from './Config.svelte';
 	import * as types from '@/types';
 	import * as stores from '@/stores';
@@ -30,11 +29,6 @@
 		</div>
 		<div>
 			<Config />
-		</div>
-		<div>
-			<Button class="cursor-pointer" size="icon" variant="outline" onclick={toggleMode}>
-				<SunMoon />
-			</Button>
 		</div>
 	</div>
 </div>
