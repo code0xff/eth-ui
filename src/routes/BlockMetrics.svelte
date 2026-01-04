@@ -23,25 +23,56 @@
 		gasUsed: number;
 	};
 
-	$: chartData = [...blocks]
-		.slice()
-		.sort((a, b) => a.number - b.number)
-		.map((b): ChartPoint => {
-			const wei = (b as any).baseFeePerGas ?? (b as any).baseFee ?? (b as any).baseFeeWei ?? 0n;
+	function toChartPoint(b: types.Block): ChartPoint {
+		const wei = b.baseFeePerGas ?? 0n;
 
-			const baseFeeGwei =
-				typeof wei === 'bigint' ? Number(wei) / 1_000_000_000 : Number(wei) / 1_000_000_000;
+		const baseFeeGwei = b.baseFeePerGas ? Number(wei) / 1_000_000_000 : 0;
+		const gasUsed = b.gasUsed ? Number(b.gasUsed) : 0;
 
-			const gasUsedRaw = (b as any).gasUsed ?? 0n;
-			const gasUsed = typeof gasUsedRaw === 'bigint' ? Number(gasUsedRaw) : Number(gasUsedRaw);
+		return {
+			block: b.number,
+			txCount: b.transactions.length,
+			baseFeeGwei,
+			gasUsed
+		};
+	}
 
-			return {
-				block: b.number,
-				txCount: b.transactions.length,
-				baseFeeGwei,
-				gasUsed
-			};
-		});
+	/**
+	 * Build chart data using only the latest contiguous block sequence.
+	 * Starts from the highest block number and keeps blocks where
+	 * block.number decreases exactly by 1 (N, N-1, N-2, ...).
+	 * Stops immediately when a gap is detected.
+	 */
+	function buildLatestContiguousBlocks(_blocks: types.Block[]): types.Block[] {
+		if (_blocks.length === 0) return [];
+
+		// Sort by block number descending (latest first)
+		const sortedDesc = [..._blocks].sort((a, b) => b.number - a.number);
+
+		const picked: types.Block[] = [];
+		let expected: number | null = null;
+
+		for (const b of sortedDesc) {
+			if (picked.length === 0) {
+				picked.push(b);
+				expected = b.number - 1;
+				continue;
+			}
+
+			if (expected !== null && b.number === expected) {
+				picked.push(b);
+				expected = b.number - 1;
+			} else {
+				// Stop at the first gap; only keep the latest contiguous range
+				break;
+			}
+		}
+
+		// Return ascending order for chart rendering
+		return picked.reverse();
+	}
+
+	$: chartData = buildLatestContiguousBlocks(blocks).map(toChartPoint);
 
 	const chartConfig = {
 		txCount: { label: 'Tx Count', color: 'var(--chart-1)' },
