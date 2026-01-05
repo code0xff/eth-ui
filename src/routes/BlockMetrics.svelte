@@ -19,20 +19,20 @@
 	type ChartPoint = {
 		block: number;
 		txCount: number;
-		baseFeeGwei: number;
+		baseFee: number;
 		gasUsed: number;
 	};
 
 	function toChartPoint(b: types.Block): ChartPoint {
 		const wei = b.baseFeePerGas ?? 0n;
 
-		const baseFeeGwei = b.baseFeePerGas ? Number(wei) / 1_000_000_000 : 0;
+		const baseFee = b.baseFeePerGas ? Number(wei) : 0;
 		const gasUsed = b.gasUsed ? Number(b.gasUsed) : 0;
 
 		return {
 			block: b.number,
 			txCount: b.transactions.length,
-			baseFeeGwei,
+			baseFee,
 			gasUsed
 		};
 	}
@@ -76,7 +76,7 @@
 
 	const chartConfig = {
 		txCount: { label: 'Tx Count', color: 'var(--chart-1)' },
-		baseFeeGwei: { label: 'Base Fee', color: 'var(--chart-2)' },
+		baseFee: { label: 'Base Fee', color: 'var(--chart-2)' },
 		gasUsed: { label: 'Gas Used', color: 'var(--chart-3)' }
 	} satisfies Chart.ChartConfig;
 
@@ -100,9 +100,9 @@
 			case 'baseFee':
 				return [
 					{
-						key: 'baseFeeGwei',
-						label: chartConfig.baseFeeGwei.label,
-						color: chartConfig.baseFeeGwei.color
+						key: 'baseFee',
+						label: chartConfig.baseFee.label,
+						color: chartConfig.baseFee.color
 					}
 				];
 			case 'gasUsed':
