@@ -9,7 +9,7 @@
 <div>
 	<Accordion.Root type="single">
 		<Accordion.Item value={name}>
-			<Accordion.Trigger>Open {name}</Accordion.Trigger>
+			<Accordion.Trigger class="cursor-pointer">Open {name}</Accordion.Trigger>
 			<Accordion.Content>
 				<Textarea readonly class="resize-none" value={data} />
 			</Accordion.Content>

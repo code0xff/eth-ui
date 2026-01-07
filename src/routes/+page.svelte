@@ -194,7 +194,7 @@
 		<div class="mx-4">
 			<Accordion.Root type="single">
 				<Accordion.Item value="metrics">
-					<Accordion.Trigger>Block Metrics</Accordion.Trigger>
+					<Accordion.Trigger class="cursor-pointer">Block Metrics</Accordion.Trigger>
 
 					<Accordion.Content>
 						<BlockMetrics blocks={blockList} />
