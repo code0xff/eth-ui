@@ -34,3 +34,7 @@ export const DEFAULT_TX_ABIS = [
 
 export const WALLET = 'wallet';
 export const NONE = 'none';
+
+export const MANUAL =
+	'https://code0xff.notion.site/ETH-UI-User-Manual-dcb4f1a0b639428297753f193c1a7aa0';
+export const GITHUB = 'https://github.com/code0xff/eth-ui';

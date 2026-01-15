@@ -1,20 +1,28 @@
 <script lang="ts">
 	import { Button } from '@/components/ui/button';
-	import { Github } from '@lucide/svelte';
+	import { BookOpen, Github } from '@lucide/svelte';
+	import * as constants from '@/constants';
 </script>
 
-<div class="flex w-full flex-row">
-	<div class="flex flex-1 items-center justify-center">
-		<p>© 2025 code0xff</p>
-	</div>
-	<div class="mr-4 flex justify-end">
+<div class="grid w-full grid-cols-3 items-center">
+	<div></div>
+
+	<p class="text-center">© 2025 code0xff</p>
+
+	<div class="mr-4 flex justify-end gap-4">
 		<Button
 			class="cursor-pointer"
 			variant="outline"
 			size="icon"
-			onclick={() => {
-				window.open('https://github.com/code0xff/eth-ui');
-			}}
+			onclick={() => window.open(constants.MANUAL)}
+		>
+			<BookOpen />
+		</Button>
+		<Button
+			class="cursor-pointer"
+			variant="outline"
+			size="icon"
+			onclick={() => window.open(constants.GITHUB)}
 		>
 			<Github />
 		</Button>
