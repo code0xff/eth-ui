@@ -10,7 +10,7 @@
 	import * as helpers from '@/helpers';
 	import * as stores from '@/stores';
 	import * as types from '@/types';
-	import Data from '../../Data.svelte';
+	import Data from '@/components/Data.svelte';
 
 	export let data: { hash: string };
 

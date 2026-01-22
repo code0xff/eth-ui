@@ -11,9 +11,9 @@
 	import * as helpers from '@/helpers';
 	import * as constants from '@/constants';
 	import * as types from '@/types';
-	import BlockMetrics from './BlockMetrics.svelte';
-	import Editor from './Editor.svelte';
-	import Search from './Search.svelte';
+	import BlockMetrics from '@/components/BlockMetrics.svelte';
+	import Editor from '@/components/Editor.svelte';
+	import Search from '@/components/Search.svelte';
 
 	let selectedRpc = '';
 	$: if (selectedRpc) {

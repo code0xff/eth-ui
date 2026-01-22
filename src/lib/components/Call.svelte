@@ -9,7 +9,7 @@
 	import * as services from '@/services';
 	import * as stores from '@/stores';
 	import * as types from '@/types';
-	import Editor from '../../Editor.svelte';
+	import Editor from '@/components/Editor.svelte';
 
 	export let address = '';
 	export let abis: string[] = [];

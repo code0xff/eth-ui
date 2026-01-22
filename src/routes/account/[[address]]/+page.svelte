@@ -4,10 +4,10 @@
 	import * as Card from '@/components/ui/card';
 	import { Input } from '@/components/ui/input';
 	import * as Table from '@/components/ui/table';
-	import Call from './Call.svelte';
-	import Storage from './Storage.svelte';
-	import Tx from './Tx.svelte';
-	import Data from '../../Data.svelte';
+	import Call from '@/components/Call.svelte';
+	import Storage from '@/components/Storage.svelte';
+	import Tx from '@/components/Tx.svelte';
+	import Data from '@/components/Data.svelte';
 	import * as helpers from '@/helpers';
 	import * as stores from '@/stores';
 	import * as types from '@/types';

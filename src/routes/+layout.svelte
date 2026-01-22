@@ -8,8 +8,8 @@
 	import * as constants from '@/constants';
 	import * as helpers from '@/helpers';
 	import * as stores from '@/stores';
-	import Header from './Header.svelte';
-	import Footer from './Footer.svelte';
+	import Header from '@/components/Header.svelte';
+	import Footer from '@/components/Footer.svelte';
 
 	let { children } = $props();
 
