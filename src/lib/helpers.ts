@@ -21,25 +21,42 @@ export function printNumber(num: number | bigint | null): string {
 	}
 }
 
+function formatUnitUpTo3dp(wei: bigint, base: bigint): string {
+  const denom4 = base / 10_000n;
+  const v4 = wei / denom4;
+  const v3 = (v4 + 5n) / 10n;
+
+  const intPart = v3 / 1000n;
+  const fracPartNum = v3 % 1000n;
+
+  if (fracPartNum === 0n) {
+    return intPart.toLocaleString();
+  }
+
+  let fracStr = fracPartNum.toString().padStart(3, "0");
+  fracStr = fracStr.replace(/0+$/, "");
+
+  return `${intPart.toLocaleString()}.${fracStr}`;
+}
+
 export function printWei(wei: bigint | null, withOrigin: boolean = false): string {
-	if (wei === null) {
-		return '';
-	}
+  if (wei === null) return "";
 
-	let value: bigint;
-	let unit: string;
-	if (wei >= constants.ETH) {
-		value = wei / constants.ETH;
-		unit = 'eth';
-	} else if (wei >= constants.GWEI) {
-		value = wei / constants.GWEI;
-		unit = 'gwei';
-	} else {
-		value = wei;
-		unit = 'wei';
-	}
+  let result: string;
+  let unit: string;
 
-	return `${value.toLocaleString()} ${unit}${withOrigin ? ` (${wei.toLocaleString()})` : ''}`;
+  if (wei >= constants.ETH) {
+    result = formatUnitUpTo3dp(wei, constants.ETH);
+    unit = "eth";
+  } else if (wei >= constants.GWEI) {
+    result = formatUnitUpTo3dp(wei, constants.GWEI);
+    unit = "gwei";
+  } else {
+    result = wei.toLocaleString();
+    unit = "wei";
+  }
+
+  return `${result} ${unit}${withOrigin ? ` (${wei.toLocaleString()} wei)` : ""}`;
 }
 
 export function splitToChunks(data: string, selectorExist?: boolean): string {
