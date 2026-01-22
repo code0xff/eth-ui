@@ -5,6 +5,7 @@
 	import Config from './Config.svelte';
 	import * as types from '@/types';
 	import * as stores from '@/stores';
+	import Calculator from './Calculator.svelte';
 
 	let syncStatus: types.SyncStatus = 'idle';
 	stores.syncStatusStore.subscribe((updatedSyncStatus) => {
@@ -21,14 +22,11 @@
 			ETH UI
 		</a>
 	</div>
-	<div class="mr-4 flex flex-1 justify-end gap-4">
-		<div>
-			<Button variant="ghost" size="icon">
-				<RefreshCw class={syncStatus === 'processing' ? 'animate-spin' : ''} />
-			</Button>
-		</div>
-		<div>
-			<Config />
-		</div>
+	<div class="mr-4 flex flex-1 justify-end gap-2">
+		<Button variant="ghost" size="icon">
+			<RefreshCw class={syncStatus === 'processing' ? 'animate-spin' : ''} />
+		</Button>
+		<Calculator />
+		<Config />
 	</div>
 </div>
