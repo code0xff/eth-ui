@@ -33,6 +33,8 @@
 	let blockList: types.Block[] = [];
 	let txList: types.TxResponse[] = [];
 
+	let metricsOpen = false;
+
 	stores.syncStatusStore.subscribe((updatedSyncStatus) => {
 		syncStatus = updatedSyncStatus;
 	});
@@ -141,6 +143,8 @@
 	}
 
 	onMount(() => {
+		metricsOpen = stores.metricsStore.get();
+
 		document.addEventListener('visibilitychange', async () => {
 			const _syncStatus = stores.syncStatusStore.get();
 			if (_syncStatus === 'processing') {
@@ -192,7 +196,7 @@
 			<Search />
 		</div>
 		<div class="mx-4">
-			<Accordion.Root type="single">
+			<Accordion.Root type="single" value={metricsOpen ? 'metrics' : undefined}>
 				<Accordion.Item value="metrics">
 					<Accordion.Trigger class="cursor-pointer">Block Metrics</Accordion.Trigger>
 

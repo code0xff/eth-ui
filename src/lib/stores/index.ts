@@ -29,5 +29,6 @@ export const rpcsStore = new Store<string[]>([], true, 'rpcs');
 export const callAbisStore = new Store<string[]>([], true, 'callAbis');
 export const txAbisStore = new Store<string[]>([], true, 'txAbis');
 export const testKeysStore = new Store<string[]>([], true, 'testKeys');
+export const metricsStore = new Store<boolean>(true, true, 'metrics');
 
 export const initializedStore = new Store<boolean>(false);

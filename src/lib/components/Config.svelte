@@ -3,6 +3,7 @@
 	import { toggleMode } from 'mode-watcher';
 	import { CogIcon, Download, Info, SunMoon } from '@lucide/svelte';
 	import { Button } from '@/components/ui/button';
+	import { Checkbox } from './ui/checkbox';
 	import * as Dialog from '@/components/ui/dialog';
 	import { Input } from '@/components/ui/input';
 	import * as Table from '@/components/ui/table';
@@ -17,9 +18,12 @@
 	let env: types.Environment;
 	let importedFile: File | null = null;
 
+	let metricsOpen = false;
+
 	$: if (open) {
 		depth = stores.depthStore.get();
 		interval = stores.intervalStore.get();
+		metricsOpen = stores.metricsStore.get();
 	}
 
 	function applyEnv(env: types.Environment) {
@@ -49,6 +53,7 @@
 		}
 		stores.depthStore.set(depth);
 		stores.intervalStore.set(interval);
+		stores.metricsStore.set(metricsOpen);
 
 		if (env) {
 			applyEnv(env);
@@ -153,6 +158,12 @@
 										placeholder={`${constants.MIN_INTERVAL.toString()} ms`}
 										bind:value={interval}
 									/>
+								</Table.Cell>
+							</Table.Row>
+							<Table.Row>
+								<Table.Cell>Metrics</Table.Cell>
+								<Table.Cell>
+									<Checkbox bind:checked={metricsOpen} />
 								</Table.Cell>
 							</Table.Row>
 							<Table.Row>
