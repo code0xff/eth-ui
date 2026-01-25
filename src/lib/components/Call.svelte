@@ -47,9 +47,9 @@
 
 <div>
 	<Card.Root>
-		<Card.Header>
+		<!-- <Card.Header>
 			<Card.Title>Call</Card.Title>
-		</Card.Header>
+		</Card.Header> -->
 		<Card.Content>
 			<div>
 				<div class="flex flex-col gap-4 md:flex-row">

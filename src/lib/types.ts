@@ -76,3 +76,5 @@ export type Environment = {
 };
 
 export type Validator = (input: string) => boolean;
+
+export type Actions = 'call' | 'tx' | 'storage';

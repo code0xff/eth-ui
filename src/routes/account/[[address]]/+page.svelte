@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { RefreshCw } from '@lucide/svelte';
+	import * as Accordion from '@/components/ui/accordion';
 	import { Button } from '@/components/ui/button';
 	import * as Card from '@/components/ui/card';
 	import { Input } from '@/components/ui/input';
@@ -17,6 +18,8 @@
 	let initialized = false;
 	let account: types.Account;
 	let fetching = false;
+
+	let actions: types.Actions[] = ['tx'];
 
 	stores.initializedStore.subscribe(async (updatedInitialized) => {
 		initialized = updatedInitialized;
@@ -88,13 +91,28 @@
 			</Card.Content>
 		</Card.Root>
 	</div>
-	<div class="mx-4 mt-4">
-		<Call address={data.address} />
-	</div>
-	<div class="mx-4 mt-4">
-		<Tx address={data.address} />
-	</div>
-	<div class="mx-4 mt-4">
-		<Storage address={data.address} />
+	<div class="mx-4">
+		<Accordion.Root type="multiple" value={actions}>
+			<Accordion.Item value="tx">
+				<Accordion.Trigger class="cursor-pointer px-4">Transaction</Accordion.Trigger>
+				<Accordion.Content>
+					<Tx address={data.address} />
+				</Accordion.Content>
+			</Accordion.Item>
+
+			<Accordion.Item value="call">
+				<Accordion.Trigger class="cursor-pointer px-4">Call</Accordion.Trigger>
+				<Accordion.Content>
+					<Call address={data.address} />
+				</Accordion.Content>
+			</Accordion.Item>
+
+			<Accordion.Item value="storage">
+				<Accordion.Trigger class="cursor-pointer px-4">Storage</Accordion.Trigger>
+				<Accordion.Content>
+					<Storage address={data.address} />
+				</Accordion.Content>
+			</Accordion.Item>
+		</Accordion.Root>
 	</div>
 </div>

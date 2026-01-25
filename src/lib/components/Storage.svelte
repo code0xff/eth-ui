@@ -45,9 +45,9 @@
 
 <div>
 	<Card.Root>
-		<Card.Header>
+		<!-- <Card.Header>
 			<Card.Title>Storage</Card.Title>
-		</Card.Header>
+		</Card.Header> -->
 		<Card.Content>
 			<Table.Root>
 				<Table.Body>

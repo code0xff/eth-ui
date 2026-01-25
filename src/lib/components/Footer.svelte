@@ -9,7 +9,7 @@
 
 	<p class="text-center">© 2025 code0xff</p>
 
-	<div class="mr-4 flex justify-end gap-4">
+	<div class="mr-4 flex justify-end gap-2">
 		<Button
 			class="cursor-pointer"
 			variant="outline"
