@@ -52,8 +52,8 @@
 		</Card.Header> -->
 		<Card.Content>
 			<div>
-				<div class="flex flex-col gap-4 md:flex-row">
-					<div class="flex min-w-0 flex-1 flex-row gap-4">
+				<div class="flex flex-col gap-2 md:flex-row">
+					<div class="flex min-w-0 flex-1 flex-row gap-2">
 						<Select.Root type="single" bind:value={selectedAbi}>
 							<Select.Trigger class="w-full cursor-pointer truncate">{selectedAbi}</Select.Trigger>
 							<Select.Content>

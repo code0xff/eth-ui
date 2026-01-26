@@ -34,7 +34,7 @@
 	}
 </script>
 
-<div class="flex flex-row gap-4">
+<div class="flex flex-row gap-2">
 	<div class="w-full">
 		<Input placeholder="Search by Address / Tx Hash / Block Number" bind:value={searchParam} />
 	</div>

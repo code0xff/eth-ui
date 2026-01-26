@@ -160,8 +160,8 @@
 <div class="flex min-h-0 flex-1 flex-col">
 	<div class="shrink-0">
 		<div class="mx-4">
-			<div class="flex flex-col gap-4 xl:flex-row">
-				<div class="flex min-w-0 flex-1 flex-row gap-4">
+			<div class="flex flex-col gap-2 xl:flex-row">
+				<div class="flex min-w-0 flex-1 flex-row gap-2">
 					<Select.Root
 						type="single"
 						disabled={!initialized || syncStatus === 'processing'}

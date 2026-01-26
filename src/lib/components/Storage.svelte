@@ -54,8 +54,8 @@
 					<Table.Row>
 						<Table.Cell class="w-1/6">Slot</Table.Cell>
 						<Table.Cell class="w-5/6">
-							<div class="flex flex-col gap-4 md:flex-row">
-								<div class="flex flex-2 flex-row gap-4">
+							<div class="flex flex-col gap-2 md:flex-row">
+								<div class="flex flex-2 flex-row gap-2">
 									<div class="min-w-[110px]">
 										<Select.Root type="single" bind:value={keyType}>
 											<Select.Trigger class="w-full cursor-pointer truncate">
@@ -94,7 +94,7 @@
 					<Table.Row>
 						<Table.Cell class="w-1/6">Key</Table.Cell>
 						<Table.Cell class="w-5/6">
-							<div class="flex flex-row gap-4">
+							<div class="flex flex-row gap-2">
 								<div class="w-full">
 									<Input bind:value={slot} />
 								</div>

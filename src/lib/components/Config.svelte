@@ -177,7 +177,7 @@
 				</Dialog.Description>
 			</Dialog.Header>
 			<Dialog.Footer>
-				<div class="flex flex-row gap-4">
+				<div class="flex flex-row gap-2">
 					<Button variant="outline" class="cursor-pointer" onclick={exportEnvironment}>
 						<Download />
 					</Button>

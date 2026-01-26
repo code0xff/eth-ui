@@ -59,7 +59,7 @@
 				<Dialog.Title>{name} Editor</Dialog.Title>
 				<Dialog.Description>
 					<div class="mt-4">
-						<div class="flex flex-row gap-4">
+						<div class="flex flex-row gap-2">
 							<div class="w-full">
 								<Input bind:value={input} />
 							</div>
