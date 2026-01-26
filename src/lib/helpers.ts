@@ -205,6 +205,9 @@ export function encodeFunctionData(abi: string, inputs: string): string {
 
 	if (_func.inputs.length > 0) {
 		const _inputs = inputs.split(',');
+		if (_inputs.length !== _func.inputs.length) {
+			throw new Error(`required inputs: ${_func.inputs.length}`);
+		}
 		return _interface.encodeFunctionData(_func.name, [..._inputs]);
 	} else {
 		return _interface.encodeFunctionData(_func.name, []);

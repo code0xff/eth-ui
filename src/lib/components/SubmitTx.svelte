@@ -20,7 +20,11 @@
 	let open = false;
 
 	$: if (open && abi !== constants.NONE) {
-		callData = helpers.encodeFunctionData(abi, inputs);
+		helpers.tryExecute(
+			() => (callData = helpers.encodeFunctionData(abi, inputs)),
+			false,
+			() => (open = false)
+		);
 	}
 
 	async function sendTx() {
@@ -56,7 +60,7 @@
 		Send
 	</Button>
 	<Dialog.Root bind:open>
-		<Dialog.Content class="min-w-170">
+		<Dialog.Content class="min-w-165">
 			<Dialog.Header>
 				<Dialog.Title>Tx</Dialog.Title>
 				<Dialog.Description>
