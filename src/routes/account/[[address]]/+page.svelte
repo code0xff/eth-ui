@@ -78,8 +78,7 @@
 							>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell>Code</Table.Cell>
-							<Table.Cell>
+							<Table.Cell colspan={2}>
 								<Data
 									name="code"
 									data={account?.code ? helpers.splitToChunks(account.code) : '0x'}

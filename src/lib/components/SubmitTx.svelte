@@ -6,15 +6,22 @@
 	import * as Table from '@/components/ui/table';
 	import * as constants from '@/constants';
 	import * as helpers from '@/helpers';
+	import Data from '@/components/Data.svelte';
 
-	export let testKey: string = '';
-	export let to: string = '';
-	export let abi: string = '';
-	export let value: string = '';
-	export let inputs: string = '';
-	export let hash: string = '';
+	export let testKey = '';
+	export let to = '';
+	export let abi = '';
+	export let value = '';
+	export let inputs = '';
+	export let hash = '';
+
+	let callData = '';
 
 	let open = false;
+
+	$: if (open && abi.trim().length > 0) {
+		callData = helpers.encodeFunctionData(abi, inputs);
+	}
 
 	async function sendTx() {
 		await helpers.tryExecuteAsync(
@@ -49,7 +56,7 @@
 		Send
 	</Button>
 	<Dialog.Root bind:open>
-		<Dialog.Content>
+		<Dialog.Content class="min-w-170">
 			<Dialog.Header>
 				<Dialog.Title>Tx</Dialog.Title>
 				<Dialog.Description>
@@ -63,13 +70,13 @@
 								</Table.Cell>
 							</Table.Row>
 							<Table.Row>
-								<Table.Cell>abi</Table.Cell>
+								<Table.Cell>ABI</Table.Cell>
 								<Table.Cell>
 									<Input readonly bind:value={abi} />
 								</Table.Cell>
 							</Table.Row>
 							<Table.Row>
-								<Table.Cell>value</Table.Cell>
+								<Table.Cell>Value</Table.Cell>
 								<Table.Cell>
 									<Input readonly bind:value />
 								</Table.Cell>
@@ -81,15 +88,20 @@
 								</Table.Cell>
 							</Table.Row>
 							<Table.Row>
-								<Table.Cell></Table.Cell>
-								<Table.Cell class="flex justify-end">
-									<Button class="cursor-pointer" variant="outline" onclick={sendTx}>Submit</Button>
+								<Table.Cell colspan={2}>
+									<Data
+										name="data"
+										data={callData ? helpers.splitToChunks(callData, true) : '0x'}
+									/>
 								</Table.Cell>
 							</Table.Row>
 						</Table.Body>
 					</Table.Root>
 				</Dialog.Description>
 			</Dialog.Header>
+			<Dialog.Footer>
+				<Button class="cursor-pointer" variant="outline" onclick={sendTx}>Submit</Button>
+			</Dialog.Footer>
 		</Dialog.Content>
 	</Dialog.Root>
 </div>

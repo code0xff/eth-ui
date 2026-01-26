@@ -115,8 +115,7 @@
 							>
 						</Table.Row>
 						<Table.Row>
-							<Table.Cell class="w-1/6">Data</Table.Cell>
-							<Table.Cell class="w-5/6">
+							<Table.Cell colspan={2}>
 								<Data name="data" data={tx ? helpers.splitToChunks(tx.data, true) : '0x'} />
 							</Table.Cell>
 						</Table.Row>

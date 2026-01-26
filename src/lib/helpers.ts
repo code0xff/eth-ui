@@ -4,6 +4,7 @@ import * as constants from './constants';
 import * as services from './services';
 import * as stores from './stores';
 import * as types from './types';
+import { AbiParser } from './services';
 
 export function timestampToDate(timestamp: number): string {
 	const datetime = new Date(timestamp * 1000).toISOString();
@@ -22,41 +23,41 @@ export function printNumber(num: number | bigint | null): string {
 }
 
 function formatUnitUpTo3dp(wei: bigint, base: bigint): string {
-  const denom4 = base / 10_000n;
-  const v4 = wei / denom4;
-  const v3 = (v4 + 5n) / 10n;
+	const denom4 = base / 10_000n;
+	const v4 = wei / denom4;
+	const v3 = (v4 + 5n) / 10n;
 
-  const intPart = v3 / 1000n;
-  const fracPartNum = v3 % 1000n;
+	const intPart = v3 / 1000n;
+	const fracPartNum = v3 % 1000n;
 
-  if (fracPartNum === 0n) {
-    return intPart.toLocaleString();
-  }
+	if (fracPartNum === 0n) {
+		return intPart.toLocaleString();
+	}
 
-  let fracStr = fracPartNum.toString().padStart(3, "0");
-  fracStr = fracStr.replace(/0+$/, "");
+	let fracStr = fracPartNum.toString().padStart(3, '0');
+	fracStr = fracStr.replace(/0+$/, '');
 
-  return `${intPart.toLocaleString()}.${fracStr}`;
+	return `${intPart.toLocaleString()}.${fracStr}`;
 }
 
 export function printWei(wei: bigint | null, withOrigin: boolean = false): string {
-  if (wei === null) return "";
+	if (wei === null) return '';
 
-  let result: string;
-  let unit: string;
+	let result: string;
+	let unit: string;
 
-  if (wei >= constants.ETH) {
-    result = formatUnitUpTo3dp(wei, constants.ETH);
-    unit = "eth";
-  } else if (wei >= constants.GWEI) {
-    result = formatUnitUpTo3dp(wei, constants.GWEI);
-    unit = "gwei";
-  } else {
-    result = wei.toLocaleString();
-    unit = "wei";
-  }
+	if (wei >= constants.ETH) {
+		result = formatUnitUpTo3dp(wei, constants.ETH);
+		unit = 'eth';
+	} else if (wei >= constants.GWEI) {
+		result = formatUnitUpTo3dp(wei, constants.GWEI);
+		unit = 'gwei';
+	} else {
+		result = wei.toLocaleString();
+		unit = 'wei';
+	}
 
-  return `${result} ${unit}${withOrigin ? ` (${wei.toLocaleString()} wei)` : ""}`;
+	return `${result} ${unit}${withOrigin ? ` (${wei.toLocaleString()} wei)` : ''}`;
 }
 
 export function splitToChunks(data: string, selectorExist?: boolean): string {
@@ -196,4 +197,16 @@ export function deriveStorageKey(baseSlot: bigint, keyType: types.KeyType, key: 
 	}
 
 	return ethers.keccak256(abiCoder.encode([keyType, 'uint256'], [key, baseSlot]));
+}
+
+export function encodeFunctionData(abi: string, inputs: string): string {
+	const _func = AbiParser.parse(abi);
+	const _interface = new ethers.Interface([abi]);
+
+	if (_func.inputs.length > 0) {
+		const _inputs = inputs.split(',');
+		return _interface.encodeFunctionData(_func.name, [..._inputs]);
+	} else {
+		return _interface.encodeFunctionData(_func.name, []);
+	}
 }
