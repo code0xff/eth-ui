@@ -10,7 +10,7 @@
 
 	export let testKey = '';
 	export let to = '';
-	export let abi = '';
+	export let abi = constants.NONE;
 	export let value = '';
 	export let inputs = '';
 	export let hash = '';
@@ -19,7 +19,7 @@
 
 	let open = false;
 
-	$: if (open && abi.trim().length > 0) {
+	$: if (open && abi !== constants.NONE) {
 		callData = helpers.encodeFunctionData(abi, inputs);
 	}
 
