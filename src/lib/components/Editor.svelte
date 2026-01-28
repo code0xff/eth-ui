@@ -16,7 +16,7 @@
 	let input = '';
 	let items: string[] = [];
 
-	$: if (open) {
+	function onOpenDialog() {
 		items = store.get();
 	}
 
@@ -53,7 +53,7 @@
 	>
 		<Plus />
 	</Button>
-	<Dialog.Root bind:open>
+	<Dialog.Root bind:open onOpenChange={onOpenDialog}>
 		<Dialog.Content>
 			<Dialog.Header>
 				<Dialog.Title>{name} Editor</Dialog.Title>

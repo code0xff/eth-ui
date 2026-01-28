@@ -19,7 +19,9 @@
 
 	let open = false;
 
-	$: if (open && abi !== constants.NONE) {
+	function onOpenDialog() {
+		if (abi === constants.NONE) return;
+		
 		helpers.tryExecute(
 			() => (callData = helpers.encodeFunctionData(abi, inputs)),
 			false,
@@ -59,7 +61,7 @@
 	>
 		Send
 	</Button>
-	<Dialog.Root bind:open>
+	<Dialog.Root bind:open onOpenChange={onOpenDialog}>
 		<Dialog.Content class="min-w-165">
 			<Dialog.Header>
 				<Dialog.Title>Tx</Dialog.Title>

@@ -5,34 +5,51 @@
 	import * as Dialog from '@/components/ui/dialog';
 	import { Input } from '@/components/ui/input';
 	import * as Table from '@/components/ui/table';
+	import { toast } from 'svelte-sonner';
 
 	let open = false;
 	let decimal = '0';
 	let hex = '0x00';
 
-	$: if (open) {
+	function onDialogOpen() {
 		decimal = '0';
 		hex = '0x00';
 	}
 
 	function onDecimalInput(e: Event & { currentTarget: HTMLInputElement }): void {
-		if (e.currentTarget.value.trim().length === 0) return;
-		hex = toBeHex(e.currentTarget.value);
+		const _decimal = e.currentTarget.value;
+		if (_decimal === '') return;
+
+		if (!/^\d+$/.test(_decimal)) return;
+
+		decimal = _decimal;
+		hex = toBeHex(_decimal);
 	}
 
 	function onHexInput(e: Event & { currentTarget: HTMLInputElement }): void {
-		if (e.currentTarget.value.trim().length === 0) return;
+		let _hex = e.currentTarget.value.trim();
+		if (_hex === '' || _hex === '0x') return;
 
-		let _hex = e.currentTarget.value;
-		if (!_hex.startsWith('0x')) {
-			_hex = `0x${_hex}`;
+		if (_hex.startsWith('0x')) {
+			_hex = _hex.slice(2);
 		}
-		decimal = toBigInt(_hex).toString();
+
+		if (!/^[0-9a-fA-F]+$/.test(_hex)) return;
+
+		hex = `0x${_hex}`;
+		decimal = toBigInt(hex).toString();
 	}
 
 	function applyUint256Hex(): void {
 		if (decimal.length === 0) return;
 		hex = toBeHex(decimal, 32);
+	}
+
+	async function copyHexToClipboard() {
+		if (hex.length === 0) return;
+
+		await navigator.clipboard.writeText(hex);
+		toast.info(`copied hex: ${hex}`);
 	}
 </script>
 
@@ -47,7 +64,7 @@
 	>
 		<Calculator />
 	</Button>
-	<Dialog.Root bind:open>
+	<Dialog.Root bind:open onOpenChange={onDialogOpen}>
 		<Dialog.Content>
 			<Dialog.Header>
 				<Dialog.Title>Hex Converter</Dialog.Title>
@@ -72,6 +89,14 @@
 											onclick={applyUint256Hex}
 										>
 											<ArrowRightToLine />
+										</Button>
+										<Button
+											class="cursor-pointer"
+											size="icon"
+											variant="outline"
+											onclick={copyHexToClipboard}
+										>
+											<Clipboard />
 										</Button>
 									</div>
 								</Table.Cell>
