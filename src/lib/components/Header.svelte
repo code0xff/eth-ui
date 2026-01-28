@@ -5,7 +5,7 @@
 	import Config from './Config.svelte';
 	import * as types from '@/types';
 	import * as stores from '@/stores';
-	import Calculator from './Calculator.svelte';
+	import HexConverter from './HexConverter.svelte';
 
 	let syncStatus: types.SyncStatus = 'idle';
 	stores.syncStatusStore.subscribe((updatedSyncStatus) => {
@@ -26,7 +26,7 @@
 		<Button variant="ghost" size="icon">
 			<RefreshCw class={syncStatus === 'processing' ? 'animate-spin' : ''} />
 		</Button>
-		<Calculator />
+		<HexConverter />
 		<Config />
 	</div>
 </div>
