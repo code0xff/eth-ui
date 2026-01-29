@@ -40,8 +40,8 @@
 	}
 </script>
 
-<div class="flex min-h-0 flex-1 flex-col overflow-y-auto">
-	<div class="mx-4">
+<div class="mx-4 flex min-h-0 flex-1 flex-col overflow-y-auto">
+	<div>
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>
@@ -124,7 +124,7 @@
 			</Card.Content>
 		</Card.Root>
 	</div>
-	<div class="mx-4 mt-4">
+	<div class="mt-4">
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Receipt</Card.Title>
@@ -167,7 +167,7 @@
 			</Card.Content>
 		</Card.Root>
 	</div>
-	<div class="mx-4 mt-4">
+	<div class="mt-4">
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Logs</Card.Title>

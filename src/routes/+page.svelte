@@ -157,9 +157,9 @@
 	});
 </script>
 
-<div class="flex min-h-0 flex-1 flex-col">
+<div class="flex min-h-0 flex-1 flex-col mx-4">
 	<div class="shrink-0">
-		<div class="mx-4">
+		<div>
 			<div class="flex flex-col gap-2 xl:flex-row">
 				<div class="flex min-w-0 flex-1 flex-row gap-2">
 					<Select.Root
@@ -192,10 +192,10 @@
 				</div>
 			</div>
 		</div>
-		<div class="mx-4 mt-4">
+		<div class="mt-4">
 			<Search />
 		</div>
-		<div class="mx-4">
+		<div>
 			<Accordion.Root type="single" value={metricsOpen ? 'metrics' : undefined}>
 				<Accordion.Item value="metrics">
 					<Accordion.Trigger class="cursor-pointer px-4">Block Metrics</Accordion.Trigger>
@@ -207,7 +207,7 @@
 			</Accordion.Root>
 		</div>
 	</div>
-	<div class="mx-4 flex min-h-0 min-w-0 flex-1">
+	<div class="flex min-h-0 min-w-0 flex-1">
 		<div class="flex min-h-0 min-w-0 flex-1 flex-col gap-4 xl:flex-row xl:gap-4">
 			<div class="flex min-h-0 min-w-0 flex-1">
 				<Card.Root class="flex min-h-0 min-w-0 flex-1 flex-col">

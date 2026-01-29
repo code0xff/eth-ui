@@ -19,7 +19,7 @@
 	let account: types.Account;
 	let fetching = false;
 
-	let actions: types.Actions[] = ['tx'];
+	let action: types.Actions = 'tx';
 
 	stores.initializedStore.subscribe(async (updatedInitialized) => {
 		initialized = updatedInitialized;
@@ -43,8 +43,8 @@
 	}
 </script>
 
-<div class="flex min-h-0 flex-1 flex-col overflow-y-auto">
-	<div class="mx-4">
+<div class="mx-4 flex min-h-0 flex-1 flex-col overflow-y-auto">
+	<div>
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>
@@ -90,8 +90,8 @@
 			</Card.Content>
 		</Card.Root>
 	</div>
-	<div class="mx-4">
-		<Accordion.Root type="multiple" value={actions}>
+	<div>
+		<Accordion.Root type="single" value={action}>
 			<Accordion.Item value="tx">
 				<Accordion.Trigger class="cursor-pointer px-4">Transaction</Accordion.Trigger>
 				<Accordion.Content>
