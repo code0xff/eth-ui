@@ -20,7 +20,7 @@
 
 	let metricsOpen = false;
 
-	function onOpenDialog() {
+	$: if (open) {
 		depth = stores.depthStore.get();
 		interval = stores.intervalStore.get();
 		metricsOpen = stores.metricsStore.get();
@@ -117,7 +117,7 @@
 	>
 		<CogIcon />
 	</Button>
-	<Dialog.Root bind:open onOpenChange={onOpenDialog}>
+	<Dialog.Root bind:open>
 		<Dialog.Content>
 			<Dialog.Header>
 				<Dialog.Title>Setting</Dialog.Title>

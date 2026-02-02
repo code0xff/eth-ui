@@ -11,7 +11,7 @@
 	let decimal = '0';
 	let hex = '0x00';
 
-	function onDialogOpen() {
+	$: if (open) {
 		decimal = '0';
 		hex = '0x00';
 	}
@@ -64,7 +64,7 @@
 	>
 		<Calculator />
 	</Button>
-	<Dialog.Root bind:open onOpenChange={onDialogOpen}>
+	<Dialog.Root bind:open>
 		<Dialog.Content>
 			<Dialog.Header>
 				<Dialog.Title>Hex Converter</Dialog.Title>
