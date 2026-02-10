@@ -8,13 +8,15 @@ import { AbiParser } from '.';
 
 export class EthersBlockProvider implements interfaces.BlockProvider {
 	private url: string;
+	private connectUrl: string;
 	private provider: ethers.Provider | undefined;
 	private network: types.Network | undefined;
 	private pollingActive: boolean = false;
 	private syncedBlockNumber: number | undefined;
 
-	constructor(url: string) {
+	constructor(url: string, connectUrl?: string) {
 		this.url = url;
+		this.connectUrl = connectUrl ?? url;
 	}
 
 	getUrl(): string {
@@ -24,15 +26,15 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	async connect(): Promise<void> {
 		console.debug(`${this.connect.name}()`);
 
-		if (!this.url) {
-			throw new Error(`invalid url: ${this.url}`);
+		if (!this.connectUrl) {
+			throw new Error(`invalid url: ${this.connectUrl}`);
 		}
-		if (this.url.startsWith('http') || this.url.startsWith('https')) {
-			this.provider = new ethers.JsonRpcProvider(this.url);
-		} else if (this.url.startsWith('ws') || this.url.startsWith('wss')) {
-			this.provider = new ethers.WebSocketProvider(this.url);
+		if (this.connectUrl.startsWith('http') || this.connectUrl.startsWith('https')) {
+			this.provider = new ethers.JsonRpcProvider(this.connectUrl);
+		} else if (this.connectUrl.startsWith('ws') || this.connectUrl.startsWith('wss')) {
+			this.provider = new ethers.WebSocketProvider(this.connectUrl);
 		} else {
-			throw new Error(`unsupported url: ${this.url}`);
+			throw new Error(`unsupported url: ${this.connectUrl}`);
 		}
 
 		const { chainId, name } = await this.provider.getNetwork();
@@ -55,8 +57,8 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 		try {
 			await this.disconnect();
 
-			if (!this.url) {
-				throw new Error(`invalid url: ${this.url}`);
+			if (!this.connectUrl) {
+				throw new Error(`invalid url: ${this.connectUrl}`);
 			}
 
 			await this.connect();
@@ -73,7 +75,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 					await this.reconnect(count - 1);
 				}, 1000);
 			} else {
-				throw new Error(`failed to connect to ${this.url}`);
+				throw new Error(`failed to connect to ${this.connectUrl}`);
 			}
 		}
 	}

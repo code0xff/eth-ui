@@ -92,14 +92,36 @@ export function compactHash(hash: string | undefined | null, size: number = 8): 
 	}
 }
 
+function shouldProxyRpc(rpc: string): boolean {
+	const isHttpRpc = rpc.startsWith('http://') || rpc.startsWith('https://');
+	if (!isHttpRpc || typeof window === 'undefined') {
+		return false;
+	}
+
+	const localhostSet = new Set(['localhost', '127.0.0.1', '::1']);
+	const isLocalHost = localhostSet.has(window.location.hostname);
+
+	return import.meta.env.DEV || isLocalHost;
+}
+
+export function resolveRpcConnectUrl(rpc: string): string {
+	if (!shouldProxyRpc(rpc)) {
+		return rpc;
+	}
+
+	const target = encodeURIComponent(rpc);
+	return `${window.location.origin}/__rpc_proxy__?target=${target}`;
+}
+
 export async function ensureProvider(): Promise<services.BlockProvider> {
 	let _provider = stores.providerStore.get();
 	if (!_provider || !_provider.connected()) {
 		await _provider?.disconnect();
 
 		const _rpc = stores.rpcStore.get();
+		const _connectUrl = resolveRpcConnectUrl(_rpc);
 
-		_provider = services.defaultBlockProvider(_rpc);
+		_provider = services.defaultBlockProvider(_rpc, _connectUrl);
 		await _provider.connect();
 
 		stores.providerStore.set(_provider);
