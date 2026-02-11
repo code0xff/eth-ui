@@ -6,6 +6,10 @@ import * as types from '@/types';
 import * as interfaces from './interfaces';
 import { AbiParser } from '.';
 
+function safeStringify(value: unknown): string {
+	return JSON.stringify(value, (_, v) => (typeof v === 'bigint' ? v.toString() : v), 2);
+}
+
 export class EthersBlockProvider implements interfaces.BlockProvider {
 	private url: string;
 	private connectUrl: string;
@@ -176,7 +180,7 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 			gasPrice: _txReceipt.gasPrice,
 			contractAddress: _txReceipt.contractAddress,
 			logsBloom: _txReceipt.logsBloom,
-			logs: _txReceipt.logs.map((log) => JSON.stringify(log, null, 2))
+			logs: _txReceipt.logs.map((log) => safeStringify(log))
 		};
 	}
 
