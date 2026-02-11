@@ -57,7 +57,7 @@ export function printWei(wei: bigint | null, withOrigin: boolean = false): strin
 		unit = 'wei';
 	}
 
-	return `${result} ${unit}${withOrigin ? ` (${wei.toLocaleString()} wei)` : ''}`;
+	return `${result} ${unit}${withOrigin && unit !== 'wei' ? ` (${wei.toLocaleString()} wei)` : ''}`;
 }
 
 export function splitToChunks(data: string, selectorExist?: boolean): string {
