@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { RefreshCw } from '@lucide/svelte';
 	import * as Accordion from '@/components/ui/accordion';
 	import { Button } from '@/components/ui/button';
@@ -21,8 +22,14 @@
 
 	let action: types.Actions = 'tx';
 
-	stores.initializedStore.subscribe(async (updatedInitialized) => {
-		initialized = updatedInitialized;
+	onMount(() => {
+		const unsubscribe = stores.initializedStore.subscribe((updatedInitialized) => {
+			initialized = updatedInitialized;
+		});
+
+		return () => {
+			unsubscribe();
+		};
 	});
 
 	$: if (initialized && data) {
@@ -68,13 +75,13 @@
 						<Table.Row>
 							<Table.Cell class="w-1/6">Balance</Table.Cell>
 							<Table.Cell class="w-5/6"
-								>{account?.balance ? helpers.printWei(account.balance, true) : ''}</Table.Cell
+								>{account ? helpers.printWei(account.balance, true) : ''}</Table.Cell
 							>
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Nonce</Table.Cell>
 							<Table.Cell class="w-5/6"
-								>{account?.nonce ? helpers.printNumber(account.nonce) : ''}</Table.Cell
+								>{account ? helpers.printNumber(account.nonce) : ''}</Table.Cell
 							>
 						</Table.Row>
 						<Table.Row>

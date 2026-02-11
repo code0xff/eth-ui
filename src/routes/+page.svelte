@@ -35,25 +35,6 @@
 
 	let metricsOpen = false;
 
-	stores.syncStatusStore.subscribe((updatedSyncStatus) => {
-		syncStatus = updatedSyncStatus;
-	});
-	stores.blockStore.subscribe((updatedBlocks) => {
-		blockList = [...updatedBlocks.values()];
-	});
-	stores.txStore.subscribe((updatedTxs) => {
-		txList = [...updatedTxs.values()];
-	});
-	stores.rpcStore.subscribe((updatedRpc) => {
-		selectedRpc = updatedRpc;
-	});
-	stores.rpcsStore.subscribe((updatedRpcs) => {
-		rpcs = updatedRpcs;
-	});
-	stores.initializedStore.subscribe(async (updatedInitialized) => {
-		initialized = updatedInitialized;
-	});
-
 	async function resetSynced() {
 		stores.blockStore.reset();
 		stores.txStore.reset();
@@ -145,7 +126,28 @@
 	onMount(() => {
 		metricsOpen = stores.metricsStore.get();
 
-		document.addEventListener('visibilitychange', async () => {
+		const unsubscribers = [
+			stores.syncStatusStore.subscribe((updatedSyncStatus) => {
+				syncStatus = updatedSyncStatus;
+			}),
+			stores.blockStore.subscribe((updatedBlocks) => {
+				blockList = [...updatedBlocks.values()];
+			}),
+			stores.txStore.subscribe((updatedTxs) => {
+				txList = [...updatedTxs.values()];
+			}),
+			stores.rpcStore.subscribe((updatedRpc) => {
+				selectedRpc = updatedRpc;
+			}),
+			stores.rpcsStore.subscribe((updatedRpcs) => {
+				rpcs = updatedRpcs;
+			}),
+			stores.initializedStore.subscribe((updatedInitialized) => {
+				initialized = updatedInitialized;
+			})
+		];
+
+		const handleVisibilityChange = async () => {
 			const _syncStatus = stores.syncStatusStore.get();
 			if (_syncStatus === 'processing') {
 				const _provider = stores.providerStore.get();
@@ -153,7 +155,13 @@
 					await runSync();
 				}
 			}
-		});
+		};
+		document.addEventListener('visibilitychange', handleVisibilityChange);
+
+		return () => {
+			document.removeEventListener('visibilitychange', handleVisibilityChange);
+			unsubscribers.forEach((unsubscribe) => unsubscribe());
+		};
 	});
 </script>
 

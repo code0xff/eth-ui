@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { RefreshCw } from '@lucide/svelte';
@@ -18,8 +19,14 @@
 	let tx: types.TxWithReceipt | null;
 	let fetching = false;
 
-	stores.initializedStore.subscribe(async (updatedInitialized) => {
-		initialized = updatedInitialized;
+	onMount(() => {
+		const unsubscribe = stores.initializedStore.subscribe((updatedInitialized) => {
+			initialized = updatedInitialized;
+		});
+
+		return () => {
+			unsubscribe();
+		};
 	});
 
 	$: if (initialized && data) {
@@ -66,7 +73,9 @@
 							<Table.Cell class="w-1/6">Number</Table.Cell>
 							<Table.Cell
 								class="w-5/6 cursor-pointer hover:underline"
-								onclick={tx?.blockNumber ? () => goto(resolve(`/block/${tx!.blockNumber}`)) : null}
+								onclick={tx?.blockNumber != null
+									? () => goto(resolve(`/block/${tx!.blockNumber}`))
+									: null}
 								>{tx ? helpers.printNumber(tx.blockNumber) : ''}</Table.Cell
 							>
 						</Table.Row>

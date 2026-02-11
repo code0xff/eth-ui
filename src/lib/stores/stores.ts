@@ -31,19 +31,29 @@ export class Store<T> implements interfaces.Store<T> {
 	}
 
 	getFromLocalStorage(): T | null {
+		if (typeof window === 'undefined') {
+			return null;
+		}
+
 		const _value = localStorage.getItem(this.storageKey!);
-		return _value ? (JSON.parse(_value) as T) : null;
+		if (!_value) return null;
+
+		try {
+			return JSON.parse(_value) as T;
+		} catch {
+			return null;
+		}
 	}
 
 	set(value: T): void {
 		this.store.set(value);
-		if (this.useLocalStorage) {
+		if (this.useLocalStorage && typeof window !== 'undefined') {
 			localStorage.setItem(this.storageKey!, JSON.stringify(value));
 		}
 	}
 
-	subscribe(run: (value: T) => Promise<void> | void): void {
-		this.store.subscribe(async (value) => {
+	subscribe(run: (value: T) => Promise<void> | void): () => void {
+		return this.store.subscribe(async (value) => {
 			await run(value);
 		});
 	}

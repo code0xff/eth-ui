@@ -9,7 +9,7 @@ export interface Store<T> {
 	get(): T;
 	getFromLocalStorage(): T | null;
 	set(value: T): void;
-	subscribe(run: (value: T) => Promise<void> | void): void;
+	subscribe(run: (value: T) => Promise<void> | void): () => void;
 	update(updater: (value: T) => T): void;
 	reset(): void;
 }

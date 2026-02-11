@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { RefreshCw } from '@lucide/svelte';
@@ -16,8 +17,14 @@
 	let block: types.Block | null;
 	let fetching = false;
 
-	stores.initializedStore.subscribe(async (updatedInitialized) => {
-		initialized = updatedInitialized;
+	onMount(() => {
+		const unsubscribe = stores.initializedStore.subscribe((updatedInitialized) => {
+			initialized = updatedInitialized;
+		});
+
+		return () => {
+			unsubscribe();
+		};
 	});
 
 	$: if (initialized && data) {
@@ -35,7 +42,11 @@
 
 			let _blockTag: string | number = blockTag;
 			if (!_blockTag?.startsWith('0x')) {
-				_blockTag = parseInt(_blockTag);
+				const parsedBlockTag = Number.parseInt(_blockTag, 10);
+				if (Number.isNaN(parsedBlockTag)) {
+					throw new Error(`invalid block tag: ${blockTag}`);
+				}
+				_blockTag = parsedBlockTag;
 			}
 
 			block = await _provider.getBlock(_blockTag, true);
