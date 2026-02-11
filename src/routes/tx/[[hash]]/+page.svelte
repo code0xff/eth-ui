@@ -39,6 +39,7 @@
 			if (!data.hash) {
 				throw new Error(`invalid tx hash: ${hash}`);
 			}
+			helpers.saveQueryHistory('tx', hash);
 
 			const _provider = await helpers.ensureProvider();
 			tx = await _provider.getTxWithReceipt(hash);

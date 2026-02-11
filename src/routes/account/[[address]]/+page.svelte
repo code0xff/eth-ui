@@ -42,6 +42,7 @@
 			if (!address) {
 				throw new Error(`invalid account address: ${address}`);
 			}
+			helpers.saveQueryHistory('account', address);
 
 			const _provider = await helpers.ensureProvider();
 			account = await _provider.getAccount(address);

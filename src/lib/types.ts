@@ -78,3 +78,13 @@ export type Environment = {
 export type Validator = (input: string) => boolean;
 
 export type Actions = 'call' | 'tx' | 'storage';
+
+export type QueryType = 'block' | 'tx' | 'account';
+
+export type QueryHistoryItem = {
+	type: QueryType;
+	value: string;
+	queriedAt: number;
+};
+
+export type QueryHistoryByRpc = Record<string, QueryHistoryItem[]>;

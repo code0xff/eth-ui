@@ -30,5 +30,6 @@ export const callAbisStore = new Store<string[]>([], true, 'callAbis');
 export const txAbisStore = new Store<string[]>([], true, 'txAbis');
 export const testKeysStore = new Store<string[]>([], true, 'testKeys');
 export const metricsStore = new Store<boolean>(true, true, 'metrics');
+export const queryHistoryStore = new Store<types.QueryHistoryByRpc>({}, true, 'queryHistory');
 
 export const initializedStore = new Store<boolean>(false);

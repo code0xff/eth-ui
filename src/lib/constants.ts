@@ -20,6 +20,7 @@ export const DEFAULT_DEPTH_LIMIT = 10;
 
 export const MIN_DEPTH_LIMIT = 1;
 export const MIN_INTERVAL = 300;
+export const QUERY_HISTORY_LIMIT = 30;
 
 export const DEFAULT_CALL_ABIS = [
 	'function totalSupply() external view returns (uint256)',

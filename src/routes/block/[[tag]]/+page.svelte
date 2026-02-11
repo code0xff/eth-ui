@@ -48,6 +48,7 @@
 				}
 				_blockTag = parsedBlockTag;
 			}
+			helpers.saveQueryHistory('block', _blockTag.toString());
 
 			block = await _provider.getBlock(_blockTag, true);
 		});

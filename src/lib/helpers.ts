@@ -92,6 +92,53 @@ export function compactHash(hash: string | undefined | null, size: number = 8): 
 	}
 }
 
+function normalizeHistoryValue(type: types.QueryType, value: string): string {
+	const trimmed = value.trim();
+	if (type === 'block') {
+		return trimmed;
+	}
+	return trimmed.toLowerCase();
+}
+
+export function buildQueryPath(type: types.QueryType, value: string): string {
+	switch (type) {
+		case 'block':
+			return `/block/${value}`;
+		case 'tx':
+			return `/tx/${value}`;
+		case 'account':
+			return `/account/${value}`;
+	}
+}
+
+export function saveQueryHistory(type: types.QueryType, value: string): void {
+	const rpc = stores.rpcStore.get();
+	if (!rpc) return;
+
+	const normalizedValue = normalizeHistoryValue(type, value);
+	if (!normalizedValue) return;
+
+	stores.queryHistoryStore.update((historyByRpc) => {
+		const rpcHistory = historyByRpc[rpc] ?? [];
+		const withoutDup = rpcHistory.filter(
+			(item) => !(item.type === type && normalizeHistoryValue(item.type, item.value) === normalizedValue)
+		);
+		const nextRpcHistory: types.QueryHistoryItem[] = [
+			{
+				type,
+				value: normalizedValue,
+				queriedAt: Date.now()
+			},
+			...withoutDup
+		].slice(0, constants.QUERY_HISTORY_LIMIT);
+
+		return {
+			...historyByRpc,
+			[rpc]: nextRpcHistory
+		};
+	});
+}
+
 function shouldProxyRpc(rpc: string): boolean {
 	const isHttpRpc = rpc.startsWith('http://') || rpc.startsWith('https://');
 	if (!isHttpRpc || typeof window === 'undefined') {
