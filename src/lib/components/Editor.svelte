@@ -79,7 +79,7 @@
 									{#each items as value, index}
 										<Table.Row>
 											<Table.Cell class="w-full">
-												<Input {value} />
+												<Input {value} readonly />
 											</Table.Cell>
 											<Table.Cell class="text-center">
 												<Button
