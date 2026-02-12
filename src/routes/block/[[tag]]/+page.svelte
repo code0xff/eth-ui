@@ -89,12 +89,21 @@
 						</Table.Row>
 						<Table.Row>
 							<Table.Cell class="w-1/6">Parent</Table.Cell>
-							<Table.Cell
-								class="w-5/6 cursor-pointer hover:underline"
-								onclick={block?.parentHash
-									? async () => goto(resolve(`/block/${block?.parentHash}`))
-									: null}
-								>{block ? block.parentHash : ''}
+							<Table.Cell class="w-5/6">
+								{#if block?.parentHash}
+									<a
+										class="cursor-pointer hover:underline"
+										href={resolve('/block/[[tag]]', { tag: block!.parentHash })}
+										onclick={async (event) => {
+											event.preventDefault();
+											await goto(resolve('/block/[[tag]]', { tag: block!.parentHash }));
+										}}
+									>
+										{block.parentHash}
+									</a>
+								{:else}
+									{block ? block.parentHash : ''}
+								{/if}
 							</Table.Cell>
 						</Table.Row>
 						<Table.Row>
