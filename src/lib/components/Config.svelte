@@ -1,4 +1,5 @@
 <script lang="ts">
+	import * as ethers from 'ethers';
 	import { toast } from 'svelte-sonner';
 	import { toggleMode } from 'mode-watcher';
 	import { CogIcon, Download, Info, SunMoon } from '@lucide/svelte';
@@ -11,6 +12,7 @@
 	import * as helpers from '@/helpers';
 	import * as stores from '@/stores';
 	import * as types from '@/types';
+	import Editor from './Editor.svelte';
 
 	let open = false;
 	let depth = constants.DEFAULT_DEPTH_LIMIT;
@@ -31,7 +33,8 @@
 			['rpcs', stores.rpcsStore],
 			['callAbis', stores.callAbisStore],
 			['txAbis', stores.txAbisStore],
-			['testKeys', stores.testKeysStore]
+			['testKeys', stores.testKeysStore],
+			['filterAddresses', stores.filterAddressesStore]
 		] as const;
 
 		for (const [key, store] of mappings) {
@@ -88,7 +91,8 @@
 			rpcs: stores.rpcsStore.get(),
 			callAbis: stores.callAbisStore.get(),
 			txAbis: stores.txAbisStore.get(),
-			testKeys: stores.testKeysStore.get()
+			testKeys: stores.testKeysStore.get(),
+			filterAddresses: stores.filterAddressesStore.get()
 		};
 
 		helpers.tryExecute(() => {
@@ -103,6 +107,10 @@
 
 			URL.revokeObjectURL(url);
 		});
+	}
+
+	function validateAddress(address: string): boolean {
+		return ethers.isAddress(address.trim());
 	}
 </script>
 
@@ -164,6 +172,16 @@
 								<Table.Cell>Metrics</Table.Cell>
 								<Table.Cell>
 									<Checkbox bind:checked={metricsOpen} />
+								</Table.Cell>
+							</Table.Row>
+							<Table.Row>
+								<Table.Cell>Filter Addresses</Table.Cell>
+								<Table.Cell>
+									<Editor
+										name="Filter Address"
+										store={stores.filterAddressesStore}
+										validate={validateAddress}
+									/>
 								</Table.Cell>
 							</Table.Row>
 							<Table.Row>

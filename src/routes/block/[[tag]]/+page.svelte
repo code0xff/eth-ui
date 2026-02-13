@@ -16,14 +16,20 @@
 	let initialized = false;
 	let block: types.Block | null;
 	let fetching = false;
+	let highlightedTxHashes = new Set<string>();
 
 	onMount(() => {
-		const unsubscribe = stores.initializedStore.subscribe((updatedInitialized) => {
-			initialized = updatedInitialized;
-		});
+		const unsubscribers = [
+			stores.initializedStore.subscribe((updatedInitialized) => {
+				initialized = updatedInitialized;
+			}),
+			stores.highlightedTxHashesStore.subscribe((updatedHighlightedTxHashes) => {
+				highlightedTxHashes = new Set(updatedHighlightedTxHashes);
+			})
+		];
 
 		return () => {
-			unsubscribe();
+			unsubscribers.forEach((unsubscribe) => unsubscribe());
 		};
 	});
 
@@ -166,7 +172,12 @@
 					<Table.Body>
 						{#if block}
 							{#each block.prefetchedTransactions as tx}
-								<Table.Row onclick={() => goto(resolve(`/tx/${tx.hash}`))} class="cursor-pointer">
+								<Table.Row
+									onclick={() => goto(resolve(`/tx/${tx.hash}`))}
+									class={`cursor-pointer ${highlightedTxHashes.has(tx.hash)
+										? '!bg-foreground !text-background'
+										: ''}`}
+								>
 									<Table.Cell>{tx.index}</Table.Cell>
 									<Table.Cell>{helpers.compactHash(tx.hash)}</Table.Cell>
 									<Table.Cell>{helpers.compactHash(tx.from, 8)}</Table.Cell>

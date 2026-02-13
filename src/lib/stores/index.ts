@@ -21,6 +21,8 @@ export const blockStore = new Store<Map<number, types.Block>>(new Map());
 export const txStore = new Store<Map<string, types.TxResponse>>(new Map());
 export const syncStatusStore = new Store<types.SyncStatus>('idle');
 export const providerStore = new Store<services.BlockProvider | undefined>(undefined);
+export const highlightedBlockNumbersStore = new Store<number[]>([]);
+export const highlightedTxHashesStore = new Store<string[]>([]);
 
 export const rpcStore = new Store<string>('', true, 'rpc');
 export const depthStore = new Store<number>(constants.DEFAULT_DEPTH_LIMIT, true, 'depth');
@@ -29,6 +31,7 @@ export const rpcsStore = new Store<string[]>([], true, 'rpcs');
 export const callAbisStore = new Store<string[]>([], true, 'callAbis');
 export const txAbisStore = new Store<string[]>([], true, 'txAbis');
 export const testKeysStore = new Store<string[]>([], true, 'testKeys');
+export const filterAddressesStore = new Store<string[]>([], true, 'filterAddresses');
 export const metricsStore = new Store<boolean>(true, true, 'metrics');
 export const queryHistoryStore = new Store<types.QueryHistoryByRpc>({}, true, 'queryHistory');
 

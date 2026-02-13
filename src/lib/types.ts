@@ -73,6 +73,7 @@ export type Environment = {
 	callAbis?: string[];
 	txAbis?: string[];
 	testKeys?: string[];
+	filterAddresses?: string[];
 };
 
 export type Validator = (input: string) => boolean;

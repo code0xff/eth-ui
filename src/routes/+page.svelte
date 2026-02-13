@@ -34,10 +34,63 @@
 	let txList: types.TxResponse[] = [];
 
 	let metricsOpen = false;
+	let normalizedFilterAddresses: string[] = [];
+	let highlightedBlockNumbers = new Set<number>();
+	let highlightedTxHashes = new Set<string>();
+
+	function normalizeAddresses(addresses: string[]): string[] {
+		return [...new Set(addresses.map((address) => address.trim().toLowerCase()).filter(Boolean))];
+	}
+
+	async function txMatchesFilters(
+		tx: types.TxResponse,
+		filters: Set<string>,
+		filtersWithoutPrefix: string[],
+		provider: Awaited<ReturnType<typeof helpers.ensureProvider>>
+	): Promise<boolean> {
+		const from = tx.from?.toLowerCase();
+		const to = tx.to?.toLowerCase();
+		if ((from && filters.has(from)) || (to && filters.has(to))) {
+			return true;
+		}
+
+		const receipt = await provider.getTxReceipt(tx.hash);
+		if (!receipt) {
+			return false;
+		}
+
+		for (const log of receipt.logs) {
+			try {
+				const parsed = JSON.parse(log);
+				const topics = Array.isArray(parsed?.topics) ? parsed.topics : [];
+				for (const topic of topics) {
+					if (typeof topic !== 'string') {
+						continue;
+					}
+
+					const normalizedTopic = topic.toLowerCase();
+					if (filters.has(normalizedTopic)) {
+						return true;
+					}
+					for (const filterWithoutPrefix of filtersWithoutPrefix) {
+						if (filterWithoutPrefix && normalizedTopic.includes(filterWithoutPrefix)) {
+							return true;
+						}
+					}
+				}
+			} catch {
+				continue;
+			}
+		}
+
+		return false;
+	}
 
 	async function resetSynced() {
 		stores.blockStore.reset();
 		stores.txStore.reset();
+		stores.highlightedBlockNumbersStore.reset();
+		stores.highlightedTxHashesStore.reset();
 
 		let _provider = stores.providerStore.get();
 		if (_provider) {
@@ -56,7 +109,7 @@
 				await _provider.offNewBlock();
 				return;
 			}
-			updateNewBlock(newBlock);
+			await updateNewBlock(newBlock);
 		});
 	}
 
@@ -88,7 +141,26 @@
 		});
 	}
 
-	function updateNewBlock(newBlock: types.Block) {
+	async function updateNewBlock(newBlock: types.Block) {
+		let filteredTxHashes: string[] = [];
+		const hasFilters = normalizedFilterAddresses.length > 0;
+
+		if (hasFilters) {
+			const filters = new Set(normalizedFilterAddresses);
+			const filtersWithoutPrefix = normalizedFilterAddresses.map((address) =>
+				address.startsWith('0x') ? address.slice(2) : address
+			);
+			const provider = await helpers.ensureProvider();
+
+			const matched = await Promise.all(
+				newBlock.prefetchedTransactions.map(async (tx) => ({
+					tx,
+					matched: await txMatchesFilters(tx, filters, filtersWithoutPrefix, provider)
+				}))
+			);
+			filteredTxHashes = matched.filter(({ matched }) => matched).map(({ tx }) => tx.hash);
+		}
+
 		const _blockStore = stores.blockStore.get();
 		if (_blockStore.has(newBlock.number)) {
 			return;
@@ -98,6 +170,18 @@
 		if (_blockStore.size >= _depth) {
 			const _blockList = [..._blockStore.values()];
 			const _pruneBlockList = _blockList.slice(_depth - 1);
+			const prunedBlockNumbers = new Set(_pruneBlockList.map((block) => block.number));
+			const prunedTxHashes = new Set(_pruneBlockList.flatMap((block) => block.transactions));
+
+			highlightedBlockNumbers = new Set(
+				[...highlightedBlockNumbers].filter((blockNumber) => !prunedBlockNumbers.has(blockNumber))
+			);
+			highlightedTxHashes = new Set(
+				[...highlightedTxHashes].filter((txHash) => !prunedTxHashes.has(txHash))
+			);
+			stores.highlightedBlockNumbersStore.set([...highlightedBlockNumbers]);
+			stores.highlightedTxHashesStore.set([...highlightedTxHashes]);
+
 			stores.txStore.update((_txs) => {
 				_pruneBlockList.forEach((_block) => {
 					_block.transactions.forEach((_txHash) => {
@@ -121,10 +205,18 @@
 			const _newTxs = new Map(newBlock.prefetchedTransactions.map((tx) => [tx.hash, tx]));
 			return new Map([..._newTxs, ...txs]);
 		});
+
+		if (hasFilters && filteredTxHashes.length > 0) {
+			highlightedBlockNumbers = new Set([newBlock.number, ...highlightedBlockNumbers]);
+			highlightedTxHashes = new Set([...filteredTxHashes, ...highlightedTxHashes]);
+			stores.highlightedBlockNumbersStore.set([...highlightedBlockNumbers]);
+			stores.highlightedTxHashesStore.set([...highlightedTxHashes]);
+		}
 	}
 
 	onMount(() => {
 		metricsOpen = stores.metricsStore.get();
+		normalizedFilterAddresses = normalizeAddresses(stores.filterAddressesStore.get());
 
 		const unsubscribers = [
 			stores.syncStatusStore.subscribe((updatedSyncStatus) => {
@@ -142,8 +234,38 @@
 			stores.rpcsStore.subscribe((updatedRpcs) => {
 				rpcs = updatedRpcs;
 			}),
+			stores.filterAddressesStore.subscribe(async (updatedFilterAddresses) => {
+				const nextNormalizedFilterAddresses = normalizeAddresses(updatedFilterAddresses);
+				const previous = normalizedFilterAddresses.join(',');
+				const next = nextNormalizedFilterAddresses.join(',');
+
+				if (previous === next) {
+					return;
+				}
+
+				normalizedFilterAddresses = nextNormalizedFilterAddresses;
+				highlightedBlockNumbers = new Set();
+				highlightedTxHashes = new Set();
+				stores.highlightedBlockNumbersStore.reset();
+				stores.highlightedTxHashesStore.reset();
+
+				if (!initialized) {
+					return;
+				}
+
+				await resetSynced();
+				if (stores.syncStatusStore.get() === 'processing') {
+					await runSync();
+				}
+			}),
 			stores.initializedStore.subscribe((updatedInitialized) => {
 				initialized = updatedInitialized;
+			}),
+			stores.highlightedBlockNumbersStore.subscribe((updatedHighlightedBlockNumbers) => {
+				highlightedBlockNumbers = new Set(updatedHighlightedBlockNumbers);
+			}),
+			stores.highlightedTxHashesStore.subscribe((updatedHighlightedTxHashes) => {
+				highlightedTxHashes = new Set(updatedHighlightedTxHashes);
 			})
 		];
 
@@ -236,7 +358,9 @@
 								{#each blockList as block}
 									<Table.Row
 										onclick={() => goto(resolve(`/block/${block.number}`))}
-										class="cursor-pointer"
+										class={`cursor-pointer ${highlightedBlockNumbers.has(block.number)
+											? '!bg-foreground !text-background'
+											: ''}`}
 									>
 										<Table.Cell>{helpers.printNumber(block.number)}</Table.Cell>
 										<Table.Cell>{helpers.compactHash(block.hash)}</Table.Cell>
@@ -265,7 +389,12 @@
 							</Table.Header>
 							<Table.Body>
 								{#each txList as tx}
-									<Table.Row onclick={() => goto(resolve(`/tx/${tx.hash}`))} class="cursor-pointer">
+									<Table.Row
+										onclick={() => goto(resolve(`/tx/${tx.hash}`))}
+										class={`cursor-pointer ${highlightedTxHashes.has(tx.hash)
+											? '!bg-foreground !text-background'
+											: ''}`}
+									>
 										<Table.Cell>{helpers.compactHash(tx.hash)}</Table.Cell>
 										<Table.Cell>
 											<div>
