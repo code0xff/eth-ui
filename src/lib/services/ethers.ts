@@ -16,7 +16,9 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	private provider: ethers.Provider | undefined;
 	private network: types.Network | undefined;
 	private pollingActive: boolean = false;
+	private pollingTimer: ReturnType<typeof setTimeout> | undefined;
 	private syncedBlockNumber: number | undefined;
+	private blockListener: ((blockNumber: number) => Promise<void>) | undefined;
 
 	constructor(url: string, connectUrl?: string) {
 		this.url = url;
@@ -48,11 +50,13 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 	async disconnect(): Promise<void> {
 		console.debug(`${this.disconnect.name}()`);
 
+		await this.offNewBlock();
 		await this.provider?.removeAllListeners();
 
 		this.provider?.destroy();
 		this.provider = undefined;
 		this.network = undefined;
+		this.syncedBlockNumber = undefined;
 	}
 
 	async reconnect(count: number = constants.DEFAULT_RETRY_COUNT): Promise<void> {
@@ -342,18 +346,20 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 		if (!this.connected()) {
 			await this.reconnect();
 		}
+		await this.offNewBlock();
 
 		if (this.provider instanceof ethers.JsonRpcProvider) {
 			async function pollBlock(provider: EthersBlockProvider): Promise<void> {
 				try {
 					if (provider.syncedBlockNumber === undefined) {
-						provider.syncedBlockNumber = await provider.provider!.getBlockNumber();
-					} else {
-						const _block = await provider.getBlock(provider.syncedBlockNumber + 1, true);
-						if (_block) {
-							provider.syncedBlockNumber = _block.number;
-							await callback(_block);
-						}
+						const latest = await provider.provider!.getBlockNumber();
+						provider.syncedBlockNumber = Math.max(latest - 1, 0);
+					}
+
+					const _block = await provider.getBlock(provider.syncedBlockNumber + 1, true);
+					if (_block) {
+						provider.syncedBlockNumber = _block.number;
+						await callback(_block);
 					}
 				} catch (e: unknown) {
 					if (e instanceof Error) {
@@ -362,36 +368,42 @@ export class EthersBlockProvider implements interfaces.BlockProvider {
 				} finally {
 					if (provider.pollingActive) {
 						const _interval = stores.intervalStore.get();
-						setTimeout(async () => pollBlock(provider), _interval);
+						provider.pollingTimer = setTimeout(async () => pollBlock(provider), _interval);
 					}
 				}
 			}
 
 			this.pollingActive = true;
-			const _interval = stores.intervalStore.get();
-			setTimeout(async () => pollBlock(this), _interval);
+			void pollBlock(this);
 		} else {
-			this.provider!.on('block', async (_blockNumber: number) => {
+			this.blockListener = async (_blockNumber: number) => {
 				const _block = await this.getBlock(_blockNumber, true);
 				if (_block) {
 					this.syncedBlockNumber = _block.number;
 					await callback(_block);
 				}
-			});
+			};
+			this.provider!.on('block', this.blockListener);
 		}
 	}
 
 	async offNewBlock(callback?: () => void): Promise<void> {
 		console.debug(`${this.offNewBlock.name}()`);
 
-		if (!this.connected()) {
-			return;
+		this.pollingActive = false;
+		this.syncedBlockNumber = undefined;
+		if (this.pollingTimer) {
+			clearTimeout(this.pollingTimer);
+			this.pollingTimer = undefined;
 		}
 
 		if (this.provider instanceof ethers.WebSocketProvider) {
-			this.provider.off('block');
-		} else {
-			this.pollingActive = false;
+			if (this.blockListener) {
+				this.provider.off('block', this.blockListener);
+				this.blockListener = undefined;
+			} else {
+				this.provider.removeAllListeners('block');
+			}
 		}
 		callback?.();
 	}
