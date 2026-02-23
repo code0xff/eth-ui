@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { HistoryIcon, Trash2 } from '@lucide/svelte';
 	import { Button } from '@/components/ui/button';
 	import * as Dialog from '@/components/ui/dialog';
@@ -30,9 +31,9 @@
 
 			if (searchParam.startsWith('0x')) {
 				if (searchParam.length === constants.ADDRESS_SIZE) {
-					goto(`/account/${searchParam}`);
+					goto(resolve(`/account/${searchParam}`));
 				} else if (searchParam.length === constants.HASH_SIZE) {
-					goto(`/tx/${searchParam}`);
+					goto(resolve(`/tx/${searchParam}`));
 				} else {
 					throw new Error('unsupported search condition');
 				}
@@ -41,13 +42,23 @@
 				if (Number.isNaN(_blockNumber)) {
 					throw new Error('unsupported search condition');
 				}
-				goto(`/block/${_blockNumber}`);
+				goto(resolve(`/block/${_blockNumber}`));
 			}
 		});
 	}
 
 	function goToHistory(item: types.QueryHistoryItem) {
-		goto(helpers.buildQueryPath(item.type, item.value));
+		switch (item.type) {
+			case 'account':
+				goto(resolve('/account/[[address]]', { address: item.value }));
+				break;
+			case 'tx':
+				goto(resolve('/tx/[[hash]]', { hash: item.value }));
+				break;
+			case 'block':
+				goto(resolve('/block/[[tag]]', { tag: item.value }));
+				break;
+		}
 		openHistory = false;
 	}
 
