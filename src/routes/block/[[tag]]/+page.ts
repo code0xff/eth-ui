@@ -1,7 +1,7 @@
 import type { LoadEvent } from '@sveltejs/kit';
 
 export async function load({ params }: LoadEvent) {
-	return { 
-		tag: params.tag 
+	return {
+		tag: params.tag
 	};
 }

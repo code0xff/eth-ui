@@ -119,7 +119,7 @@
 	<Card.Header>
 		<div class="flex justify-end">
 			<Select.Root type="single" bind:value={selectedMetric}>
-				<Select.Trigger size="sm" class="text-xs cursor-pointer">
+				<Select.Trigger size="sm" class="cursor-pointer text-xs">
 					{metricLabel(selectedMetric)}
 				</Select.Trigger>
 				<Select.Content>

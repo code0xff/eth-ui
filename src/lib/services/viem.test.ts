@@ -13,12 +13,13 @@ describe('ViemBlockProvider', () => {
 		await provider.offNewBlock();
 
 		expect((provider as unknown as { pollingActive: boolean }).pollingActive).toBe(false);
-		expect((provider as unknown as { syncedBlockNumber: number | undefined }).syncedBlockNumber).toBe(
-			undefined
-		);
-		expect((provider as unknown as { pollingTimer: ReturnType<typeof setTimeout> | undefined }).pollingTimer).toBe(
-			undefined
-		);
+		expect(
+			(provider as unknown as { syncedBlockNumber: number | undefined }).syncedBlockNumber
+		).toBe(undefined);
+		expect(
+			(provider as unknown as { pollingTimer: ReturnType<typeof setTimeout> | undefined })
+				.pollingTimer
+		).toBe(undefined);
 	});
 
 	it('disconnect clears client and network fields', async () => {

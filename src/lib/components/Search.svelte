@@ -116,7 +116,12 @@
 		<Button class="cursor-pointer" variant="outline" onclick={search}>Search</Button>
 	</div>
 	<div>
-		<Button class="cursor-pointer" variant="outline" size="icon" onclick={() => (openHistory = true)}>
+		<Button
+			class="cursor-pointer"
+			variant="outline"
+			size="icon"
+			onclick={() => (openHistory = true)}
+		>
 			<HistoryIcon />
 		</Button>
 	</div>
@@ -149,7 +154,8 @@
 								<Table.Cell onclick={() => goToHistory(item)}>
 									<Input readonly value={item.value} class="cursor-pointer" />
 								</Table.Cell>
-								<Table.Cell>{helpers.timestampToDate(Math.floor(item.queriedAt / 1000))}</Table.Cell>
+								<Table.Cell>{helpers.timestampToDate(Math.floor(item.queriedAt / 1000))}</Table.Cell
+								>
 								<Table.Cell>
 									<Button
 										class="cursor-pointer"

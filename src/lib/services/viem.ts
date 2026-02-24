@@ -1,5 +1,5 @@
 import * as ethers from 'ethers';
-import { createPublicClient, createWalletClient, custom, http, webSocket, type PublicClient } from 'viem';
+import * as viem from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import * as constants from '@/constants';
 import * as helpers from '@/helpers';
@@ -56,7 +56,7 @@ function safeStringify(value: unknown): string {
 export class ViemBlockProvider implements interfaces.BlockProvider {
 	private url: string;
 	private connectUrl: string;
-	private client: PublicClient | undefined;
+	private client: viem.PublicClient | undefined;
 	private network: types.Network | undefined;
 	private pollingActive: boolean = false;
 	private pollingTimer: ReturnType<typeof setTimeout> | undefined;
@@ -79,12 +79,12 @@ export class ViemBlockProvider implements interfaces.BlockProvider {
 		}
 
 		if (this.connectUrl.startsWith('http://') || this.connectUrl.startsWith('https://')) {
-			this.client = createPublicClient({
-				transport: http(this.connectUrl)
+			this.client = viem.createPublicClient({
+				transport: viem.http(this.connectUrl)
 			});
 		} else if (this.connectUrl.startsWith('ws://') || this.connectUrl.startsWith('wss://')) {
-			this.client = createPublicClient({
-				transport: webSocket(this.connectUrl)
+			this.client = viem.createPublicClient({
+				transport: viem.webSocket(this.connectUrl)
 			});
 		} else {
 			throw new Error(`unsupported url: ${this.connectUrl}`);
@@ -327,8 +327,8 @@ export class ViemBlockProvider implements interfaces.BlockProvider {
 		}
 		return (
 			(await this.client!.getStorageAt({
-			address: address as `0x${string}`,
-			slot: slot as `0x${string}`
+				address: address as `0x${string}`,
+				slot: slot as `0x${string}`
 			})) ?? '0x'
 		);
 	}
@@ -383,11 +383,13 @@ export class ViemBlockProvider implements interfaces.BlockProvider {
 				await this.reconnect();
 			}
 
-			const account = privateKeyToAccount(testKey as `0x${string}`);
-			const walletClient = createWalletClient({
-				account,
-				transport: this.connectUrl.startsWith('ws') ? webSocket(this.connectUrl) : http(this.connectUrl)
-			});
+				const account = privateKeyToAccount(testKey as `0x${string}`);
+				const walletClient = viem.createWalletClient({
+					account,
+					transport: this.connectUrl.startsWith('ws')
+						? viem.webSocket(this.connectUrl)
+						: viem.http(this.connectUrl)
+				});
 
 			return await walletClient.sendTransaction({
 				account,
@@ -403,8 +405,8 @@ export class ViemBlockProvider implements interfaces.BlockProvider {
 			throw new Error('wallet not exist');
 		}
 
-		const walletClient = createWalletClient({
-			transport: custom((globalThis as any).ethereum)
+		const walletClient = viem.createWalletClient({
+			transport: viem.custom((globalThis as any).ethereum)
 		});
 		const [account] = await walletClient.requestAddresses();
 		if (!account) {
@@ -444,17 +446,17 @@ export class ViemBlockProvider implements interfaces.BlockProvider {
 				if (e instanceof Error) {
 					console.error(e);
 				}
-				} finally {
-					if (provider.pollingActive) {
-						const _interval = stores.intervalStore.get();
-						provider.pollingTimer = setTimeout(async () => pollBlock(provider), _interval);
-					}
+			} finally {
+				if (provider.pollingActive) {
+					const _interval = stores.intervalStore.get();
+					provider.pollingTimer = setTimeout(async () => pollBlock(provider), _interval);
 				}
-			};
+			}
+		};
 
-			this.pollingActive = true;
-			const _interval = stores.intervalStore.get();
-			this.pollingTimer = setTimeout(async () => pollBlock(this), _interval);
+		this.pollingActive = true;
+		const _interval = stores.intervalStore.get();
+		this.pollingTimer = setTimeout(async () => pollBlock(this), _interval);
 	}
 
 	async offNewBlock(callback?: () => void): Promise<void> {

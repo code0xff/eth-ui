@@ -76,8 +76,7 @@
 								class="w-5/6 cursor-pointer hover:underline"
 								onclick={tx?.blockNumber != null
 									? () => goto(resolve(`/block/${tx!.blockNumber}`))
-									: null}
-								>{tx ? helpers.printNumber(tx.blockNumber) : ''}</Table.Cell
+									: null}>{tx ? helpers.printNumber(tx.blockNumber) : ''}</Table.Cell
 							>
 						</Table.Row>
 						<Table.Row>

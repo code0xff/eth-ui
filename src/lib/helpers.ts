@@ -121,7 +121,8 @@ export function saveQueryHistory(type: types.QueryType, value: string): void {
 	stores.queryHistoryStore.update((historyByRpc) => {
 		const rpcHistory = historyByRpc[rpc] ?? [];
 		const withoutDup = rpcHistory.filter(
-			(item) => !(item.type === type && normalizeHistoryValue(item.type, item.value) === normalizedValue)
+			(item) =>
+				!(item.type === type && normalizeHistoryValue(item.type, item.value) === normalizedValue)
 		);
 		const nextRpcHistory: types.QueryHistoryItem[] = [
 			{

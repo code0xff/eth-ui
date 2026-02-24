@@ -62,7 +62,7 @@
 	}
 </script>
 
-<div class="flex min-h-0 flex-1 flex-col overflow-y-auto mx-4">
+<div class="mx-4 flex min-h-0 flex-1 flex-col overflow-y-auto">
 	<div>
 		<Card.Root>
 			<Card.Header>
@@ -174,9 +174,9 @@
 							{#each block.prefetchedTransactions as tx}
 								<Table.Row
 									onclick={() => goto(resolve(`/tx/${tx.hash}`))}
-									class={`cursor-pointer ${highlightedTxHashes.has(tx.hash)
-										? '!bg-foreground !text-background'
-										: ''}`}
+									class={`cursor-pointer ${
+										highlightedTxHashes.has(tx.hash) ? '!bg-foreground !text-background' : ''
+									}`}
 								>
 									<Table.Cell>{tx.index}</Table.Cell>
 									<Table.Cell>{helpers.compactHash(tx.hash)}</Table.Cell>

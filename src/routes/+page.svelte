@@ -287,7 +287,7 @@
 	});
 </script>
 
-<div class="flex min-h-0 flex-1 flex-col mx-4">
+<div class="mx-4 flex min-h-0 flex-1 flex-col">
 	<div class="shrink-0">
 		<div>
 			<div class="flex flex-col gap-2 xl:flex-row">
@@ -358,9 +358,11 @@
 								{#each blockList as block}
 									<Table.Row
 										onclick={() => goto(resolve(`/block/${block.number}`))}
-										class={`cursor-pointer ${highlightedBlockNumbers.has(block.number)
-											? '!bg-foreground !text-background'
-											: ''}`}
+										class={`cursor-pointer ${
+											highlightedBlockNumbers.has(block.number)
+												? '!bg-foreground !text-background'
+												: ''
+										}`}
 									>
 										<Table.Cell>{helpers.printNumber(block.number)}</Table.Cell>
 										<Table.Cell>{helpers.compactHash(block.hash)}</Table.Cell>
@@ -391,9 +393,9 @@
 								{#each txList as tx}
 									<Table.Row
 										onclick={() => goto(resolve(`/tx/${tx.hash}`))}
-										class={`cursor-pointer ${highlightedTxHashes.has(tx.hash)
-											? '!bg-foreground !text-background'
-											: ''}`}
+										class={`cursor-pointer ${
+											highlightedTxHashes.has(tx.hash) ? '!bg-foreground !text-background' : ''
+										}`}
 									>
 										<Table.Cell>{helpers.compactHash(tx.hash)}</Table.Cell>
 										<Table.Cell>
