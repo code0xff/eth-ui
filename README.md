@@ -85,6 +85,57 @@ npm run build
 npm run deploy
 ```
 
+### 6. Run tests
+
+Test prerequisites:
+
+- Node.js and npm installed
+- For browser-based Vitest runs, Playwright Chromium installed (`npx playwright install chromium`)
+- For Anvil integration test, Foundry Anvil installed and available at `~/.foundry/bin/anvil`
+- For a custom Anvil binary path, use `ANVIL_BIN=/path/to/anvil`
+- `test:anvil` uses `127.0.0.1:8547`, so make sure the port is available
+
+Run all unit tests once:
+
+```shell
+npm test
+```
+
+Run unit tests in watch mode:
+
+```shell
+npm run test:unit
+```
+
+Before running integration test with local Anvil, set up once:
+
+1. Install Foundry (includes Anvil):
+
+```shell
+curl -L https://foundry.paradigm.xyz | bash
+foundryup
+```
+
+2. Confirm Anvil binary path:
+
+```shell
+~/.foundry/bin/anvil --version
+```
+
+3. If Anvil is installed in another location, set `ANVIL_BIN`:
+
+```shell
+ANVIL_BIN=/path/to/anvil npm run test:anvil
+```
+
+4. Ensure `127.0.0.1:8547` is free (used by `test:anvil`).
+
+Run integration test with local Anvil:
+
+```shell
+npm run test:anvil
+```
+
 ---
 
 ## Project Goals
