@@ -1,0 +1,9 @@
+services:
+  eth-ui:
+    build:
+      context: .
+      args:
+        BASE_PATH: ""
+    ports:
+      - "8080:80"
+    restart: unless-stopped

@@ -85,7 +85,30 @@ npm run build
 npm run deploy
 ```
 
-### 6. Run tests
+### 6. Run with Docker
+
+Build and run with Docker Compose:
+
+```shell
+docker compose up --build -d
+```
+
+Open `http://localhost:8080`.
+
+Run directly with Docker:
+
+```shell
+docker build -t eth-ui .
+docker run --rm -p 8080:80 eth-ui
+```
+
+If you need GitHub Pages base path in container build:
+
+```shell
+docker build --build-arg BASE_PATH=/eth-ui -t eth-ui .
+```
+
+### 7. Run tests
 
 Test prerequisites:
 
