@@ -59,6 +59,7 @@ export class ViemBlockProvider implements interfaces.BlockProvider {
 	private client: PublicClient | undefined;
 	private network: types.Network | undefined;
 	private pollingActive: boolean = false;
+	private pollingTimer: ReturnType<typeof setTimeout> | undefined;
 	private syncedBlockNumber: number | undefined;
 
 	constructor(url: string, connectUrl?: string) {
@@ -99,7 +100,7 @@ export class ViemBlockProvider implements interfaces.BlockProvider {
 	async disconnect(): Promise<void> {
 		console.debug(`${this.disconnect.name}()`);
 
-		this.pollingActive = false;
+		await this.offNewBlock();
 		this.client = undefined;
 		this.network = undefined;
 	}
@@ -425,6 +426,7 @@ export class ViemBlockProvider implements interfaces.BlockProvider {
 		if (!this.connected()) {
 			await this.reconnect();
 		}
+		await this.offNewBlock();
 
 		const pollBlock = async (provider: ViemBlockProvider): Promise<void> => {
 			try {
@@ -442,23 +444,28 @@ export class ViemBlockProvider implements interfaces.BlockProvider {
 				if (e instanceof Error) {
 					console.error(e);
 				}
-			} finally {
-				if (provider.pollingActive) {
-					const _interval = stores.intervalStore.get();
-					setTimeout(async () => pollBlock(provider), _interval);
+				} finally {
+					if (provider.pollingActive) {
+						const _interval = stores.intervalStore.get();
+						provider.pollingTimer = setTimeout(async () => pollBlock(provider), _interval);
+					}
 				}
-			}
-		};
+			};
 
-		this.pollingActive = true;
-		const _interval = stores.intervalStore.get();
-		setTimeout(async () => pollBlock(this), _interval);
+			this.pollingActive = true;
+			const _interval = stores.intervalStore.get();
+			this.pollingTimer = setTimeout(async () => pollBlock(this), _interval);
 	}
 
 	async offNewBlock(callback?: () => void): Promise<void> {
 		console.debug(`${this.offNewBlock.name}()`);
 
 		this.pollingActive = false;
+		this.syncedBlockNumber = undefined;
+		if (this.pollingTimer) {
+			clearTimeout(this.pollingTimer);
+			this.pollingTimer = undefined;
+		}
 		callback?.();
 	}
 }

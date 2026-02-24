@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Store } from './stores';
+import { LocalStorageStore, Store } from './stores';
 import * as constants from '../constants';
 import * as services from '../services';
 import * as types from '../types';
@@ -24,15 +24,15 @@ export const providerStore = new Store<services.BlockProvider | undefined>(undef
 export const highlightedBlockNumbersStore = new Store<number[]>([]);
 export const highlightedTxHashesStore = new Store<string[]>([]);
 
-export const rpcStore = new Store<string>('', true, 'rpc');
-export const depthStore = new Store<number>(constants.DEFAULT_DEPTH_LIMIT, true, 'depth');
-export const intervalStore = new Store<number>(constants.MIN_INTERVAL, true, 'interval');
-export const rpcsStore = new Store<string[]>([], true, 'rpcs');
-export const callAbisStore = new Store<string[]>([], true, 'callAbis');
-export const txAbisStore = new Store<string[]>([], true, 'txAbis');
-export const testKeysStore = new Store<string[]>([], true, 'testKeys');
-export const filterAddressesStore = new Store<string[]>([], true, 'filterAddresses');
-export const metricsStore = new Store<boolean>(true, true, 'metrics');
-export const queryHistoryStore = new Store<types.QueryHistoryByRpc>({}, true, 'queryHistory');
+export const rpcStore = new LocalStorageStore<string>('', 'rpc');
+export const depthStore = new LocalStorageStore<number>(constants.DEFAULT_DEPTH_LIMIT, 'depth');
+export const intervalStore = new LocalStorageStore<number>(constants.MIN_INTERVAL, 'interval');
+export const rpcsStore = new LocalStorageStore<string[]>([], 'rpcs');
+export const callAbisStore = new LocalStorageStore<string[]>([], 'callAbis');
+export const txAbisStore = new LocalStorageStore<string[]>([], 'txAbis');
+export const testKeysStore = new LocalStorageStore<string[]>([], 'testKeys');
+export const filterAddressesStore = new LocalStorageStore<string[]>([], 'filterAddresses');
+export const metricsStore = new LocalStorageStore<boolean>(true, 'metrics');
+export const queryHistoryStore = new LocalStorageStore<types.QueryHistoryByRpc>({}, 'queryHistory');
 
 export const initializedStore = new Store<boolean>(false);

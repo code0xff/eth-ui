@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import * as Card from '@/components/ui/card';
@@ -26,11 +27,15 @@
 
 	let selectedTestKey = constants.WALLET;
 
-	stores.txAbisStore.subscribe((updatedAbis) => {
+	const unsubscribeTxAbis = stores.txAbisStore.subscribe((updatedAbis) => {
 		abis = updatedAbis;
 	});
-	stores.testKeysStore.subscribe((updatedTestKeys) => {
+	const unsubscribeTestKeys = stores.testKeysStore.subscribe((updatedTestKeys) => {
 		testKeys = updatedTestKeys;
+	});
+	onDestroy(() => {
+		unsubscribeTxAbis();
+		unsubscribeTestKeys();
 	});
 
 	$: if (selectedAbi) {

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import { Button } from '@/components/ui/button';
 	import * as Card from '@/components/ui/card';
 	import { Input } from '@/components/ui/input';
@@ -21,9 +22,10 @@
 	let inputsPlaceholder: string = '';
 	let outputsPlaceholder: string = '';
 
-	stores.callAbisStore.subscribe((updatedAbis) => {
+	const unsubscribe = stores.callAbisStore.subscribe((updatedAbis) => {
 		abis = updatedAbis;
 	});
+	onDestroy(unsubscribe);
 
 	$: if (selectedAbi) {
 		inputs = '';

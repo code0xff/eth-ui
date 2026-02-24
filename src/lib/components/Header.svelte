@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import { resolve } from '$app/paths';
 	import { Button } from '@/components/ui/button';
 	import { RefreshCw } from '@lucide/svelte';
@@ -8,9 +9,10 @@
 	import HexConverter from './HexConverter.svelte';
 
 	let syncStatus: types.SyncStatus = 'idle';
-	stores.syncStatusStore.subscribe((updatedSyncStatus) => {
+	const unsubscribe = stores.syncStatusStore.subscribe((updatedSyncStatus) => {
 		syncStatus = updatedSyncStatus;
 	});
+	onDestroy(unsubscribe);
 </script>
 
 <div class="flex w-full flex-row">

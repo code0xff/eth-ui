@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import { Minus, Plus } from '@lucide/svelte';
 	import { Button } from '@/components/ui/button';
 	import * as Dialog from '@/components/ui/dialog';
@@ -16,16 +17,30 @@
 	let input = '';
 	let items: string[] = [];
 
+	const unsubscribe = store.subscribe((updatedItems) => {
+		if (open) {
+			items = [...updatedItems];
+		}
+	});
+	onDestroy(unsubscribe);
+
 	$: if (open) {
-		items = store.get();
+		items = [...store.get()];
 	}
 
 	function addItem() {
 		helpers.tryExecute(() => {
-			if (validate?.(input) === false) {
-				throw new Error(`invalid input: ${input}`);
+			const normalizedInput = input.trim();
+			if (!normalizedInput) {
+				throw new Error('input is required');
 			}
-			items = [...items, input];
+			if (validate?.(normalizedInput) === false) {
+				throw new Error(`invalid input: ${normalizedInput}`);
+			}
+			if (items.includes(normalizedInput)) {
+				throw new Error(`duplicated input: ${normalizedInput}`);
+			}
+			items = [...items, normalizedInput];
 			store.set(items);
 
 			input = '';
@@ -34,9 +49,7 @@
 
 	function removeItem(_index: number) {
 		helpers.tryExecute(() => {
-			items.splice(_index, 1);
-			items = [...items];
-
+			items = items.filter((_, index) => index !== _index);
 			store.set(items);
 		});
 	}
