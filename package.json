@@ -16,7 +16,7 @@
 		"test:unit": "vitest",
 		"test:anvil": "RUN_ANVIL_TESTS=1 vitest --run --project server tests/integration/anvil.integration.test.ts",
 		"test": "npm run test:unit -- --run",
-		"deploy": "npm run build && cp build/index.html build/404.html && gh-pages -d build -t"
+		"deploy": "npm run build && gh-pages -d build -t"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.4.0",
